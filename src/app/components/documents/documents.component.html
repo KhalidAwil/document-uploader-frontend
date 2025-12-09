@@ -1,0 +1,18 @@
+<div class="container py-5" *ngIf="showGrid$ | async">
+    <h1 class="text-center mb-5">{{ 'DOCUMENTS_TITLE' | translate }}</h1>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- Grid for document types -->
+      <div class="col" *ngFor="let doc of documentTypes">
+        <div class="card border border-primary text-center shadow-sm">
+          <div class="card-body">
+            <i [class]="doc.icon" style="font-size: 3rem;"></i>
+            <h5 class="card-title mt-3">{{ doc.translationKey | translate }}</h5>
+            <a [routerLink]="['/documents', doc.type]" class="btn btn-primary mt-3">
+              {{ 'VIEW' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <router-outlet></router-outlet>

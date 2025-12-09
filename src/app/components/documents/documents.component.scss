@@ -1,0 +1,34 @@
+.container {
+    max-width: 1200px;
+    margin: auto;
+  
+    h1 {
+      font-size: 2rem;
+      color: #333;
+    }
+  }
+  
+  .card {
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+  
+    i {
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+  
+    .btn {
+      background-color: #007bff;
+      border: none;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+  

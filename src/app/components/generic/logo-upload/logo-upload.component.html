@@ -1,0 +1,146 @@
+<form [formGroup]="logoForm">
+  <!-- Header Logo -->
+  <div class="logo-section mb-4">
+    <h4 class="section-title">{{ 'LOGO_UPLOAD.HEADER_LOGO' | translate }}</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <app-file-upload
+          #headerLogoUpload
+          [label]="'LOGO_UPLOAD.HEADER_LOGO' | translate"
+          [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'"
+          [existingFileUrl]="headerLogoUrl"
+          [context]="'logos'"
+          [control]="headerLogoControl"
+          [controlName]="'headerLogo'"
+          [deferOperations]="true"
+          (fileUploaded)="onFileOperation('headerLogo', $event)"
+          (fileDeleted)="onFileOperation('headerLogo')"
+          (pendingOperationChange)="checkPendingChanges()"
+        ></app-file-upload>
+        
+        <div class="mt-3">
+          <label class="form-label">{{ 'LOGO_UPLOAD.HEADER_SIZE' | translate }}</label>
+          <select class="form-select" formControlName="headerSize">
+            <option value="small">{{ 'LOGO_UPLOAD.SIZE_SMALL' | translate }}</option>
+            <option value="medium">{{ 'LOGO_UPLOAD.SIZE_MEDIUM' | translate }}</option>
+            <option value="large">{{ 'LOGO_UPLOAD.SIZE_LARGE' | translate }}</option>
+            <option value="xlarge">{{ 'LOGO_UPLOAD.SIZE_XLARGE' | translate }}</option>
+            <option value="original">{{ 'LOGO_UPLOAD.SIZE_ORIGINAL' | translate }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="preview-container">
+          <h5>{{ 'LOGO_UPLOAD.PREVIEW' | translate }}</h5>
+          <div class="logo-preview" *ngIf="headerLogoUpload?.previewLink">
+            <img 
+              [src]="headerLogoUpload.previewLink" 
+              *ngIf="logoForm.get('headerSize')?.value !== 'original'; else originalHeaderPreview"
+              [ngClass]="getImageSizeClass(logoForm.get('headerSize')?.value || 'medium')"
+              alt="Header Logo Preview" 
+            />
+            <ng-template #originalHeaderPreview>
+              <img [src]="headerLogoUpload.previewLink" alt="Header Logo Preview" />
+            </ng-template>
+          </div>
+          <div class="logo-placeholder" *ngIf="!headerLogoUpload?.previewLink">
+            <span>{{ 'LOGO_UPLOAD.NO_LOGO' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="logo-divider">
+
+  <!-- Footer Logo -->
+  <div class="logo-section mb-4">
+    <h4 class="section-title">{{ 'LOGO_UPLOAD.FOOTER_LOGO' | translate }}</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <app-file-upload
+          #footerLogoUpload
+          [label]="'LOGO_UPLOAD.FOOTER_LOGO' | translate"
+          [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'"
+          [existingFileUrl]="footerLogoUrl"
+          [context]="'logos'"
+          [control]="footerLogoControl"
+          [controlName]="'footerLogo'"
+          [deferOperations]="true"
+          (fileUploaded)="onFileOperation('footerLogo', $event)"
+          (fileDeleted)="onFileOperation('footerLogo')"
+          (pendingOperationChange)="checkPendingChanges()"
+        ></app-file-upload>
+        
+        <div class="mt-3">
+          <label class="form-label">{{ 'LOGO_UPLOAD.FOOTER_SIZE' | translate }}</label>
+          <select class="form-select" formControlName="footerSize">
+            <option value="small">{{ 'LOGO_UPLOAD.SIZE_SMALL' | translate }}</option>
+            <option value="medium">{{ 'LOGO_UPLOAD.SIZE_MEDIUM' | translate }}</option>
+            <option value="large">{{ 'LOGO_UPLOAD.SIZE_LARGE' | translate }}</option>
+            <option value="xlarge">{{ 'LOGO_UPLOAD.SIZE_XLARGE' | translate }}</option>
+            <option value="original">{{ 'LOGO_UPLOAD.SIZE_ORIGINAL' | translate }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="preview-container">
+          <h5>{{ 'LOGO_UPLOAD.PREVIEW' | translate }}</h5>
+          <div class="logo-preview" *ngIf="footerLogoUpload?.previewLink">
+            <img 
+              [src]="footerLogoUpload.previewLink" 
+              *ngIf="logoForm.get('footerSize')?.value !== 'original'; else originalFooterPreview"
+              [ngClass]="getImageSizeClass(logoForm.get('footerSize')?.value || 'medium')"
+              alt="Footer Logo Preview" 
+            />
+            <ng-template #originalFooterPreview>
+              <img [src]="footerLogoUpload.previewLink" alt="Footer Logo Preview" />
+            </ng-template>
+          </div>
+          <div class="logo-placeholder" *ngIf="!footerLogoUpload?.previewLink">
+            <span>{{ 'LOGO_UPLOAD.NO_LOGO' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="logo-divider">
+
+  <!-- PDF Logo -->
+  <!-- <div class="logo-section mb-4">
+    <h4 class="section-title">{{ 'LOGO_UPLOAD.PDF_LOGO' | translate }}</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <app-file-upload
+          #pdfLogoUpload
+          [label]="'LOGO_UPLOAD.PDF_LOGO' | translate"
+          [acceptedFileTypes]="'.jpg,.jpeg,.png'"
+          [existingFileUrl]="pdfLogoUrl"
+          [context]="'logos'"
+          [control]="pdfLogoControl"
+          [controlName]="'pdfLogo'"
+          [deferOperations]="true"
+          (fileUploaded)="onFileOperation('pdfLogo', $event)"
+          (fileDeleted)="onFileOperation('pdfLogo')"
+          (pendingOperationChange)="checkPendingChanges()"
+        ></app-file-upload>
+      </div>
+      <div class="col-md-4">
+        <div class="preview-container">
+          <h5>{{ 'LOGO_UPLOAD.PREVIEW' | translate }}</h5>
+          <div class="logo-preview" *ngIf="pdfLogoUpload?.previewLink">
+            <img 
+              [src]="pdfLogoUpload.previewLink" 
+              class="logo-preview-medium"
+              alt="PDF Logo Preview" 
+            />
+          </div>
+          <div class="logo-placeholder" *ngIf="!pdfLogoUpload?.previewLink">
+            <span>{{ 'LOGO_UPLOAD.NO_LOGO' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</form>

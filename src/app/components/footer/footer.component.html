@@ -1,0 +1,124 @@
+<div class="footer-container">
+  <div class="container-fluid-custom">
+    <footer class="py-4">
+      <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <div *ngIf="logoPath; else defaultText" class="footer-logo-container">
+            <img
+              [src]="logoPath"
+              alt="{{ 'LOGO_ALT' | translate }}"
+              [class]="'footer-logo logo-' + logoSize"
+              *ngIf="logoSize !== 'original'; else originalLogo"
+            />
+            <ng-template #originalLogo>
+              <img [src]="logoPath" alt="{{ 'LOGO_ALT' | translate }}" class="footer-logo" />
+            </ng-template>
+          </div>
+          <ng-template #defaultText>
+            <h2 class="mb-4">
+              {{ 'DOCUMENT_UPLOADER' | translate }}
+            </h2>
+          </ng-template>
+          <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_FACEBOOK' | translate }}">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_TWITTER' | translate }}">
+              <i class="bi bi-twitter"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_INSTAGRAM' | translate }}">
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://youtube.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_YOUTUBE' | translate }}">
+              <i class="bi bi-youtube"></i>
+            </a>
+            <a href="https://tiktok.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_TIKTOK' | translate }}">
+              <i class="bi bi-tiktok"></i>
+            </a>
+            <a href="https://t.me/" target="_blank" class="social-icon" title="{{ 'SOCIAL_TELEGRAM' | translate }}">
+              <i class="bi bi-telegram"></i>
+            </a>
+            <a href="https://snapchat.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_SNAPCHAT' | translate }}">
+              <i class="bi bi-snapchat"></i>
+            </a>
+            <a href="https://messenger.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_MESSENGER' | translate }}">
+              <i class="bi bi-messenger"></i>
+            </a>
+            <a href="https://whatsapp.com" target="_blank" class="social-icon" title="{{ 'SOCIAL_WHATSAPP' | translate }}">
+              <i class="bi bi-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <h5 class="footer-heading">
+            {{ 'QUICK_LINKS' | translate }}
+          </h5>
+          <div class="footer-nav-container">
+            <div class="footer-nav-grid">
+              <div class="footer-nav-column">
+                <a routerLink="" class="footer-link">
+                  <i class="bi bi-house-door"></i>
+                  {{ 'HOME' | translate }}
+                </a>
+                <a routerLink="documents/guide" class="footer-link">
+                  <i class="bi bi-book"></i>
+                  {{ 'GUIDES' | translate }}
+                </a>
+                <a routerLink="documents/release" class="footer-link">
+                  <i class="bi bi-file-earmark-text"></i>
+                  {{ 'RELEASES' | translate }}
+                </a>
+              </div>
+
+              <div class="footer-nav-column">
+                <a routerLink="documents/bian" class="footer-link">
+                  <i class="bi bi-file-earmark"></i>
+                  {{ 'BIANS' | translate }}
+                </a>
+                <a routerLink="documents/news" class="footer-link">
+                  <i class="bi bi-newspaper"></i>
+                  {{ 'NEWS' | translate }}
+                </a>
+                <a routerLink="documents/archive_c" class="footer-link">
+                  <i class="bi bi-archive"></i>
+                  {{ 'ARCHIVE_C' | translate }}
+                </a>
+              </div>
+
+              <div class="footer-nav-column">
+                <a routerLink="documents/athar" class="footer-link">
+                  <i class="bi bi-radar"></i>
+                  {{ 'ATHAR' | translate }}
+                </a>
+                <a routerLink="documents/media" class="footer-link">
+                  <i class="bi bi-collection"></i>
+                  {{ 'LIBRARY' | translate }}
+                </a>
+                <a routerLink="join-us" class="footer-link">
+                  <i class="bi bi-people"></i>
+                  {{ 'JOIN_US.NAV_TITLE' | translate }}
+                </a>
+              </div>
+
+              <div class="footer-nav-column">
+                <a routerLink="contact" class="footer-link">
+                  <i class="bi bi-envelope"></i>
+                  {{ 'CONTACT' | translate }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="copyright-container text-center">
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="copyright-text text-white">
+            {{ 'COPYRIGHT' | translate }} {{ getCurrentDate() | arabicDate: 'year' }}
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

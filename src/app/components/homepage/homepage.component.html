@@ -1,0 +1,340 @@
+<main class="container position-relative direction-rtl">
+  <!-- Enhanced Carousel -->
+  <ngb-carousel *ngIf="carouselImages && carouselImages.length > 0" [interval]="5000" class="mb-5 carousel-modern"
+    [showNavigationArrows]="carouselImages.length > 1">
+    <ng-template ngbSlide *ngFor="let img of carouselImages; let i = index">
+      <a [href]="img.image_url" target="_blank" rel="noopener">
+        <div class="picsum-img-wrapper">
+          <img [src]="img.image_url | imageUrl" alt="{{ 'CAROUSEL_IMAGE_ALT' | translate: {index: i} }}" class="carousel-img" />
+        </div>
+      </a>
+    </ng-template>
+  </ngb-carousel>
+  <!-- Carousel Shimmer Placeholder -->
+  <div *ngIf="isLoading && (!carouselImages || carouselImages.length === 0)" class="carousel-modern">
+    <div class="carousel-img-wrapper shimmer">
+      <div class="shimmer-img"></div>
+    </div>
+  </div>
+
+  <div class="content-container position-relative">
+    <div *ngIf="isLoading" class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'LOADING' | translate }}</span>
+      </div>
+    </div>
+
+    <div [class.fade-in]="!isLoading" [class.d-none]="isLoading">
+      <!-- Feature Cards Row -->
+      <div class="row mb-5">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="feature-card border border-primary h-100" *ngIf="latestGuides && latestGuides[0] as document">
+            <div class="card-img-container">
+              <img class="w-100" [src]="document.image_url | imageUrl" alt="{{ 'LATEST_GUIDE_IMAGE_ALT' | translate }}" />
+            </div>
+            <div class="card-body d-flex flex-column text-white bg-gradient-primary">
+              <span class="badge bg-tertiary mb-2">{{ 'LATEST_GUIDE' | translate }}</span>
+              <h4 class="card-title">{{ document.title | truncate }}</h4>
+              <div class="text-light mb-2 small">
+                <i class="bi bi-calendar-event me-1"></i> {{ document.date_of_publication | arabicDate: 'fullDate' }}
+              </div>
+              <p class="card-text mb-4">{{ document.description | truncate: 180 }}</p>
+              <a [routerLink]="['/documents', 'guide', 'view', document.id]"
+                class="btn btn-tertiary-custom mt-auto align-self-start">
+                {{ 'CONTINUE_READING' | translate }}
+                <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="feature-card border border-secondary h-100"
+            *ngIf="latestReleases && latestReleases[0] as document">
+            <div class="card-img-container">
+              <img class="w-100" [src]="document.image_url | imageUrl" alt="{{ 'LATEST_RELEASE_IMAGE_ALT' | translate }}" />
+            </div>
+            <div class="card-body d-flex flex-column text-white bg-gradient-secondary">
+              <span class="badge bg-tertiary mb-2">{{ 'LATEST_RELEASE' | translate }}</span>
+              <h4 class="card-title">{{ document.title | truncate }}</h4>
+              <div class="text-light mb-2 small">
+                <i class="bi bi-calendar-event me-1"></i> {{ document.date_of_publication | arabicDate: 'fullDate' }}
+              </div>
+              <p class="card-text mb-4">{{ document.description | truncate: 180 }}</p>
+              <a [routerLink]="['/documents', 'release', 'view', document.id]"
+                class="btn btn-tertiary-custom mt-auto align-self-start">
+                {{ 'CONTINUE_READING' | translate }}
+                <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content and Sidebar Row -->
+      <div class="row gx-5 gy-4 homepage-body">
+        <div [ngClass]="{
+          'col-lg-8 main-content-column': showSidebar,
+          'col-12 main-content-column': !showSidebar
+        }" style="text-align: right;">
+          <!-- Static Sections -->
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'ABOUT_US_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'ABOUT_US_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'VISION_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'VISION_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'MISSION_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'MISSION_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'GOALS_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                </div>
+              </div>
+              <div class="row g-4">
+                <div class="col mt-3">
+                  <div class="goal-card primary-card">
+                    <h4 class="card-title text-primary text-center mb-0 pb-0">{{ 'GOAL_1_HEADER' | translate }}</h4>
+                    <div class="divider mt-2"></div>
+                    <p class="card-text text-primary text-justify">{{ 'GOAL_1_TEXT' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mt-3">
+                  <div class="goal-card secondary-card">
+                    <h4 class="card-title text-secondary text-center mb-0 pb-0">{{ 'GOAL_2_HEADER' | translate }}</h4>
+                    <div class="divider mt-2"></div>
+                    <p class="card-text text-primary text-justify">{{ 'GOAL_2_TEXT' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mt-3">
+                  <div class="goal-card tertiary-card">
+                    <h4 class="card-title text-tertiary text-center mb-0 pb-0">{{ 'GOAL_3_HEADER' | translate }}</h4>
+                    <div class="divider mt-2"></div>
+                    <p class="card-text text-primary text-justify">{{ 'GOAL_3_TEXT' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mt-3">
+                  <div class="goal-card primary-card">
+                    <h4 class="card-title text-primary text-center mb-0 pb-0">{{ 'GOAL_4_HEADER' | translate }}</h4>
+                    <div class="divider mt-2"></div>
+                    <p class="card-text text-primary text-justify">{{ 'GOAL_4_TEXT' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mt-3">
+                  <div class="goal-card secondary-card">
+                    <h4 class="card-title text-secondary text-center mb-0 pb-0">{{ 'GOAL_5_HEADER' | translate }}</h4>
+                    <div class="divider mt-2"></div>
+                    <p class="card-text text-primary text-justify">{{ 'GOAL_5_TEXT' | translate }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'VISUAL_SLOGAN_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <div *ngIf="headerLogoPath; else defaultIcon" class="logo-container me-3">
+                    <img [src]="headerLogoPath" alt="{{ 'LOGO_ALT' | translate }}"
+                      *ngIf="headerLogoSize !== 'original'; else originalHeaderLogo" [height]="getLogoHeight('header')"
+                      class="logo-img">
+                    <ng-template #originalHeaderLogo>
+                      <img [src]="headerLogoPath" alt="{{ 'LOGO_ALT' | translate }}" class="logo-img">
+                    </ng-template>
+                  </div>
+                  <ng-template #defaultIcon>
+                    <i class="bi bi-info-circle"></i>
+                  </ng-template>
+                  <p class="mt-4 text-primary text-justify">{{ 'VISUAL_SLOGAN_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section bg-gradient-secondary mt-4">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-white">{{ 'READABLE_SLOGAN_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <div *ngIf="footerLogoPath; else defaultIcon" class="logo-container me-3">
+                    <img [src]="footerLogoPath" alt="{{ 'LOGO_ALT' | translate }}"
+                      *ngIf="footerLogoSize !== 'original'; else originalFooterLogo" [height]="getLogoHeight('footer')"
+                      class="logo-img">
+                    <ng-template #originalFooterLogo>
+                      <img [src]="footerLogoPath" alt="{{ 'LOGO_ALT' | translate }}" class="logo-img">
+                    </ng-template>
+                  </div>
+                  <ng-template #defaultIcon>
+                    <i class="bi bi-info-circle"></i>
+                  </ng-template>
+                  <p class="mt-4 text-white text-justify">{{ 'READABLE_SLOGAN_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'A_SECTION_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'A_SECTION_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'B_SECTION_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'B_SECTION_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="modern-section mt-4 border border-primary">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="section-heading text-primary">{{ 'C_SECTION_HEADER' | translate }}</h2>
+                  <div class="divider"></div>
+                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'C_SECTION_TEXT' | translate }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="col-lg-4" style="text-align: right;">
+          <div class="position-sticky" style="top: 2rem">
+            <div class="sidebar-modern border border-primary">
+              <h4 class="text-primary">{{ 'RECENT_POSTS' | translate }}</h4>
+              <div class="divider mx-0"></div>
+
+              <!-- Bian Post -->
+              <div class="sidebar-item bg-gradient-primary" *ngIf="latestBians[0] as document">
+                <img class="rounded" width="100" height="100" [src]="document?.image_url"
+                  alt="{{ 'LATEST_BIAN_IMAGE_ALT' | translate }}" />
+                <div class="sidebar-content">
+                  <span class="badge bg-tertiary mb-1">{{ 'LATEST_BIAN' | translate }}</span>
+                  <h5 class="mb-1 text-white">{{ document?.title | truncate: 50 }}</h5>
+                  <small class="text-light d-block mb-2">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ document?.date_of_publication | arabicDate: 'fullDate' }}
+                  </small>
+                  <a [routerLink]="['/documents', 'bian', 'view', document?.id]" class="modern-link text-tertiary">
+                    {{ 'CONTINUE_READING' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- News Post -->
+              <div class="sidebar-item bg-gradient-primary" *ngIf="latestNews[0] as document">
+                <img class="rounded" width="100" height="100" [src]="document?.image_url"
+                  alt="{{ 'LATEST_NEWS_IMAGE_ALT' | translate }}" />
+                <div class="sidebar-content">
+                  <span class="badge bg-tertiary mb-1">{{ 'LATEST_NEWS' | translate }}</span>
+                  <h5 class="mb-1 text-white">{{ document?.title | truncate: 50 }}</h5>
+                  <small class="text-light d-block mb-2">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ document?.date_of_publication | arabicDate: 'fullDate' }}
+                  </small>
+                  <a [routerLink]="['/documents', 'news', 'view', document?.id]" class="modern-link text-tertiary">
+                    {{ 'CONTINUE_READING' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Archive Post -->
+              <div class="sidebar-item bg-gradient-primary" *ngIf="latestArchiveCs[0] as document">
+                <img class="rounded" width="100" height="100" [src]="document?.image_url"
+                  alt="{{ 'LATEST_ARCHIVE_C_IMAGE_ALT' | translate }}" />
+                <div class="sidebar-content">
+                  <span class="badge bg-tertiary mb-1">{{ 'LATEST_ARCHIVE_C' | translate }}</span>
+                  <h5 class="mb-1 text-white">{{ document?.title | truncate: 50 }}</h5>
+                  <small class="text-light d-block mb-2">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ document?.date_of_publication | arabicDate: 'fullDate' }}
+                  </small>
+                  <a [routerLink]="['/documents', 'archive_c', 'view', document?.id]" class="modern-link text-tertiary">
+                    {{ 'CONTINUE_READING' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Athar Post -->
+              <div class="sidebar-item bg-gradient-primary" *ngIf="latestAthars[0] as document">
+                <img class="rounded" width="100" height="100" [src]="document?.image_url"
+                  alt="{{ 'LATEST_ATHAR_IMAGE_ALT' | translate }}" />
+                <div class="sidebar-content">
+                  <span class="badge bg-tertiary mb-1">{{ 'LATEST_ATHAR' | translate }}</span>
+                  <h5 class="mb-1 text-white">{{ document?.title | truncate: 50 }}</h5>
+                  <small class="text-light d-block mb-2">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ document?.date_of_publication | arabicDate: 'fullDate' }}
+                  </small>
+                  <a [routerLink]="['/documents', 'athar', 'view', document?.id]" class="modern-link text-tertiary">
+                    {{ 'CONTINUE_READING' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Media Post -->
+              <div class="sidebar-item bg-gradient-primary" *ngIf="latestMedias[0] as document">
+                <img class="rounded" width="100" height="100" [src]="document?.image_url"
+                  alt="{{ 'LATEST_MEDIA_IMAGE_ALT' | translate }}" />
+                <div class="sidebar-content">
+                  <span class="badge bg-tertiary mb-1">{{ 'LATEST_MEDIA' | translate }}</span>
+                  <h5 class="mb-1 text-white">{{ document?.title | truncate: 50 }}</h5>
+                  <small class="text-light d-block mb-2">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ document?.date_of_publication | arabicDate: 'fullDate' }}
+                  </small>
+                  <a [routerLink]="['/documents', 'media', 'view', document?.id]" class="modern-link text-tertiary">
+                    {{ 'CONTINUE_READING' | translate }} <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

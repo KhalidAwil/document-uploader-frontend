@@ -1,0 +1,98 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2 class="login-title">{{ 'LOGIN_TITLE' | translate }}</h2>
+      <p class="login-subtitle">{{ 'LOGIN_SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Generic Error Alert -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ errorMessage }}
+      <button type="button" class="btn-close" (click)="clearError()" aria-label="Close"></button>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Email Field -->
+      <div class="mb-4">
+        <label for="email" class="form-label">
+          <i class="bi bi-envelope ms-2"></i>
+          {{ 'EMAIL' | translate }}
+          <span class="text-danger">*</span>
+        </label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          formControlName="email"
+          placeholder="{{ 'EMAIL_PLACEHOLDER' | translate }}"
+          [ngClass]="{'is-invalid': hasFieldError('email')}"
+          (blur)="f['email'].markAsTouched()"
+        />
+        <div class="invalid-feedback" *ngIf="hasFieldError('email')">
+          {{ getFieldErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="mb-4">
+        <label for="password" class="form-label">
+          <i class="bi bi-lock ms-2"></i>
+          {{ 'PASSWORD' | translate }}
+          <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            placeholder="{{ 'PASSWORD_PLACEHOLDER' | translate }}"
+            [ngClass]="{'is-invalid': hasFieldError('password')}"
+            (blur)="f['password'].markAsTouched()"
+          />
+          <button 
+            class="btn btn-outline-tertiary" 
+            type="button" 
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+          <div class="invalid-feedback" *ngIf="hasFieldError('password')">
+            {{ getFieldErrorMessage('password') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Code Field -->
+      <div class="mb-4">
+        <label for="role_code" class="form-label">
+          <i class="bi bi-shield-lock ms-2"></i>
+          {{ 'ROLE_CODE' | translate }}
+          <span class="text-danger">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="role_code"
+          formControlName="role_code"
+          placeholder="{{ 'ROLE_CODE_PLACEHOLDER' | translate }}"
+          [ngClass]="{'is-invalid': hasFieldError('role_code')}"
+          (blur)="f['role_code'].markAsTouched()"
+        />
+        <div class="invalid-feedback" *ngIf="hasFieldError('role_code')">
+          {{ getFieldErrorMessage('role_code') }}
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-outline-tertiary" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ loading ? ('LOGGING_IN' | translate) : ('LOGIN_BUTTON' | translate) }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

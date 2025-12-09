@@ -1,0 +1,400 @@
+<div class="container mt-4" dir="rtl">
+  <h2 class="mb-4 text-right">{{ 'REPORT.TITLE' | translate }}</h2>
+
+  <!-- Document Type Selection Form -->
+  <form [formGroup]="typeForm" class="mb-3">
+    <div class="mb-3 text-right">
+      <app-dropdown-select
+        id="document_type"
+        [label]="'REPORT.SELECT_TYPE' | translate"
+        dropdownName="report_document_type"
+        [placeholder]="'REPORT.SELECT_TYPE' | translate"
+        [control]="typeForm.get('documentType')"
+        [initialValue]="typeForm.get('documentType')?.value"
+      ></app-dropdown-select>
+    </div>
+
+    <!-- User Selection for Audit Log (Moved Here) -->
+    <div class="mb-3 text-right" *ngIf="getDocumentType() === 'audit_log'">
+      <label for="user_id" class="form-label">{{ 'USER_ID' | translate }}</label>
+      <select class="form-select" id="user_id" formControlName="user_id" (change)="onUserSelect()">
+        <option value="">{{ 'SELECT_USER' | translate }}</option>
+        <option *ngFor="let user of users" [value]="user.id">{{ user.nickname }}</option>
+      </select>
+    </div>
+  </form>
+
+  <!-- Filters Section -->
+  <div class="d-flex justify-content-between mb-3" *ngIf="selectedConfig">
+    <button class="btn btn-outline-secondary" type="button" (click)="toggleFilters()">
+      <i class="bi bi-funnel-fill"></i>
+      {{ 'TOGGLE_FILTERS' | translate }}
+    </button>
+  </div>
+
+  <div [ngClass]="{ collapse: filtersCollapsed }" *ngIf="selectedConfig" class="filter-section">
+    <form [formGroup]="reportForm" (ngSubmit)="onFilter()" class="text-right">
+      <div class="row g-3 mb-4">
+        <!-- Filters for Non-Audit Log Types -->
+        <ng-container *ngIf="getDocumentType() !== 'audit_log'">
+          <div class="col-md-4" *ngIf="hasFilterField('date_of_event')">
+            <label for="dateOfEvent" class="form-label">{{ 'DATE_OF_EVENT' | translate }}</label>
+            <input type="text" class="form-control" id="dateOfEvent"
+              [attr.placeholder]="'FILTERS_SELECT_EVENT_DATE' | translate"
+              bsDaterangepicker formControlName="date_of_event" [bsConfig]="bsConfig" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('date_of_publication')">
+            <label for="dateOfPublication" class="form-label">{{ 'DATE_OF_PUBLICATION' | translate }}</label>
+            <input type="text" class="form-control" id="dateOfPublication"
+              [attr.placeholder]="'FILTERS_SELECT_PUBLICATION_DATE' | translate"
+              bsDaterangepicker formControlName="date_of_publication" [bsConfig]="bsConfig" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_date_of_loss')">
+            <label for="atharDateOfLoss" class="form-label">{{ 'ATHAR_DATE_OF_LOSS' | translate }}</label>
+            <input type="text" class="form-control" id="atharDateOfLoss"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_DATE_OF_LOSS' | translate"
+              bsDaterangepicker formControlName="athar_date_of_loss" [bsConfig]="bsConfig" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_date_of_presentation')">
+            <label for="atharDateOfPresentation" class="form-label">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate }}</label>
+            <input type="text" class="form-control" id="atharDateOfPresentation"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_DATE_OF_PRESENTATION' | translate"
+              bsDaterangepicker formControlName="athar_date_of_presentation" [bsConfig]="bsConfig" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('release_type')">
+            <app-dropdown-select 
+              id="release_type" 
+              [label]="'RELEASE_TYPE' | translate" 
+              dropdownName="release_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('release_type')"
+              [initialValue]="reportForm.get('release_type')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('type_c')">
+            <app-dropdown-select 
+              id="type_c" 
+              [label]="'TYPE_C' | translate" 
+              dropdownName="type_c"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('type_c')"
+              [initialValue]="reportForm.get('type_c')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('media_type')">
+            <app-dropdown-select 
+              id="media_type" 
+              [label]="'MEDIA_TYPE' | translate" 
+              dropdownName="media_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('media_type')"
+              [initialValue]="reportForm.get('media_type')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <!-- Athar-specific dropdown filters -->
+          <div class="col-md-4" *ngIf="hasFilterField('athar_type')">
+            <app-dropdown-select 
+              id="athar_type" 
+              [label]="'ATHAR_TYPE' | translate" 
+              dropdownName="athar_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_type')"
+              [initialValue]="reportForm.get('athar_type')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_material')">
+            <app-dropdown-select 
+              id="athar_material" 
+              [label]="'ATHAR_MATERIAL' | translate" 
+              dropdownName="athar_material"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_material')"
+              [initialValue]="reportForm.get('athar_material')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_preservation_status')">
+            <app-dropdown-select 
+              id="athar_preservation_status" 
+              [label]="'ATHAR_PRESERVATION_STATUS' | translate" 
+              dropdownName="athar_preservation_status"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_preservation_status')"
+              [initialValue]="reportForm.get('athar_preservation_status')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_legal_status')">
+            <app-dropdown-select 
+              id="athar_legal_status" 
+              [label]="'ATHAR_LEGAL_STATUS' | translate" 
+              dropdownName="athar_legal_status"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_legal_status')"
+              [initialValue]="reportForm.get('athar_legal_status')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_origin_country')">
+            <app-dropdown-select 
+              id="athar_origin_country" 
+              [label]="'ATHAR_ORIGIN_COUNTRY' | translate" 
+              dropdownName="athar_origin_country"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_origin_country')"
+              [initialValue]="reportForm.get('athar_origin_country')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_present_location_country')">
+            <app-dropdown-select 
+              id="athar_present_location_country" 
+              [label]="'ATHAR_PRESENT_LOCATION_COUNTRY' | translate" 
+              dropdownName="athar_present_location_country"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_present_location_country')"
+              [initialValue]="reportForm.get('athar_present_location_country')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('athar_required_procedure')">
+            <app-dropdown-select 
+              id="athar_required_procedure" 
+              [label]="'ATHAR_REQUIRED_PROCEDURE' | translate" 
+              dropdownName="athar_required_procedure"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('athar_required_procedure')"
+              [initialValue]="reportForm.get('athar_required_procedure')?.value">
+            </app-dropdown-select>
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('title')">
+            <label for="title" class="form-label">{{ 'TITLE' | translate }}</label>
+            <input type="text" class="form-control" id="title" formControlName="title" 
+              [attr.placeholder]="'FILTERS_SELECT_TITLE' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('description')">
+            <label for="description" class="form-label">{{ 'DESCRIPTION' | translate }}</label>
+            <input type="text" class="form-control" id="description" formControlName="description" 
+              [attr.placeholder]="'FILTERS_SELECT_DESCRIPTION' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('event_location')">
+            <label for="event_location" class="form-label">{{ 'EVENT_LOCATION' | translate }}</label>
+            <input type="text" class="form-control" id="event_location" formControlName="event_location" 
+              [attr.placeholder]="'FILTERS_SELECT_EVENT_LOCATION' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('created_by_nickname')">
+            <label for="created_by_nickname" class="form-label">{{ 'CREATED_BY_NICKNAME' | translate }}</label>
+            <input type="text" class="form-control" id="created_by_nickname" formControlName="created_by_nickname"
+              [attr.placeholder]="'FILTERS_SELECT_CREATED_BY_NICKNAME' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngFor="let field of getOtherTextFilters()">
+            <label [for]="field" class="form-label">{{ field.toUpperCase() | translate }}</label>
+            <input type="text" class="form-control" [id]="field" [formControlName]="field"
+              [attr.placeholder]="'FILTERS_SELECT_' + field.toUpperCase() | translate" />
+          </div>
+        </ng-container>
+
+        <!-- Filters for Audit Log -->
+        <ng-container *ngIf="getDocumentType() === 'audit_log'">
+          <div class="col-md-4" *ngIf="hasFilterField('field_name')">
+            <label for="field_name" class="form-label">{{ 'FIELD_NAME' | translate }}</label>
+            <input type="text" class="form-control" id="field_name" formControlName="field_name" 
+              [attr.placeholder]="'FILTERS_SELECT_FIELD_NAME' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('action')">
+            <label for="action" class="form-label">{{ 'ACTION' | translate }}</label>
+            <input type="text" class="form-control" id="action" formControlName="action" 
+              [attr.placeholder]="'FILTERS_SELECT_ACTION' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('user_nickname')">
+            <label for="user_nickname" class="form-label">{{ 'USER_NICKNAME' | translate }}</label>
+            <input type="text" class="form-control" id="user_nickname" formControlName="user_nickname"
+              [attr.placeholder]="'FILTERS_SELECT_USER_NICKNAME' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('model_type')">
+            <label for="model_type" class="form-label">{{ 'MODEL_TYPE' | translate }}</label>
+            <input type="text" class="form-control" id="model_type" formControlName="model_type"
+              [attr.placeholder]="'FILTERS_SELECT_MODEL_TYPE' | translate" />
+          </div>
+
+          <div class="col-md-4" *ngIf="hasFilterField('role_code')">
+            <app-dropdown-select 
+              id="role_code" 
+              [label]="'ROLE_CODE' | translate" 
+              dropdownName="role_code"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" 
+              [control]="reportForm.get('role_code')"
+              [initialValue]="reportForm.get('role_code')?.value">
+            </app-dropdown-select>
+          </div>
+        </ng-container>
+
+        <!-- Filter Buttons -->
+        <div class="col-md-12">
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ 'APPLY_FILTERS' | translate }}
+            </button>
+            
+            <button type="button" class="btn" 
+              [class.btn-primary]="sortOrder === 'asc'" [class.btn-secondary]="sortOrder !== 'asc'"
+              (click)="onSortChange('asc')">
+              <i class="bi bi-sort-up me-1"></i>
+              {{ 'SORT_ASC' | translate }}
+            </button>
+            
+            <button type="button" class="btn"
+              [class.btn-primary]="sortOrder === 'desc'" [class.btn-secondary]="sortOrder !== 'desc'"
+              (click)="onSortChange('desc')">
+              <i class="bi bi-sort-down me-1"></i>
+              {{ 'SORT_DESC' | translate }}
+            </button>
+
+            <ng-container *ngIf="getDocumentType() === 'archive_c' && hasFilterField('date_of_event')">
+              <button type="button" class="btn btn-secondary" (click)="onEventDateSortChange('asc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-up me-1"></i>
+                {{ 'EVENT_DATE_SORT_ASC' | translate }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="onEventDateSortChange('desc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-down me-1"></i>
+                {{ 'EVENT_DATE_SORT_DESC' | translate }}
+              </button>
+            </ng-container>
+            
+            <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
+              <i class="bi bi-x-circle me-1"></i>
+              {{ 'CLEAR_FILTERS' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Section -->
+  <div class="position-relative">
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'LOADING' | translate }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="reportData?.length" class="mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-right">{{ 'REPORT.RESULTS' | translate }}</h3>
+        <div class="btn-group">
+          <button (click)="exportReport('pdf')" class="btn btn-danger">
+            <i class="bi bi-file-pdf me-1"></i>
+            {{ 'REPORT.EXPORT.PDF' | translate }}
+          </button>
+          <button (click)="exportReport('xlsx')" class="btn btn-success">
+            <i class="bi bi-file-excel me-1"></i>
+            {{ 'REPORT.EXPORT.XLSX' | translate }}
+          </button>
+          <button (click)="exportReport('csv')" class="btn btn-secondary">
+            <i class="bi bi-file-text me-1"></i>
+            {{ 'REPORT.EXPORT.CSV' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive table-container">
+        <table class="table table-hover table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th class="text-right">{{ 'ROW_NUMBER' | translate }}</th>
+              <th *ngFor="let field of displayFields" class="text-right">
+                {{ getFieldTranslationKey(field) | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of reportData; let i = index">
+              <td class="text-right">{{ getRowNumber(i) | arabicNumerals }}</td>
+              <td *ngFor="let field of displayFields" 
+                  class="text-right" 
+                  [class.expandable]="isTextTruncated(row[field], field)"
+                  [class.expanded]="isCellExpanded(i, field)"
+                  [title]="getCellTooltip(row[field], i, field)"
+                  (click)="toggleCellExpansion(i, field, row[field])">
+                <ng-container *ngIf="isUrlField(field) && row[field]; else plainText">
+                  <a [href]="getUrlValue(row[field])" target="_blank" (click)="$event.stopPropagation()">انقر على الرابط</a>
+                </ng-container>
+                <ng-template #plainText>
+                  <span *ngIf="isDateField(field) && row[field]">{{ row[field] | arabicDate: 'short' }}</span>
+                  <span *ngIf="isNumericField(field) && row[field]">{{ row[field] | arabicNumerals }}</span>
+                  <span *ngIf="isDropdownField(field) && row[field]">{{ getDropdownLabel(field, row[field]) }}</span>
+                  <span *ngIf="!isDateField(field) && !isNumericField(field) && !isDropdownField(field) || !row[field]">{{ row[field] }}</span>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="pagination-info text-right">
+          <div class="items-per-page d-inline-block me-3">
+            <label class="ms-2">{{ 'PAGINATION.ITEMS_PER_PAGE' | translate }}:</label>
+            <select class="form-select form-select-sm d-inline-block w-auto"
+              [disabled]="isLoading" [ngModel]="pagination.perPage"
+              (ngModelChange)="onPageSizeChange($event)">
+              <option *ngFor="let size of pageSizes" [value]="size.value">{{ size.label }}</option>
+            </select>
+          </div>
+          <div class="showing-text d-inline-block">
+            {{ 'PAGINATION.SHOWING' | translate }}
+            {{ (pagination.currentPage - 1) * pagination.perPage + 1 | arabicNumerals }} -
+            {{ math.min(pagination.currentPage * pagination.perPage, pagination.total) | arabicNumerals }}
+            {{ 'PAGINATION.OF' | translate }} {{ pagination.total | arabicNumerals }}
+            {{ 'PAGINATION.ITEMS' | translate }}
+          </div>
+        </div>
+
+        <nav aria-label="Page navigation" *ngIf="pagination.lastPage > 1">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="pagination.currentPage === 1 || isLoading">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(pagination.currentPage - 1)">
+                <span aria-hidden="true">«</span>
+              </a>
+            </li>
+            <li class="page-item" *ngFor="let page of getPages()"
+              [class.active]="page === pagination.currentPage" [class.disabled]="isLoading">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">
+                {{ page | arabicNumerals }}
+              </a>
+            </li>
+            <li class="page-item" [class.disabled]="pagination.currentPage === pagination.lastPage || isLoading">
+              <a class="page-link" href="javascript:void(0)" (click)="onPageChange(pagination.currentPage + 1)">
+                <span aria-hidden="true">»</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div *ngIf="!reportData?.length && !isLoading" class="no-results text-center mt-4">
+      <h5>{{ 'NO_RESULTS_MESSAGE' | translate }}</h5>
+    </div>
+  </div>
+</div>

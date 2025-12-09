@@ -1,0 +1,19 @@
+.join-us-section {
+  background: var(--app-primary-50);
+  border: 2px solid var(--app-primary-300);
+  color: var(--app-primary-900);
+  border-radius: var(--app-radius-md);
+  padding: 2rem 1.5rem;
+
+  ul li {
+    font-size: 1.4rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .join-us-section-card-primary,
+  .join-us-section-card-secondary {
+    padding: 1.25rem 0.6rem;
+  }
+}

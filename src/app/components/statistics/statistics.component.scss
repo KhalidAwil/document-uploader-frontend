@@ -1,0 +1,201 @@
+// Print-specific styles for statistics component
+@media print {
+  .chart-container {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  // Ensure chart is visible when printing
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  // Hide interactive elements when printing
+  .btn-group {
+    display: none !important;
+  }
+  
+  // Improve text contrast for black and white printing
+  .form-label,
+  h2 {
+    color: black !important;
+    font-weight: bold;
+  }
+  
+  // Ensure proper spacing for printed output
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  // Hide filter form when printing to save space
+  form {
+    display: none !important;
+  }
+}
+
+// Regular styles
+.chart-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+// Improve button spacing
+.btn-group {
+  margin-bottom: 20px;
+}
+
+// Better form layout
+.form-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+// Loading indicator styling
+.spinner-border {
+  margin: 40px auto;
+  display: block;
+}
+
+// Welcome overlay styling
+.welcome-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(41, 48, 75, 0.05), rgba(209, 152, 93, 0.05));
+  border-radius: 8px;
+  z-index: 10;
+  border: 2px dashed #e9ecef;
+}
+
+.welcome-content {
+  text-align: center;
+  padding: 40px;
+  color: #495057;
+  max-width: 400px;
+}
+
+.welcome-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: #29304B;
+  opacity: 0.8;
+}
+
+.welcome-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #29304B;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.welcome-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #D1985D;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+.welcome-hint i {
+  font-size: 1.2rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+// No data overlay styling
+.no-data-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.no-data-content {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.no-data-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+  color: #6c757d;
+}
+
+.no-data-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.no-data-subtitle {
+  font-size: 1rem;
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+// RTL support for content
+[dir="rtl"] .welcome-content,
+[dir="rtl"] .no-data-content {
+  text-align: center;
+}
+
+[dir="rtl"] .welcome-hint {
+  flex-direction: row-reverse;
+}
+
+// Print styles
+@media print {
+  .welcome-overlay,
+  .no-data-overlay {
+    background: white !important;
+    border: 1px solid #333 !important;
+  }
+  
+  .welcome-title,
+  .welcome-subtitle,
+  .welcome-hint,
+  .no-data-title,
+  .no-data-subtitle {
+    color: black !important;
+  }
+  
+  .welcome-icon,
+  .no-data-icon {
+    color: #333 !important;
+  }
+  
+  .welcome-hint {
+    animation: none !important;
+  }
+}

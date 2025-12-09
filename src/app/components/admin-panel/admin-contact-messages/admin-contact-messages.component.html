@@ -1,0 +1,109 @@
+<div class="container mt-5">
+    <h2>{{ 'CONTACT_MESSAGES' | translate }}</h2>
+    <div *ngIf="isLoading" class="text-center my-3">
+       <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>{{ 'LOADING_MESSAGES' | translate }}</p>
+    </div>
+  
+    <div *ngIf="!isLoading">
+        <!-- Message Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-striped admin-table">
+              <thead>
+                <tr>
+                  <th>{{ 'CONTACT_NAME' | translate }}</th>
+                  <th>{{ 'CONTACT_EMAIL' | translate }}</th>
+                  <th>{{ 'CONTACT_PHONE' | translate }}</th>
+                  <th>{{ 'CONTACT_SUBJECT' | translate }}</th>
+                  <th>{{ 'CONTACT_MESSAGE' | translate }}</th>
+                  <th>{{ 'CONTACT_DATE' | translate }}</th>
+                  <th>{{ 'ACTIONS' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="contactMessages.length === 0">
+                  <td colspan="7" class="text-center">{{ 'NO_MESSAGES_FOUND' | translate }}</td>
+                </tr>
+                <tr *ngFor="let message of contactMessages">
+                  <td>{{ message.name }}</td>
+                  <td>{{ message.email }}</td>
+                  <td>{{ message.phone || ('N/A' | translate) }}</td>
+                  <td>{{ message.subject }}</td>
+                  <td>{{ message.message | truncate: 30 }}</td> <!-- Adjust truncate length -->
+                  <td>{{ message.created_at | arabicDate: 'short' }}</td> <!-- Use Angular DatePipe -->
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-primary ms-2"
+                      (click)="openMessage(message)"
+                      [title]="'CONTACT_VIEW_MESSAGE' | translate"
+                    >
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button
+                      *ngIf="canDeleteMessages()"
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      (click)="deleteMessage(message.id)"
+                      [title]="'DELETE' | translate"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+  
+        <!-- Selected Message View -->
+         <div *ngIf="selectedMessage" class="card border border-primary">
+            <div class="card-header">
+              <h5 class="card-title d-flex justify-content-between align-items-center">
+                 <span>
+                     <i class="bi bi-envelope-open me-2"></i>
+                    {{ 'CONTACT_MESSAGE_FROM' | translate: { name: selectedMessage.name } }}
+                 </span>
+                <button class="btn-close" aria-label="Close" (click)="clearSelectedMessage()"></button>
+              </h5>
+            </div>
+            <div class="card-body">
+              <p><strong>{{ 'CONTACT_NAME' | translate }}:</strong> {{ selectedMessage.name }}</p>
+              <p><strong>{{ 'CONTACT_EMAIL' | translate }}:</strong> {{ selectedMessage.email }}</p>
+              <p>
+                <strong>{{ 'CONTACT_PHONE' | translate }}:</strong>
+                {{ selectedMessage.phone || ('N/A' | translate) }}
+              </p>
+              <p>
+                <strong>{{ 'CONTACT_RESIDENCE' | translate }}:</strong>
+                {{ selectedMessage.current_residence || ('N/A' | translate) }}
+              </p>
+              <p><strong>{{ 'CONTACT_SUBJECT' | translate }}:</strong> {{ selectedMessage.subject }}</p>
+              <p>
+                <strong>{{ 'CONTACT_DATE' | translate }}:</strong>
+                {{ selectedMessage.created_at | arabicDate: 'medium' }} <!-- Use Angular DatePipe -->
+              </p>
+              <hr>
+              <p><strong>{{ 'CONTACT_MESSAGE' | translate }}:</strong></p>
+              <p style="white-space: pre-wrap;">{{ selectedMessage.message }}</p> <!-- Preserve whitespace -->
+            </div>
+            <!-- Optional Footer
+             <div class="card-footer text-end">
+               <button class="btn btn-secondary" (click)="clearSelectedMessage()">
+                 <i class="bi bi-x-circle me-1"></i>
+                 {{ 'CONTACT_MESSAGE_CLOSE' | translate }}
+               </button>
+             </div>
+             -->
+          </div>
+  
+          <!-- Placeholder if no message is selected -->
+          <div *ngIf="!selectedMessage && contactMessages.length > 0" class="card border border-primary">
+            <div class="card-body text-center text-muted">
+              {{ 'SELECT_MESSAGE_TO_VIEW' | translate }}
+            </div>
+          </div>
+    </div>
+  
+  </div>

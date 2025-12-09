@@ -1,0 +1,57 @@
+<div class="container mt-5">
+    <h2>{{ 'MANAGE_USERS' | translate }}</h2>
+    <div *ngIf="isLoading" class="text-center my-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <div *ngIf="!isLoading" class="table-responsive">
+        <table class="table table-striped admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'FIRST_NAME' | translate }}</th>
+              <th>{{ 'LAST_NAME' | translate }}</th>
+              <th>{{ 'NICKNAME' | translate }}</th>
+              <th>{{ 'EMAIL' | translate }}</th>
+              <th>{{ 'ROLE' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!users || users.length === 0">
+              <td colspan="6" class="text-center">{{ 'NO_USERS_FOUND' | translate }}</td>
+            </tr>
+            <tr *ngFor="let user of users">
+              <td>{{ user?.first_name }}</td>
+              <td>{{ user?.last_name }}</td>
+              <td>{{ user?.nickname }}</td>
+              <td>{{ user?.email }}</td>
+              <td>
+                <!-- Use badge for styling roles -->
+                <span class="badge bg-secondary">{{ printUserRoles(user?.roles) }}</span>
+              </td>
+              <td>
+                <button
+                  *ngIf="canEditUser(user)"
+                  class="btn btn-sm btn-primary ms-1"
+                  (click)="editUser(user?.id)"
+                  [title]="'EDIT' | translate"
+                >
+                  <i class="bi bi-pencil"></i>
+                  <!-- <span class="d-none d-md-inline ms-1">{{ 'EDIT' | translate }}</span> Optional text -->
+                </button>
+                <button
+                  *ngIf="canDeleteUser(user)"
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteUser(user?.id)"
+                  [title]="'DELETE' | translate"
+                >
+                  <i class="bi bi-trash"></i>
+                   <!-- <span class="d-none d-md-inline ms-1">{{ 'DELETE' | translate }}</span> Optional text -->
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>

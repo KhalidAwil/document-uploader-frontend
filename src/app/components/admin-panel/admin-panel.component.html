@@ -1,0 +1,175 @@
+<div class="container">
+  <ul class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist">
+    <!-- Profile Tab -->
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        routerLink="profile" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        id="profile-tab"
+        role="tab"
+        aria-controls="profile-tab-pane"
+      >
+        <i class="bi bi-person-circle ms-2"></i>
+        {{ 'PROFILE' | translate }}
+      </a>
+    </li>
+    <!-- User Actions Tab -->
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        routerLink="actions"
+        routerLinkActive="active"
+        id="user-actions-tab"
+        role="tab"
+        aria-controls="user-actions-tab-pane"
+      >
+        <i class="bi bi-gear ms-2"></i>
+        {{ 'USER_ACTIONS' | translate }}
+      </a>
+    </li>
+    <!-- Dashboard Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('super_admin') || user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="dashboard"
+        routerLinkActive="active"
+        id="dashboard-tab"
+        role="tab"
+        aria-controls="dashboard-tab-pane"
+      >
+        <i class="bi bi-graph-up ms-2"></i>
+        {{ 'DASHBOARD' | translate }}
+      </a>
+    </li>
+    <!-- Reports Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="reports"
+        routerLinkActive="active"
+        id="reports-tab"
+        role="tab"
+        aria-controls="reports-tab-pane"
+      >
+        <i class="bi bi-file-earmark-text ms-2"></i>
+        {{ 'REPORTS' | translate }}
+      </a>
+    </li>
+    <!-- Users Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('super_admin') || user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="users"
+        routerLinkActive="active"
+        id="users-tab"
+        role="tab"
+        aria-controls="users-tab-pane"
+      >
+        <i class="bi bi-people ms-2"></i>
+        {{ 'USERS' | translate }}
+      </a>
+    </li>
+    <!-- Contact Messages Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('super_admin') || user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="messages"
+        routerLinkActive="active"
+        id="contact-messages-tab"
+        role="tab"
+        aria-controls="contact-messages-tab"
+      >
+        <i class="bi bi-envelope ms-2"></i>
+        {{ 'CONTACT_MESSAGES' | translate }}
+      </a>
+    </li>
+    <!-- Site Settings Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="settings"
+        routerLinkActive="active"
+        id="site-settings-tab"
+        role="tab"
+        aria-controls="site-settings-tab-pane"
+      >
+        <i class="bi bi-wrench ms-2"></i>
+        {{ 'SITE_SETTINGS' | translate }}
+      </a>
+    </li>
+    <!-- Site Analytics Tab -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="site-analytics"
+        routerLinkActive="active"
+        id="site-analytics-tab"
+        role="tab"
+        aria-controls="site-analytics-tab-pane"
+      >
+        <i class="bi bi-bar-chart ms-2"></i>
+        تحليلات الموقع
+      </a>
+    </li>
+    <!-- Dropdown Management Tab (Consider making this a link outside the main tabs if desired) -->
+    <li
+      class="nav-item"
+      role="presentation"
+      *ngIf="user?.roles?.includes('root_super_admin')"
+    >
+      <a
+        class="nav-link"
+        routerLink="dropdown_management" 
+        routerLinkActive="active"
+        id="dropdown-management-tab" 
+        role="tab"
+        aria-controls="dropdown-management-tab-pane" 
+      >
+        <i class="bi bi-menu-down ms-2"></i> 
+        {{ 'DROPDOWN_MANAGEMENT.TITLE' | translate }}
+      </a>
+    </li>
+  </ul>
+
+  <!-- Router Outlet for Child Components -->
+  <div class="tab-content mt-4" id="myTabContent">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
+
+<!-- 
+  NOTE: This edit removes all the original <div class="tab-pane">...</div> sections.
+  Ensure the content from those sections has been moved to the respective child component templates:
+  - admin-profile.component.html
+  - admin-actions.component.html
+  - admin-users.component.html
+  - admin-contact-messages.component.html
+  - admin-site-settings.component.html
+-->

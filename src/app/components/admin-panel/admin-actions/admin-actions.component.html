@@ -1,0 +1,66 @@
+<div class="container align-items-center py-4">
+    <h2>{{ 'USER_ACTIONS' | translate }}</h2>
+  
+    <!-- Simple Table Layout for Actions -->
+    <div class="table-responsive">
+      <table class="table table-striped admin-table">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 40%;">{{ 'ACTION' | translate }}</th>
+            <th>{{ 'DESCRIPTION' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loop through creatable document types -->
+          <tr *ngFor="let type of creatableTypes">
+            <td class="align-middle py-3">
+              <button
+                class="btn btn-primary w-100"
+                (click)="createDocument(type.type)"
+              >
+                <i [ngClass]="type.icon" class="me-2"></i>
+                {{
+                  'CREATE_DOCUMENT'
+                    | translate
+                    : { TYPE: ('ADMIN_PANEL_CREATE_' + type.type.toUpperCase() | translate) }
+                }}
+              </button>
+            </td>
+            <td class="align-middle py-3">
+               <p class="mb-0">
+                {{
+                  'ACTION_DESCRIPTION'
+                    | translate
+                    : { TYPE: ('ADMIN_PANEL_CREATE_' + type.type.toUpperCase() | translate) }
+                }}
+               </p>
+            </td>
+          </tr>
+  
+          <!-- Create Dropdown action -->
+          <tr *ngIf="user?.roles?.includes('super_admin') || user?.roles?.includes('root_super_admin')">
+            <td class="align-middle py-3">
+               <button class="btn btn-primary w-100" (click)="createDropdown()">
+                 <i class="bi bi-menu-button-wide me-2"></i>
+                 {{
+                   'CREATE_DOCUMENT'
+                     | translate
+                     : { TYPE: ('ADMIN_PANEL_CREATE_DROPDOWN' | translate) }
+                 }}
+               </button>
+            </td>
+            <td class="align-middle py-3">
+              <p class="mb-0">
+                {{
+                  'ACTION_DESCRIPTION'
+                    | translate
+                    : { TYPE: ('ADMIN_PANEL_CREATE_DROPDOWN' | translate) }
+                }}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+  </div>

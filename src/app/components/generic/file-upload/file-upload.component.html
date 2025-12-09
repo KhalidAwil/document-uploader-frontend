@@ -1,0 +1,104 @@
+<div class="file-upload">
+  <div>
+    <div class="input-group">
+      <span class="input-group-text border-right-0 rounded-0">{{ label | translate }}</span>
+      <label tabindex="0" class="form-control">
+        <span class="file-name" *ngIf="uploadedFileName">
+          {{ uploadedFileName }}
+        </span>
+        <span class="file-placeholder" *ngIf="!uploadedFileName">
+          {{ placeholder | translate }}
+        </span>
+        <input type="file" #fileInput [accept]="acceptedFileTypes" (change)="onFileSelected($event)"
+          class="form-control invisible" [disabled]="disabled || isUploading"
+          [attr.placeholder]="placeholder | translate" />
+      </label>
+      <button class="btn btn-outline-secondary border-right-0" type="button" (click)="fileInput.click()"
+        [disabled]="disabled || isUploading">
+        <span *ngIf="!isUploading">{{ 'FILE_UPLOAD.BROWSE' | translate }}</span>
+        <span *ngIf="isUploading" class="d-flex align-items-center">
+          <div class="spinner-border spinner-border-sm me-2" role="status">
+            <span class="visually-hidden">{{ 'FILE_UPLOAD.UPLOADING' | translate }}</span>
+          </div>
+          {{ 'FILE_UPLOAD.UPLOADING' | translate }}
+        </span>
+      </button>
+    </div>
+
+    <div class="upload-actions mb-2" *ngIf="uploadedFileName || isUploading || pendingOperation">
+      <!-- Preview Link / Image -->
+      <div *ngIf="previewLink && !isUploading" class="mt-2">
+        <div class="image-preview mb-2" *ngIf="isImage && safePreviewUrl">
+          <img [src]="safePreviewUrl" class="img-thumbnail" style="max-height: 200px; width: auto;" alt="Preview">
+        </div>
+        <a class="btn btn-secondary btn-sm" [href]="previewLink" target="_blank">
+          {{ previewLinkLabel | translate }}
+        </a>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="upload-progress mt-2" *ngIf="isUploading">
+        <!-- Large file indicator -->
+        <div class="large-file-alert mb-2"
+          *ngIf="currentProgress.totalBytes && currentProgress.totalBytes > 10*1024*1024">
+          <div class="alert alert-info d-flex align-items-center py-2">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <small>
+              <strong>{{ 'FILE_UPLOAD.LARGE_FILE_NOTICE' | translate }}</strong>
+              - {{ 'FILE_UPLOAD.LARGE_FILE_PATIENCE' | translate }}
+            </small>
+          </div>
+        </div>
+
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" [style.width.%]="currentProgress.percentage"
+            [class.bg-success]="currentProgress.status === 'completed'"
+            [class.bg-danger]="currentProgress.status === 'error'"
+            [class.bg-info]="currentProgress.status === 'compressing'"
+            [class.progress-bar-striped]="currentProgress.status === 'compressing' || (currentProgress.totalBytes && currentProgress.totalBytes > 10*1024*1024)"
+            [class.progress-bar-animated]="currentProgress.status === 'compressing' || (currentProgress.totalBytes && currentProgress.totalBytes > 10*1024*1024)"
+            [attr.aria-valuenow]="currentProgress.percentage" aria-valuemin="0" aria-valuemax="100">
+            {{ currentProgress.percentage }}%
+          </div>
+        </div>
+
+        <!-- Progress details -->
+        <div class="progress-details mt-1">
+          <div class="progress-status">
+            <small class="text-muted">
+              <i class="bi bi-clock"
+                *ngIf="currentProgress.estimatedTimeRemaining && currentProgress.estimatedTimeRemaining > 0"></i>
+              {{ progressStatusText }}
+            </small>
+          </div>
+          <div class="progress-size" *ngIf="currentProgress.totalBytes">
+            <small class="text-muted">
+              {{ formatBytes(currentProgress.uploadedBytes || 0) }} / {{ formatBytes(currentProgress.totalBytes) }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons mt-2">
+        <!-- Cancel upload button -->
+        <button *ngIf="isUploading" class="btn btn-warning btn-sm" (click)="cancelUpload()" type="button"
+          [title]="'FILE_UPLOAD.CANCEL_UPLOAD' | translate">
+          {{ 'FILE_UPLOAD.CANCEL' | translate }}
+        </button>
+
+        <!-- Delete file button -->
+        <button *ngIf="(control.value || pendingOperation?.type === 'upload') && !isUploading"
+          class="btn btn-danger btn-sm" (click)="deleteFile()" type="button" [disabled]="disabled"
+          [title]="'FILE_UPLOAD.DELETE_FILE' | translate">
+          {{ 'FILE_UPLOAD.DELETE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="text-danger mt-1" *ngIf="errorMessage">
+    {{ errorMessage | translate }}
+  </div>
+</div>

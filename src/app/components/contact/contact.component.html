@@ -1,0 +1,135 @@
+<!-- contact.component.html -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border border-primary">
+        <div class="card-body">
+          <h1 class="text-center">{{ 'CONTACT_TITLE' | translate }}</h1>
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            <!-- Name field -->
+            <div class="mb-3">
+              <label for="name" class="form-label">{{ 'CONTACT_NAME' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                formControlName="name"
+                [placeholder]="'CONTACT_NAME_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('name')?.invalid && contactForm.get('name')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="contactForm.get('name')?.errors?.['required'] && contactForm.get('name')?.touched">
+                {{ 'CONTACT_NAME_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <!-- Email field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">{{ 'CONTACT_EMAIL' | translate }}</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                [placeholder]="'CONTACT_EMAIL_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="contactForm.get('email')?.errors?.['required'] && contactForm.get('email')?.touched">
+                {{ 'CONTACT_EMAIL_REQUIRED' | translate }}
+              </div>
+              <div class="invalid-feedback" *ngIf="contactForm.get('email')?.errors?.['email'] && contactForm.get('email')?.touched">
+                {{ 'CONTACT_EMAIL_INVALID' | translate }}
+              </div>
+            </div>
+
+            <!-- Phone field -->
+            <div class="mb-3">
+              <label for="phone" class="form-label">{{ 'CONTACT_PHONE' | translate }}</label>
+              <input
+                type="tel"
+                class="form-control"
+                id="phone"
+                formControlName="phone"
+                [placeholder]="'CONTACT_PHONE_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="contactForm.get('phone')?.errors?.['required'] && contactForm.get('phone')?.touched">
+                {{ 'CONTACT_PHONE_REQUIRED' | translate }}
+              </div>
+              <div class="invalid-feedback" *ngIf="contactForm.get('phone')?.errors?.['pattern'] && contactForm.get('phone')?.touched">
+                {{ 'CONTACT_PHONE_INVALID' | translate }}
+              </div>
+            </div>
+
+            <!-- Current Residence field -->
+            <div class="mb-3">
+              <label for="current_residence" class="form-label">{{ 'CONTACT_RESIDENCE' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="current_residence"
+                formControlName="current_residence"
+                [placeholder]="'CONTACT_RESIDENCE_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('current_residence')?.invalid && contactForm.get('current_residence')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="contactForm.get('current_residence')?.errors?.['required'] && contactForm.get('current_residence')?.touched">
+                {{ 'CONTACT_RESIDENCE_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <!-- Subject field -->
+            <div class="mb-3">
+              <label for="subject" class="form-label">{{ 'CONTACT_SUBJECT' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="subject"
+                formControlName="subject"
+                [placeholder]="'CONTACT_SUBJECT_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched">
+                {{ 'CONTACT_SUBJECT_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <!-- Message field -->
+            <div class="mb-3">
+              <label for="message" class="form-label">{{ 'CONTACT_MESSAGE' | translate }}</label>
+              <textarea
+                class="form-control"
+                id="message"
+                rows="5"
+                formControlName="message"
+                [placeholder]="'CONTACT_MESSAGE_PLACEHOLDER' | translate"
+                [ngClass]="{'is-invalid': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"
+              ></textarea>
+              <div class="invalid-feedback" *ngIf="contactForm.get('message')?.errors?.['required'] && contactForm.get('message')?.touched">
+                {{ 'CONTACT_MESSAGE_REQUIRED' | translate }}
+              </div>
+              <div class="invalid-feedback" *ngIf="contactForm.get('message')?.errors?.['minlength'] && contactForm.get('message')?.touched">
+                {{ 'CONTACT_MESSAGE_MIN_LENGTH' | translate }}
+              </div>
+            </div>
+
+            <!-- Submit button -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="contactForm.invalid || isSubmitting"
+            >
+              <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+              {{ (isSubmitting ? 'CONTACT_SUBMITTING' : 'CONTACT_SUBMIT') | translate }}
+            </button>
+
+            <!-- Status messages -->
+            <div class="mt-3" *ngIf="submitStatus.message">
+              <div [class]="'alert ' + (submitStatus.success ? 'alert-success' : 'alert-danger')">
+                {{ submitStatus.message }}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

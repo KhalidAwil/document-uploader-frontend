@@ -1,0 +1,175 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-12">
+      <h2>{{ 'DROPDOWN_MANAGEMENT.TITLE' | translate }}</h2>
+
+      <!-- General Error Message -->
+      <div *ngIf="errorMessage || backendErrors['general']" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ errorMessage || backendErrors['general']?.[0] }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''; backendErrors = {}"></button>
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="showSuccessToast" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="showSuccessToast = false;"></button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="d-flex justify-content-center my-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- No Dropdown Selected Message - Only shown when no dropdown is selected -->
+      <div *ngIf="noDropdownSelected" class="text-primary text-center">
+        <h4>{{ 'DROPDOWN_MANAGEMENT.SELECT_DROPDOWN_MESSAGE' | translate }}</h4>
+      </div>
+
+      <!-- Dropdown Form - Hidden until a dropdown is selected -->
+      <form *ngIf="!noDropdownSelected" [formGroup]="dropdownForm" (ngSubmit)="saveDropdown()" class="mb-4">
+        <div class="mb-3">
+          <label for="name" class="form-label">{{ 'DROPDOWN_MANAGEMENT.NAME_LABEL' | translate }}</label>
+          <input id="name" type="text" class="form-control" [placeholder]="'DROPDOWN_MANAGEMENT.NAME_LABEL' | translate" formControlName="name" [disabled]="true" />
+          <input type="hidden" formControlName="name" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+            {{ getFieldError('name') }}
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="backendErrors['name']">
+            {{ backendErrors['name'].join(', ') }}
+          </div>
+          <small *ngIf="isRolesDropdown" class="text-info">
+            <i class="bi bi-info-circle"></i> {{ 'DROPDOWN_MANAGEMENT.ROLES_INTEGRATION_INFO' | translate }}
+          </small>
+          <small *ngIf="isRestrictedDropdown" class="text-warning">
+            <i class="bi bi-info-circle"></i> {{ 'DROPDOWN_MANAGEMENT.RESTRICTED_DROPDOWN_INFO' | translate }}
+          </small>
+        </div>
+
+        <div class="mb-3">
+          <label for="label" class="form-label">{{ 'DROPDOWN_MANAGEMENT.LABEL_FIELD' | translate }}</label>
+          <input id="label" type="text" class="form-control" [placeholder]="'DROPDOWN_MANAGEMENT.LABEL_PLACEHOLDER' | translate" formControlName="label" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('label')">
+            {{ getFieldError('label') }}
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="backendErrors['label']">
+            {{ backendErrors['label'].join(', ') }}
+          </div>
+          <small class="form-text text-muted">{{ 'DROPDOWN_MANAGEMENT.LABEL_HELP' | translate }}</small>
+        </div>
+
+        <div formArrayName="options" class="mb-3">
+          <label class="form-label">
+            {{ 'DROPDOWN_MANAGEMENT.OPTIONS_LABEL' | translate }}
+            <span *ngIf="isRolesDropdown" class="badge bg-info ms-2">{{ 'DROPDOWN_MANAGEMENT.ROLE_BADGE' | translate }}</span>
+            <span *ngIf="isRestrictedDropdown" class="badge bg-warning ms-2">{{ 'DROPDOWN_MANAGEMENT.RESTRICTED_BADGE' | translate }}</span>
+          </label>
+
+          <div *ngFor="let option of optionsArray.controls; let i = index" [formGroupName]="i"
+            class="d-flex gap-2 mb-2">
+            <div class="flex-grow-1">
+              <input type="text" class="form-control" formControlName="label"
+                [placeholder]="isRolesDropdown ? 'DROPDOWN_MANAGEMENT.ROLE_LABEL_PLACEHOLDER' : 'DROPDOWN_MANAGEMENT.OPTION_LABEL_PLACEHOLDER' | translate"
+                [class.is-invalid]="hasError(option.get('label'), 'required') && option.get('label')?.touched || getOptionErrors(i, 'label').length > 0"
+                [readonly]="!isEditable(selectedDropdown?.name)"
+                [disabled]="!isEditable(selectedDropdown?.name)" />
+              <div class="invalid-feedback" *ngIf="hasError(option.get('label'), 'required') && option.get('label')?.touched">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="getOptionErrors(i, 'label').length > 0">
+                {{ getOptionErrors(i, 'label').join(', ') }}
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <input type="text" class="form-control" formControlName="value"
+                [placeholder]="(isRolesDropdown ? 'DROPDOWN_MANAGEMENT.ROLE_VALUE_PLACEHOLDER' : 'DROPDOWN_MANAGEMENT.OPTION_VALUE_PLACEHOLDER') | translate"
+                [class.is-invalid]="hasError(option.get('value'), 'required') && option.get('value')?.touched || getOptionErrors(i, 'value').length > 0"
+                [readonly]="!isEditable(selectedDropdown?.name)"
+                [disabled]="!isEditable(selectedDropdown?.name)" />
+              <div class="invalid-feedback" *ngIf="hasError(option.get('value'), 'required') && option.get('value')?.touched">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="getOptionErrors(i, 'value').length > 0">
+                {{ getOptionErrors(i, 'value').join(', ') }}
+              </div>
+            </div>
+            <button type="button" class="btn btn-danger" (click)="removeOption(i)"
+              [disabled]="optionsArray.length === 1 || !canDeleteOptions(selectedDropdown?.name)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="canAddOptions(selectedDropdown?.name)">
+          <button type="button" class="btn btn-secondary" (click)="addOption()">
+            <i class="bi bi-plus-circle me-1"></i>
+            {{ 'DROPDOWN_MANAGEMENT.ADD_OPTION' | translate }}
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+          <button type="submit" class="btn btn-primary" [disabled]="dropdownForm.invalid || isLoading || !isEditable(selectedDropdown?.name)">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ 'DROPDOWN_MANAGEMENT.UPDATE_BUTTON' | translate }}
+          </button>
+
+          <button type="button" class="btn btn-warning" (click)="resetForm()">
+            {{ 'DROPDOWN_MANAGEMENT.CANCEL_BUTTON' | translate }}
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-4">
+        <h3>{{ 'DROPDOWN_MANAGEMENT.EXISTING_DROPDOWNS' | translate }}</h3>
+
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>{{ 'DROPDOWN_MANAGEMENT.TABLE.NAME' | translate }}</th>
+                <th>{{ 'DROPDOWN_MANAGEMENT.TABLE.LABEL' | translate }}</th>
+                <th>{{ 'DROPDOWN_MANAGEMENT.TABLE.OPTIONS' | translate }}</th>
+                <th>{{ 'DROPDOWN_MANAGEMENT.TABLE.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dropdown of dropdowns">
+                <td>
+                  {{ dropdown.name }}
+                  <span *ngIf="dropdown.name === 'role_code'" class="badge bg-info ms-2"><small>
+                    {{ 'DROPDOWN_MANAGEMENT.ROLE_BADGE' | translate }}
+                  </small></span>
+                  <span *ngIf="['document_type', 'media_type', 'report_document_type'].includes(dropdown.name)" class="badge bg-warning ms-2"><small>
+                    {{ 'DROPDOWN_MANAGEMENT.RESTRICTED_BADGE' | translate }}
+                  </small></span>
+                </td>
+                <td>
+                  {{ dropdown.label || 'DROPDOWN_MANAGEMENT.NO_LABEL' | translate }}
+                </td>
+                <td>
+                  <small class="text-muted">
+                    {{ dropdown.options.length }} {{ 'DROPDOWN_MANAGEMENT.TABLE.OPTIONS_COUNT' | translate }}
+                  </small>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-primary" (click)="editDropdown(dropdown)">
+                      <i class="bi bi-pencil me-1"></i>
+                      {{ 'DROPDOWN_MANAGEMENT.EDIT_BUTTON' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="dropdowns.length === 0">
+                <td colspan="4" class="text-center">
+                  {{ 'DROPDOWN_MANAGEMENT.NO_DROPDOWNS' | translate }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

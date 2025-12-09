@@ -1,0 +1,116 @@
+.file-upload {
+    width: 100%;
+  }
+  
+  .custom-file-upload {
+    position: relative;
+    width: 100%;
+  }
+  
+  .custom-file-upload input[type="file"] {
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .file-placeholder {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+  }
+  
+  .file-name {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: calc(100% - 120px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .upload-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+  }
+  
+  .upload-progress {
+    .progress {
+      width: 100%;
+      height: 8px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      transition: width 0.3s ease;
+      font-size: 0.75rem;
+      line-height: 8px;
+      
+      &.bg-info {
+        background: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
+        background-size: 20px 20px;
+      }
+    }
+    
+    .progress-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+  }
+
+  .custom-file-upload input[type=file] {
+    margin-left: 0px !important;
+  }
+  
+  .custom-file-upload input[type=file]::-webkit-file-upload-button {
+    display: none;
+  }
+  
+  .custom-file-upload input[type=file]::file-selector-button {
+    display: none;
+  }
+  
+  .custom-file-upload:hover label {
+    background-color: #dde0e3;
+    cursor: pointer;
+  }
+
+  .input-group {
+    .form-control {
+      &.disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+    }
+  }
+
+  .upload-actions {
+    .btn {
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.65;
+      }
+    }
+
+    a.disabled {
+      pointer-events: none;
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .text-danger {
+    font-size: 0.875rem;
+  }

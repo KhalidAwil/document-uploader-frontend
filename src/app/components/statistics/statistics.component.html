@@ -1,0 +1,142 @@
+<div class="container mt-4" dir="rtl">
+    <h2>{{ 'STATISTICS.TITLE' | translate }}</h2>
+
+    <!-- Filter Form -->
+    <form [formGroup]="statisticsForm" (ngSubmit)="onFilter()" class="my-4">
+        <div class="row g-3">
+            <!-- Period Selection -->
+            <div class="col-md-4">
+                <label for="period" class="form-label">{{ 'STATISTICS.PERIOD' | translate }}</label>
+                <select id="period" formControlName="period" class="form-select" (change)="onPeriodChange()">
+                    <option value="day">{{ 'STATISTICS.DAY' | translate }}</option>
+                    <option value="month">{{ 'STATISTICS.MONTH' | translate }}</option>
+                    <option value="year">{{ 'STATISTICS.YEAR' | translate }}</option>
+                </select>
+            </div>
+
+            <!-- Start Date and End Date for 'day' period -->
+            <div *ngIf="statisticsForm.value.period === 'day'" class="col-md-4">
+                <label for="start_date" class="form-label">{{ 'STATISTICS.START_DATE' | translate }}</label>
+                <input id="start_date" type="text" class="form-control" formControlName="start_date" bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+            </div>
+            <div *ngIf="statisticsForm.value.period === 'day'" class="col-md-4">
+                <label for="end_date" class="form-label">{{ 'STATISTICS.END_DATE' | translate }}</label>
+                <input id="end_date" type="text" class="form-control" formControlName="end_date" bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+            </div>
+
+            <!-- Month and Year for 'month' period -->
+            <div *ngIf="statisticsForm.value.period === 'month'" class="col-md-4">
+                <label for="month" class="form-label">{{ 'STATISTICS.MONTH' | translate }}</label>
+                <select id="month" formControlName="month" class="form-select">
+                    <option *ngFor="let month of months" [value]="month.value">{{ month.label | translate }}</option>
+                </select>
+            </div>
+            <div *ngIf="statisticsForm.value.period === 'month'" class="col-md-4">
+                <label for="year" class="form-label">{{ 'STATISTICS.YEAR' | translate }}</label>
+                <select id="year" formControlName="year" class="form-select">
+                    <option *ngFor="let year of years" [value]="year">{{ convertToArabicNumerals(year) }}</option>
+                </select>
+            </div>
+
+            <!-- Year Selection for 'year' period -->
+            <div *ngIf="statisticsForm.value.period === 'year'" class="col-md-4">
+                <label for="year" class="form-label">{{ 'STATISTICS.YEAR' | translate }}</label>
+                <select id="year" formControlName="year" class="form-select">
+                    <option *ngFor="let year of years" [value]="year">{{ convertToArabicNumerals(year) }}</option>
+                </select>
+            </div>
+
+            <!-- Document Type Selection -->
+            <div class="col-md-4">
+                <app-dropdown-select
+                    id="document_type"
+                    [label]="'REPORT.SELECT_TYPE' | translate"
+                    dropdownName="document_type"
+                    [placeholder]="'REPORT.SELECT_TYPE' | translate"
+                    [control]="statisticsForm.get('document_type')"
+                    [initialValue]="statisticsForm.get('document_type')?.value"
+                    [disabled]="!!statisticsForm.get('page_type')?.value"
+                    [excludeValues]="['user']"
+                    (selectionChange)="onDocumentTypeChange()"
+                ></app-dropdown-select>
+            </div>
+
+            <!-- Page Type Selection -->
+            <div class="col-md-4">
+                <label for="page_type" class="form-label">{{ 'STATISTICS.PAGE_TYPE' | translate }}</label>
+                <select id="page_type" formControlName="page_type" class="form-select" 
+                        [disabled]="!!statisticsForm.get('document_type')?.value"
+                        (change)="onPageTypeChange()">
+                    <option value="">{{ 'STATISTICS.ALL_PAGES' | translate }}</option>
+                    <option value="homepage">{{ 'STATISTICS.HOMEPAGE' | translate }}</option>
+                    <option value="join-us">{{ 'STATISTICS.JOIN_US' | translate }}</option>
+                    <option value="contact-us">{{ 'STATISTICS.CONTACT_US' | translate }}</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    {{ 'STATISTICS.FILTER' | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{ 'STATISTICS.LOADING' | translate }}</span>
+        </div>
+    </div>
+        
+
+    <!-- Chart Type Toggle -->
+    <div class="btn-group my-3" role="group" aria-label="Chart type toggle">
+        <button type="button" class="btn"
+                [ngClass]="selectedChartType === 'bar' ? 'btn-primary' : 'btn-outline-primary'"
+                (click)="changeChartType('bar')">
+            <i class="bi bi-bar-chart-line"></i>&nbsp;{{ 'CHART.BAR' | translate }}
+        </button>
+        <button type="button" class="btn"
+                [ngClass]="selectedChartType === 'line' ? 'btn-primary' : 'btn-outline-primary'"
+                (click)="changeChartType('line')">
+            <i class="bi bi-graph-up"></i>&nbsp;{{ 'CHART.LINE' | translate }}
+        </button>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="chart-container my-4" style="position: relative; height: 500px; width: 100%;">
+        <!-- Welcome Message for Initial State -->
+        <div *ngIf="showWelcomeMessage" class="welcome-overlay">
+            <div class="welcome-content">
+                <i class="bi bi-graph-up-arrow welcome-icon"></i>
+                <h4 class="welcome-title">{{ 'STATISTICS.WELCOME_TITLE' | translate }}</h4>
+                <p class="welcome-subtitle">{{ 'STATISTICS.WELCOME_MESSAGE' | translate }}</p>
+                <div class="welcome-hint">
+                    <i class="bi bi-arrow-up"></i>
+                    <small>{{ 'STATISTICS.FILTER' | translate }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- No Data Message After Search -->
+        <div *ngIf="showNoDataMessage" class="no-data-overlay">
+            <div class="no-data-content">
+                <i class="bi bi-bar-chart-line no-data-icon"></i>
+                <h4 class="no-data-title">{{ 'STATISTICS.NO_DATA_CHART' | translate }}</h4>
+                <p class="no-data-subtitle">{{ 'STATISTICS.NO_DATA' | translate }}</p>
+            </div>
+        </div>
+        
+        <canvas #statisticsChart></canvas>
+    </div>
+    
+    <!-- Print Instructions -->
+    <div class="d-print-none alert alert-info mt-3">
+        <small>
+            <i class="bi bi-info-circle"></i> 
+            {{ 'STATISTICS.PRINT_INFO' | translate }}
+        </small>
+    </div>
+</div>

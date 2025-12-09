@@ -1,0 +1,378 @@
+<div class="container mt-5">
+  <h2>{{ 'EDIT_DOCUMENT' | translate: { TYPE: ('ADMIN_PANEL_CREATE_' + documentType.toUpperCase() | translate) } }}</h2>
+  
+  <form *ngIf="editDocumentForm" [formGroup]="editDocumentForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Basic Document Information -->
+    <div class="mb-3">
+      <h5 class="text-primary fw-bold mb-3">
+        <i class="bi bi-file-earmark-text me-2"></i>
+        {{ 'BASIC_DOCUMENT_INFORMATION' | translate }}
+      </h5>
+      
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">{{ 'TITLE' | translate }}</label>
+        <input id="title" formControlName="title" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'TITLE' | translate}" />
+        <div *ngIf="shouldShowFieldError('title')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('title') }}</small>
+        </div>
+      </div>
+
+      <!-- Date of Publication -->
+      <div class="mb-3">
+        <label for="date_of_publication" class="form-label">{{ 'DATE_OF_PUBLICATION' | translate }}</label>
+        <input id="date_of_publication" type="text" class="form-control" formControlName="date_of_publication" 
+          bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+        <div *ngIf="shouldShowFieldError('date_of_publication')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('date_of_publication') }}</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">{{ 'DESCRIPTION' | translate }}</label>
+        <textarea id="description" formControlName="description" rows="4" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'DESCRIPTION' | translate}"></textarea>
+        <div *ngIf="shouldShowFieldError('description')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('description') }}</small>
+        </div>
+      </div>
+
+      <!-- Image URL -->
+      <div class="mb-3">
+        <label for="image_url" class="form-label">{{ 'IMAGE_URL' | translate }}</label>
+        <app-file-upload
+          [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL' | translate}"
+          [controlName]="'image_url'"
+          [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'"
+          [context]="'images'"
+          [control]="getFileUploadControl('image_url')"
+          [existingFileUrl]="getFileUploadControl('image_url')?.value"
+          (fileUploaded)="onFileUploaded('image_url', $event)"
+          (fileDeleted)="onFileDeleted('image_url')"
+        ></app-file-upload>
+        <div *ngIf="shouldShowFieldError('image_url')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('image_url') }}</small>
+        </div>
+      </div>
+
+      <!-- Additional Image URLs -->
+      <div *ngFor="let field of imageFields.slice(0, 7)" class="mb-3">
+        <label [for]="field" class="form-label">{{ getImageLabelKey(field) | translate }}</label>
+        <app-file-upload
+          [label]="'UPLOAD_IMAGE' | translate"
+          [controlName]="field"
+          [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'"
+          [context]="'images'"
+          [control]="getFileUploadControl(field)"
+          [existingFileUrl]="getFileUploadControl(field)?.value"
+          (fileUploaded)="onFileUploaded(field, $event)"
+          (fileDeleted)="onFileDeleted(field)"
+        ></app-file-upload>
+      </div>
+    </div>
+
+    <div class="divider mb-4"></div>
+
+    <!-- Basic Athar Information -->
+    <div class="mb-3">
+      <h5 class="text-primary fw-bold mb-3">
+        <i class="bi bi-info-circle me-2"></i>
+        {{ 'ATHAR_BASIC_INFORMATION' | translate }}
+      </h5>
+      
+      <!-- Athar ID -->
+      <div class="mb-3">
+        <label for="athar_id" class="form-label">{{ 'ATHAR_ID' | translate }}</label>
+        <input id="athar_id" formControlName="athar_id" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_ID' | translate}" />
+        <small class="form-text text-muted">{{ 'ATHAR_ID_FORMAT_INFO' | translate }}</small>
+        <div *ngIf="shouldShowFieldError('athar_id')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_id') }}</small>
+        </div>
+      </div>
+
+      <!-- Athar Name -->
+      <div class="mb-3">
+        <label for="athar_name" class="form-label">{{ 'ATHAR_NAME' | translate }}</label>
+        <input id="athar_name" formControlName="athar_name" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_NAME' | translate}" />
+        <div *ngIf="shouldShowFieldError('athar_name')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_name') }}</small>
+        </div>
+      </div>
+
+      <!-- Athar Type -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_type"
+          [label]="'ATHAR_TYPE' | translate"
+          dropdownName="athar_type"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_type')"
+          [initialValue]="editDocumentForm.get('athar_type')?.value"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_type')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_type') }}</small>
+        </div>
+      </div>
+
+      <!-- Athar Material -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_material"
+          [label]="'ATHAR_MATERIAL' | translate"
+          dropdownName="athar_material"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_material')"
+          [initialValue]="editDocumentForm.get('athar_material')?.value"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_material')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_material') }}</small>
+        </div>
+      </div>
+
+      <!-- Athar Period -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_period"
+          [label]="'ATHAR_PERIOD' | translate"
+          dropdownName="athar_period"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_period')"
+          [initialValue]="editDocumentForm.get('athar_period')?.value"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_period')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_period') }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider mb-4"></div>
+
+    <!-- Historical and Geographical Information -->
+    <div class="mb-3">
+      <h5 class="text-primary fw-bold mb-3">
+        <i class="bi bi-globe2 me-2"></i>
+        {{ 'ATHAR_HISTORICAL_GEOGRAPHICAL' | translate }}
+      </h5>
+      
+      <!-- Geo Location -->
+      <div class="mb-3">
+        <label for="athar_geo_location" class="form-label">{{ 'ATHAR_GEO_LOCATION' | translate }}</label>
+        <app-map-location-picker
+          [initialValue]="editDocumentForm?.get('athar_geo_location')?.value || ''"
+          [disabled]="false"
+          (locationChanged)="onLocationChanged('athar_geo_location', $event)">
+        </app-map-location-picker>
+        <div *ngIf="shouldShowFieldError('athar_geo_location')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_geo_location') }}</small>
+        </div>
+      </div>
+
+      <!-- Origin Country -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_origin_country"
+          [label]="'ATHAR_ORIGIN_COUNTRY' | translate"
+          dropdownName="athar_origin_country"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_origin_country')"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_origin_country')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_origin_country') }}</small>
+        </div>
+      </div>
+
+      <!-- Preservation Status -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_preservation_status"
+          [label]="'ATHAR_PRESERVATION_STATUS' | translate"
+          dropdownName="athar_preservation_status"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_preservation_status')"
+          [initialValue]="editDocumentForm.get('athar_preservation_status')?.value"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_preservation_status')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_preservation_status') }}</small>
+        </div>
+      </div>
+
+      <!-- Original Area -->
+      <div class="mb-3">
+        <label for="athar_arch_original_area" class="form-label">{{ 'ATHAR_ARCH_ORIGINAL_AREA' | translate }}</label>
+        <input id="athar_arch_original_area" formControlName="athar_arch_original_area" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_ARCH_ORIGINAL_AREA' | translate}">
+        <div *ngIf="shouldShowFieldError('athar_arch_original_area')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_arch_original_area') }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider mb-4"></div>
+
+    <!-- Current Status Information -->
+    <div class="mb-3">
+      <h5 class="text-primary fw-bold mb-3">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ 'ATHAR_CURRENT_STATUS' | translate }}
+      </h5>
+      
+      <!-- Legal Status -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_legal_status"
+          [label]="'ATHAR_LEGAL_STATUS' | translate"
+          dropdownName="athar_legal_status"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_legal_status')"
+          [initialValue]="editDocumentForm.get('athar_legal_status')?.value"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_legal_status')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_legal_status') }}</small>
+        </div>
+      </div>
+
+      <!-- Date of Loss -->
+      <div class="mb-3">
+        <label for="athar_date_of_loss" class="form-label">{{ 'ATHAR_DATE_OF_LOSS' | translate }}</label>
+        <input id="athar_date_of_loss" type="text" class="form-control" formControlName="athar_date_of_loss" 
+          bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+        <div *ngIf="shouldShowFieldError('athar_date_of_loss')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_date_of_loss') }}</small>
+        </div>
+      </div>
+
+      <!-- Present Location -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_present_location"
+          [label]="'ATHAR_PRESENT_LOCATION' | translate"
+          dropdownName="athar_present_location"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_present_location')"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_present_location')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_present_location') }}</small>
+        </div>
+      </div>
+
+      <!-- Present Location Name -->
+      <div class="mb-3">
+        <label for="athar_present_location_name" class="form-label">{{ 'ATHAR_PRESENT_LOCATION_NAME' | translate }}</label>
+        <input id="athar_present_location_name" formControlName="athar_present_location_name" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_PRESENT_LOCATION_NAME' | translate}" />
+        <div *ngIf="shouldShowFieldError('athar_present_location_name')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_present_location_name') }}</small>
+        </div>
+      </div>
+
+      <!-- Present Location Country -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_present_location_country"
+          [label]="'ATHAR_PRESENT_LOCATION_COUNTRY' | translate"
+          dropdownName="athar_present_location_country"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_present_location_country')"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_present_location_country')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_present_location_country') }}</small>
+        </div>
+      </div>
+
+      <!-- Date of Presentation -->
+      <div class="mb-3">
+        <label for="athar_date_of_presentation" class="form-label">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate }}</label>
+        <input id="athar_date_of_presentation" type="text" class="form-control" formControlName="athar_date_of_presentation" 
+          bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+        <div *ngIf="shouldShowFieldError('athar_date_of_presentation')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_date_of_presentation') }}</small>
+        </div>
+      </div>
+
+      <!-- Case Number -->
+      <div class="mb-3">
+        <label for="athar_case_number" class="form-label">{{ 'ATHAR_CASE_NUMBER' | translate }}</label>
+        <input id="athar_case_number" formControlName="athar_case_number" type="text" class="form-control"
+          [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_CASE_NUMBER' | translate}" />
+        <div *ngIf="shouldShowFieldError('athar_case_number')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_case_number') }}</small>
+        </div>
+      </div>
+
+      <!-- Required Procedure -->
+      <div class="mb-3">
+        <app-dropdown-select
+          id="athar_required_procedure"
+          [label]="'ATHAR_REQUIRED_PROCEDURE' | translate"
+          dropdownName="athar_required_procedure"
+          [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+          [control]="editDocumentForm.get('athar_required_procedure')"
+        ></app-dropdown-select>
+        <div *ngIf="shouldShowFieldError('athar_required_procedure')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_required_procedure') }}</small>
+        </div>
+      </div>
+
+      <!-- Page Link -->
+      <div class="mb-3">
+        <label for="athar_page_link" class="form-label">{{ 'ATHAR_PAGE_LINK' | translate }}</label>
+        <input id="athar_page_link" formControlName="athar_page_link" type="url" class="form-control"
+          [placeholder]="'ENTER_URL' | translate" />
+        <div *ngIf="shouldShowFieldError('athar_page_link')" class="text-danger mt-1">
+          <small>{{ getFieldErrorMessage('athar_page_link') }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Validation Summary -->
+    <div *ngIf="hasFormErrors()" class="alert alert-danger mt-4 border-start border-danger border-4">
+      <h5 class="alert-heading mb-3">
+        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+        {{ 'FORM_VALIDATION_ERRORS' | translate }}
+      </h5>
+      <ul class="mb-3 list-unstyled">
+        <li *ngFor="let error of getFormErrorSummary()" class="mb-2 d-flex align-items-start">
+          <i class="bi bi-dot text-danger me-1 fs-3"></i>
+          <span class="text-dark">{{ error }}</span>
+        </li>
+      </ul>
+      <hr class="my-3">
+      <p class="mb-0 text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        {{ 'PLEASE_FIX_ERRORS_TO_CONTINUE' | translate }}
+      </p>
+    </div>
+
+    <!-- Form Actions Buttons -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        <i class="bi bi-arrow-left me-2"></i>
+        {{ 'CANCEL' | translate }}
+      </button>
+      
+      <div class="d-flex align-items-center">
+        <div *ngIf="editDocumentForm?.invalid" class="text-danger ms-3">
+          <small>
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            {{ 'FORM_HAS_ERRORS' | translate }}
+          </small>
+        </div>
+        <button type="submit" class="btn ms-2" 
+                [ngClass]="editDocumentForm?.invalid ? 'btn-warning' : 'btn-primary'"
+                [attr.title]="editDocumentForm?.invalid ? ('FORM_HAS_ERRORS' | translate) : null">
+          <i class="bi me-2" [ngClass]="editDocumentForm?.invalid ? 'bi-exclamation-triangle' : 'bi-check-circle'"></i>
+          {{ 'SAVE_CHANGES' | translate }}
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onDelete()" *ngIf="isRootSuperAdmin()">
+          <i class="bi bi-trash me-2"></i>
+          {{ 'DELETE_DOCUMENT' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

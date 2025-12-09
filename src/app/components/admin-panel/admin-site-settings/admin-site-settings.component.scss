@@ -1,0 +1,35 @@
+@import '../admin-table-unified.scss';
+
+.carousel-image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 0.75rem;
+}
+
+.carousel-image-list > .card,
+.carousel-image-list > .card-wrapper {
+  width: 100%;
+  max-width: 320px;
+  margin-right: 0.75rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-wrapper > .card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+
+@media (max-width: 991.98px) {
+  .carousel-image-list {
+    gap: 1rem 0.5rem;
+  }
+  .carousel-image-list > .card {
+    max-width: 100%;
+    margin-right: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}

@@ -1,0 +1,49 @@
+<div>
+    <!-- Label for the select input -->
+    <label [for]="id" class="form-label" *ngIf="label">
+      {{ label }}
+      <span class="text-danger" *ngIf="required">*</span>
+    </label>
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show py-2" role="alert">
+      {{ errorMessage }}
+      <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+  
+    <div class="input-group">
+      <!-- Select input using the safe formControl getter -->
+      <select
+        [id]="id"
+        [formControl]="formControl"
+        class="form-select"
+        [class.is-invalid]="isInvalid()"
+        [attr.disabled]="disabled || isLoading ? true : null"
+        [attr.aria-describedby]="id + '-feedback'"
+      >
+        <!-- Default placeholder option -->
+        <option value="" disabled>{{ isLoading ? ('COMMON.LOADING' | translate) : placeholder }}</option>
+  
+        <!-- Options from the dropdown -->
+        <option *ngFor="let option of options" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+  
+      <!-- Loading indicator in the select -->
+      <div class="input-group-text" *ngIf="isLoading">
+        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+          <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Validation error message -->
+    <div 
+      *ngIf="isInvalid()" 
+      class="invalid-feedback" 
+      [id]="id + '-feedback'"
+    >
+      {{ getErrorMessage() }}
+    </div>
+  </div>

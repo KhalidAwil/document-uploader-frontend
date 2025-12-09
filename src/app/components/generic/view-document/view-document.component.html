@@ -1,0 +1,402 @@
+<div class="container document-view-container direction-rtl">
+  <!-- Loading State with Shimmer Effect -->
+  <div *ngIf="isLoading" class="shimmer-container">
+    <!-- Image Shimmer -->
+    <div class="shimmer-image shimmer"></div>
+    
+    <!-- Content Shimmer -->
+    <div class="card">
+      <div class="card-body">
+        <!-- Header Shimmer -->
+        <div class="row">
+          <div class="col-md-8">
+            <div class="shimmer-title shimmer"></div>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <div class="shimmer-date shimmer"></div>
+          </div>
+        </div>
+        
+        <div class="shimmer-divider shimmer"></div>
+        
+        <!-- Metadata Shimmer -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="shimmer-meta shimmer"></div>
+            <div class="shimmer-meta shimmer"></div>
+            <div class="shimmer-meta shimmer"></div>
+          </div>
+        </div>
+        
+        <!-- Description Shimmer -->
+        <div class="my-5">
+          <div class="shimmer-text long shimmer"></div>
+          <div class="shimmer-text long shimmer"></div>
+          <div class="shimmer-text medium shimmer"></div>
+          <div class="shimmer-text long shimmer"></div>
+          <div class="shimmer-text short shimmer"></div>
+        </div>
+        
+        <!-- Buttons Shimmer -->
+        <div class="d-flex mt-4">
+          <div class="shimmer-button shimmer"></div>
+          <div class="shimmer-button shimmer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Content -->
+  <div *ngIf="!isLoading && document" class="document-content animate-slide-in">
+    <!-- Document Media -->
+    <div class="document-media-container mb-4">
+      <!-- Video Content - Only for media type with video -->
+      <div *ngIf="document?.type === 'media' && document?.media_type === 'video'" class="video-container ratio ratio-16x9">
+        <iframe *ngIf="videoEmbedUrl" [src]="videoEmbedUrl" frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Image Content - For all document types except video media -->
+      <div *ngIf="shouldShowImage()" class="image-container mb-3">
+        <img [src]="currentImageUrl | imageUrl"
+             alt="Document Image"
+             class="img-fluid rounded document-image"
+             (click)="openLightbox(currentImageUrl!)"
+             style="max-height: 500px; width: 100%; object-fit: contain; cursor: pointer;" />
+      </div>
+      
+      <!-- Image Menu - Only for archive_c and bian document types with numbered images -->
+      <div *ngIf="isSpecialDocumentType() && shouldShowImageMenu" class="image-menu mt-3 mb-4">
+        <ul class="nav nav-pills justify-content-center">
+          <li class="nav-item" *ngFor="let image of images; let i = index">
+            <a href="#" 
+               class="nav-link"
+               [class.active]="selectedImageIndex === i"
+               (click)="selectImage(i); $event.preventDefault();">
+              {{ image.label }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Document Details -->
+    <div class="document-details card shadow-none border border-primary">
+      <div class="card-body">
+        <!-- Document Header -->
+        <header class="document-header row align-items-center mb-1">
+          <div class="col-md-8">
+            <h1 class="document-title display-5 text-primary fw-bold mb-1">{{ document?.title || 'DOCUMENT_NO_TITLE' | translate }}</h1>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <h6 class="metadata-item document-date col mt-0 mb-3">
+              <i class="bi bi-calendar ms-2 text-tertiary"></i>
+              {{ document?.date_of_publication ? formatDate(document?.date_of_publication, true) : 'N/A' }}
+            </h6>
+          </div>
+        </header>
+        <div class="divider mb-4"></div>
+
+        <!-- Metadata Section -->
+        <div class="metadata-section card mb-4 shadow-none" *ngIf="hasMetaData()">
+          <div class="card-body">
+            <div *ngIf="document?.author" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-person text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'AUTHOR' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ document?.author }}</p>
+            </div>
+            <div *ngIf="document?.date_of_event" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-calendar-event text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'DATE_OF_EVENT' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ formatDate(document?.date_of_event, true) }}</p>
+            </div>
+            <div *ngIf="document?.event_location" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-geo-alt text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'EVENT_LOCATION' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ document?.event_location }}</p>
+            </div>
+            <div *ngIf="document?.type_c" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-tag text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'TYPE_C' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ getFieldValue('type_c') }}</p>
+            </div>
+            <div *ngIf="document?.release_type" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-file-earmark-text text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'RELEASE_TYPE' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ getFieldValue('release_type') }}</p>
+            </div>
+            <div *ngIf="document?.media_type" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-collection text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'MEDIA_TYPE' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ getFieldValue('media_type') }}</p>
+            </div>
+            <div *ngIf="document?.video_length" class="metadata-item d-flex align-items-center">
+              <i class="bi bi-clock text-secondary ms-2 mb-0"></i>
+              <h6 class="metadata-label text-secondary fw-semibold ms-2 mb-0">{{ 'VIDEO_LENGTH' | translate }}:</h6>
+              <p class="metadata-value mb-0">{{ document?.video_length | arabicNumerals }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div *ngIf="document?.description" class="description-container mt-5 mb-5">
+          <p class="description-text text-dark">{{ document?.description }}</p>
+        </div>
+
+        <!-- Athar-specific Information Cards -->
+        <div *ngIf="modelType === 'athar'" class="athar-information-section">
+          <div class="divider mb-4"></div>
+          
+          <!-- Basic Information Card -->
+          <div class="athar-info-card card mb-4 shadow-none metadata-section athar-card-full-width">
+            <div class="card-body">
+              <h5 class="card-title text-primary fw-bold mb-3">
+                <i class="bi bi-info-circle ms-2"></i>
+                {{ 'ATHAR_BASIC_INFORMATION' | translate }}
+              </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-hash text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ID' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_id') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-bookmark text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_NAME' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_name') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-tag text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_TYPE' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_type') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-gem text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_MATERIAL' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_material') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-clock-history text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PERIOD' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_period') }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historical and Geographical Information Card -->
+          <div class="athar-info-card card mb-4 shadow-none metadata-section athar-card-full-width">
+            <div class="card-body">
+              <h5 class="card-title text-primary fw-bold mb-3">
+                <i class="bi bi-globe2 ms-2"></i>
+                {{ 'ATHAR_HISTORICAL_GEOGRAPHICAL' | translate }}
+              </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-geo-alt text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_GEO_LOCATION' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_geo_location') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-flag text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGIN_COUNTRY' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_origin_country') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-shield-check text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESERVATION_STATUS' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_preservation_status') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-shield-check text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGINAL_AREA' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_arch_original_area') }}</p>
+                  </div>
+                </div>
+                <!-- <div class="col-12">
+                  <div class="athar-field full-width-field mb-2">
+                    <div class="d-flex align-items-center mb-1">
+                      <i class="bi bi-building text-secondary ms-2 mb-0"></i>
+                      <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGINAL_AREA' | translate }}:</h6>
+                    </div>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_arch_original_area') }}</p>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Status Information Card -->
+          <div class="athar-info-card card mb-4 shadow-none metadata-section athar-card-full-width">
+            <div class="card-body">
+              <h5 class="card-title text-primary fw-bold mb-3">
+                <i class="bi bi-exclamation-triangle ms-2"></i>
+                {{ 'ATHAR_CURRENT_STATUS' | translate }}
+              </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-scale text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_LEGAL_STATUS' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_legal_status') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-calendar-x text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_LOSS' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_date_of_loss') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-pin-map text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_present_location') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-building text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_NAME' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_present_location_name') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-globe text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_COUNTRY' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_present_location_country') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-calendar-event text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_date_of_presentation') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-file-earmark-text text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_CASE_NUMBER' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_case_number') }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-list-check text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_REQUIRED_PROCEDURE' | translate }}:</h6>
+                    <p class="field-value mb-0">{{ getFieldValue('athar_required_procedure') }}</p>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="athar-field d-flex align-items-center mb-2">
+                    <i class="bi bi-link-45deg text-secondary ms-2 mb-0"></i>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PAGE_LINK' | translate }}:</h6>
+                    <div class="field-value mb-0">
+                      <a *ngIf="document?.athar_page_link" [href]="document?.athar_page_link" target="_blank" class="text-primary">
+                        {{ document?.athar_page_link }}
+                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                      </a>
+                      <span *ngIf="!document?.athar_page_link">{{ getFieldValue('athar_page_link') }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Timeline -->
+        <div *ngIf="document?.history?.length" class="document-history-section">
+          <div class="history-title">{{ 'DOCUMENT_HISTORY.TITLE' | translate }}</div>
+          <div class="history-timeline">
+            <div *ngFor="let event of document.history" class="history-event">
+              <div class="event-date">{{ event.date | date:'yyyy-MM-dd' }}</div>
+              <div class="event-title">{{ event.title }}</div>
+              <div class="event-desc">{{ event.description }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attachments -->
+        <div class="attachments-container">
+          <h2 class="attachments-title h5 text-primary fw-semibold mb-3">{{ 'ATTACHMENTS' | translate }}</h2>
+          <div *ngIf="document?.image_url || document?.pdf_url || document?.video_url; else noAttachments" class="attachments-list d-flex flex-wrap gap-3">
+            <button *ngIf="document?.image_url" class="btn btn-outline-secondary" (click)="viewImage(currentImageUrl!, $event)">
+              <i class="bi bi-image ms-2"></i>{{ 'VIEW_IMAGE' | translate }}
+            </button>
+            <button *ngIf="document?.pdf_url" class="btn btn-outline-secondary" (click)="viewPdf(document?.pdf_url, $event)">
+              <i class="bi bi-file-earmark-pdf ms-2"></i>{{ 'VIEW_PDF' | translate }}
+            </button>
+            <button *ngIf="document?.video_url" class="btn btn-outline-secondary" (click)="viewVideo(document?.video_url, $event)">
+              <i class="bi bi-play-circle ms-2"></i>{{ 'VIEW_VIDEO' | translate }}
+            </button>
+          </div>
+          <ng-template #noAttachments>
+            <p class="no-attachments text-muted">{{ 'NO_ATTACHMENTS' | translate }}</p>
+          </ng-template>
+        </div>
+
+        <!-- Actions -->
+        <div *ngIf="canEdit()" class="actions-container d-flex flex-wrap gap-3 mt-4">
+          <a class="btn btn-primary" [routerLink]="['/documents', modelType, 'edit', document?.id]">
+            <i class="bi bi-pencil-square me-2"></i>
+            {{ 'EDIT_DOCUMENT' | translate: { TYPE: ('ADMIN_PANEL_CREATE_' + modelType.toUpperCase() | translate) } }}
+          </a>
+          <button class="btn btn-outline-secondary" (click)="goBack()">
+            <i class="bi bi-arrow-left me-2"></i>{{ 'BACK' | translate }}
+          </button>
+        </div>
+
+        <!-- Share Options -->
+        <div class="share-container mt-4 pt-4 border-top">
+          <h3 class="h5 text-primary fw-semibold mb-3">{{ 'SHARE.TITLE' | translate }}</h3>
+          <div class="share-buttons d-flex flex-wrap gap-3">
+            <button 
+              *ngFor="let option of shareOptions"
+              (click)="share(option)"
+              class="btn btn-tertiary rounded-circle share-button"
+              [title]="'SHARE.' + option.name | translate">
+              <i [class]="option.icon" class="m-0"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="modal fade" id="imageLightboxModal" tabindex="-1" aria-labelledby="imageLightboxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageLightboxModalLabel">{{ 'VIEW_IMAGE' | translate }}</h5>
+          <button type="button" class="btn-close me-2" (click)="closeLightbox()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img *ngIf="lightboxImageUrl" [src]="lightboxImageUrl | imageUrl" alt="Full-size document image" class="img-fluid" style="width: 100%; height: auto;" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

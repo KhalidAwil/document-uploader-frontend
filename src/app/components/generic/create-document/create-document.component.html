@@ -1,0 +1,742 @@
+<div class="container mt-5">
+  <h2>{{ 'CREATE_DOCUMENT' | translate: { TYPE: ('ADMIN_PANEL_CREATE_' + documentType.toUpperCase() | translate) } }}
+  </h2>
+
+  <!-- Global Upload Progress -->
+  <div class="global-upload-progress mb-4" *ngIf="hasActiveUploads()">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title mb-3">
+          <i class="bi bi-cloud-upload"></i>
+          {{ 'FILE_UPLOAD.UPLOADING_FILES' | translate }} ({{ getActiveUploadCount() }})
+        </h6>
+        <div class="progress mb-2">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="getOverallProgress()"
+            role="progressbar">
+            {{ getOverallProgress() }}%
+          </div>
+        </div>
+        <div class="d-flex justify-content-between">
+          <small class="text-muted">{{ getUploadStatusText() }}</small>
+          <small class="text-muted">{{ getUploadedSize() }} / {{ getTotalSize() }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form *ngIf="createDocumentForm" [formGroup]="createDocumentForm" (ngSubmit)="onSubmit()">
+    <!-- Dynamically render form fields based on editableFields -->
+    <div *ngFor="let field of editableFields">
+      <div class="mb-3" [ngSwitch]="field">
+        <!-- First Name -->
+        <div class="mb-3" *ngSwitchCase="'first_name'">
+          <label for="first_name" class="form-label">{{ 'FIRST_NAME' | translate }}</label>
+          <input id="first_name" formControlName="first_name" type="text" class="form-control"
+            [class.is-invalid]="createDocumentForm?.get('first_name')?.invalid && createDocumentForm?.get('first_name')?.touched"
+            placeholder="{{ 'ENTER_FIELD' | translate: { field: 'FIRST_NAME' | translate } }}" />
+          <ng-container *ngIf="createDocumentForm?.get('first_name') as firstNameControl">
+            <div *ngIf="firstNameControl.invalid && firstNameControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'FIRST_NAME' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+        <!-- Last Name -->
+        <div class="mb-3" *ngSwitchCase="'last_name'">
+          <label for="last_name" class="form-label">{{ 'LAST_NAME' | translate }}</label>
+          <input id="last_name" formControlName="last_name" type="text" class="form-control"
+            [class.is-invalid]="createDocumentForm?.get('last_name')?.invalid && createDocumentForm?.get('last_name')?.touched"
+            placeholder="{{ 'ENTER_FIELD' | translate: { field: 'LAST_NAME' | translate } }}" />
+          <ng-container *ngIf="createDocumentForm?.get('last_name') as lastNameControl">
+            <div *ngIf="lastNameControl.invalid && lastNameControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'LAST_NAME' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+        <!-- Nickname -->
+        <div class="mb-3" *ngSwitchCase="'nickname'">
+          <label for="nickname" class="form-label">{{ 'NICKNAME' | translate }}</label>
+          <input id="nickname" formControlName="nickname" type="text" class="form-control"
+            [class.is-invalid]="createDocumentForm?.get('nickname')?.invalid && createDocumentForm?.get('nickname')?.touched"
+            placeholder="{{ 'ENTER_FIELD' | translate: { field: 'NICKNAME' | translate } }}" />
+          <ng-container *ngIf="createDocumentForm?.get('nickname') as nicknameControl">
+            <div *ngIf="nicknameControl.invalid && nicknameControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'NICKNAME' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+        <!-- Email -->
+        <div class="mb-3" *ngSwitchCase="'email'">
+          <label for="email" class="form-label">{{ 'EMAIL' | translate }}</label>
+          <input id="email" formControlName="email" type="email" class="form-control"
+            [class.is-invalid]="createDocumentForm?.get('email')?.invalid && createDocumentForm?.get('email')?.touched"
+            placeholder="{{ 'ENTER_FIELD' | translate: { field: 'EMAIL' | translate } }}" />
+          <ng-container *ngIf="createDocumentForm?.get('email') as emailControl">
+            <div *ngIf="emailControl.invalid && emailControl.touched" class="text-danger">
+              <div *ngIf="emailControl.errors?.['required']">
+                {{ 'IS_REQUIRED' | translate:{ field: 'EMAIL' | translate } }}
+              </div>
+              <div *ngIf="emailControl.errors?.['email']">
+                {{ 'VALIDATION.INVALID_EMAIL' | translate }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- Password -->
+        <div class="mb-3 d-flex align-items-center" *ngSwitchCase="'password'">
+          <div class="flex-grow-1">
+            <label for="password" class="form-label">{{ 'PASSWORD' | translate }}</label>
+            <input id="password" formControlName="password" type="text" class="form-control"
+              [class.is-invalid]="createDocumentForm?.get('password')?.invalid && createDocumentForm?.get('password')?.touched"
+              [disabled]="true" />
+            <small class="form-text text-muted">{{ 'GENERATED_PASSWORD' | translate }}: {{ generatedPassword }}</small>
+            <ng-container *ngIf="createDocumentForm?.get('password') as passwordControl">
+              <div *ngIf="passwordControl.invalid && passwordControl.touched" class="text-danger">
+                <div *ngIf="passwordControl.errors?.['required']">
+                  {{ 'IS_REQUIRED' | translate:{ field: 'PASSWORD' | translate } }}
+                </div>
+                <div *ngIf="passwordControl.errors?.['minlength']">
+                  {{ 'VALIDATION.PASSWORD_MIN_LENGTH' | translate }}
+                </div>
+                <div *ngIf="passwordControl.errors?.['passwordStrength']">
+                  {{ 'VALIDATION.PASSWORD_STRENGTH' | translate }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <button type="button" class="btn btn-outline-secondary me-2" (click)="copyPasswordToClipboard()"
+            [attr.aria-label]="'COPY_PASSWORD' | translate">
+            <i class="bi bi-clipboard"></i>
+            <span *ngIf="passwordCopied" class="ms-1">{{ 'COPIED' | translate }}</span>
+          </button>
+        </div>
+        <!-- Role -->
+        <div class="mb-3" *ngSwitchCase="'role_code'">
+          <app-dropdown-select id="role" [label]="'ROLE_CODE' | translate" dropdownName="role_code"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('role_code')"></app-dropdown-select>
+        </div>
+        <!-- Title field -->
+        <div *ngSwitchCase="'title'">
+          <label for="title" class="form-label">{{ 'TITLE' | translate }}</label>
+          <input id="title" formControlName="title" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'TITLE' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('title') as titleControl">
+            <div *ngIf="titleControl.invalid && titleControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'TITLE' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Description field -->
+        <div *ngSwitchCase="'description'">
+          <label for="description" class="form-label">{{ 'DESCRIPTION' | translate }}</label>
+          <textarea id="description" formControlName="description" rows="4" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'DESCRIPTION' | translate}"></textarea>
+          <ng-container *ngIf="createDocumentForm?.get('description') as descriptionControl">
+            <div *ngIf="descriptionControl.invalid && descriptionControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'DESCRIPTION' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Date of Publication field -->
+        <div *ngSwitchCase="'date_of_publication'">
+          <label for="date_of_publication" class="form-label">{{ 'DATE_OF_PUBLICATION' | translate }}</label>
+          <input id="date_of_publication" type="text" class="form-control" formControlName="date_of_publication"
+            bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+          <ng-container *ngIf="createDocumentForm?.get('date_of_publication') as dateOfPublicationControl">
+            <div *ngIf="dateOfPublicationControl.invalid && dateOfPublicationControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'DATE_OF_PUBLICATION' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Event location -->
+        <div *ngSwitchCase="'event_location'">
+          <label for="event_location" class="form-label">{{ 'EVENT_LOCATION' | translate }}</label>
+          <input id="event_location" formControlName="event_location" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'EVENT_LOCATION' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('event_location') as eventLocationControl">
+            <div *ngIf="eventLocationControl.invalid && eventLocationControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'EVENT_LOCATION' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Image URL field (Main) -->
+        <div *ngIf="editableFields.includes('image_url') && documentType !== 'media'">
+          <div *ngSwitchCase="'image_url'">
+            <label for="image_url" class="form-label">{{ 'IMAGE_URL' | translate }}</label>
+            <app-file-upload [label]="'ENTER_FIELD' | translate:{field: ('IMAGE_URL' | translate)}"
+              [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+              [control]="getFileUploadControl('image_url')" (fileUploaded)="onFileUploaded('image_url', $event)"
+              (fileDeleted)="onFileDeleted('image_url')"
+              (uploadProgress)="onUploadProgress('image_url', $event)"></app-file-upload>
+            <ng-container *ngIf="createDocumentForm?.get('image_url') as imageUrlControl">
+              <div *ngIf="imageUrlControl.invalid && imageUrlControl.touched" class="text-danger">
+                {{ 'IS_REQUIRED' | translate:{ field: ('IMAGE_URL' | translate) } }}
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Media Type -->
+        <div *ngIf="documentType === 'media'">
+          <div *ngSwitchCase="'media_type'">
+            <app-dropdown-select id="media_type" [label]="'MEDIA_TYPE' | translate" dropdownName="media_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+              [control]="createDocumentForm.get('media_type')"></app-dropdown-select>
+            <div
+              *ngIf="createDocumentForm.get('media_type')?.invalid && (createDocumentForm.get('media_type')?.dirty || createDocumentForm.get('media_type')?.touched)"
+              class="invalid-feedback mb-3">
+              {{ 'MEDIA_TYPE_REQUIRED' | translate }}
+            </div>
+
+            <div *ngIf="createDocumentForm.get('media_type')?.value === 'image'">
+              <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE' | translate}"
+                [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+                [control]="getFileUploadControl('image_url')" (fileUploaded)="onFileUploaded('image_url', $event)"
+                (fileDeleted)="onFileDeleted('image_url')"
+                [ngClass]="{'is-invalid': createDocumentForm?.get('image_url')?.invalid && (createDocumentForm?.get('image_url')?.dirty || createDocumentForm?.get('image_url')?.touched)}">
+              </app-file-upload>
+              <div
+                *ngIf="createDocumentForm?.get('image_url')?.invalid && (createDocumentForm?.get('image_url')?.dirty || createDocumentForm?.get('image_url')?.touched)"
+                class="invalid-feedback">
+                {{ 'IMAGE_URL_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <div *ngIf="createDocumentForm.get('media_type')?.value === 'video'">
+              <div class="mb-3">
+                <label for="video_url" class="form-label">{{ 'VIDEO_URL' | translate }}</label>
+                <input id="video_url" formControlName="video_url" type="url" class="form-control"
+                  (change)="onVideoUrlChange()"
+                  [ngClass]="{'is-invalid': createDocumentForm?.get('video_url')?.invalid && (createDocumentForm?.get('video_url')?.dirty || createDocumentForm?.get('video_url')?.touched)}">
+                <div
+                  *ngIf="createDocumentForm?.get('video_url')?.invalid && (createDocumentForm?.get('video_url')?.dirty || createDocumentForm?.get('video_url')?.touched)"
+                  class="invalid-feedback">
+                  <div *ngIf="createDocumentForm?.get('video_url')?.errors?.['required']">{{ 'VIDEO_URL_REQUIRED' |
+                    translate }}</div>
+                  <div *ngIf="createDocumentForm?.get('video_url')?.errors?.['pattern']">{{ 'INVALID_URL' | translate }}
+                  </div>
+                  <div *ngIf="createDocumentForm?.get('video_url')?.errors?.['invalidYoutube']">{{
+                    'INVALID_YOUTUBE_LINK' | translate }}</div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="video_length" class="form-label">{{ 'VIDEO_LENGTH' | translate }}</label>
+                <div dir="ltr" class="d-flex justify-content-start">
+                  <ngb-timepicker [(ngModel)]="videoLengthParsed" [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="onVideoLengthChange($event)"
+                    [readonlyInputs]="!createDocumentForm?.controls?.['video_length']?.enabled" [meridian]="false"
+                    [seconds]="true" appArabicNumerals
+                    [ngClass]="{'is-invalid': createDocumentForm?.get('video_length')?.invalid && (createDocumentForm?.get('video_length')?.dirty || createDocumentForm?.get('video_length')?.touched)}"></ngb-timepicker>
+                </div>
+                <div
+                  *ngIf="createDocumentForm?.get('video_length')?.invalid && (createDocumentForm?.get('video_length')?.dirty || createDocumentForm?.get('video_length')?.touched)"
+                  class="invalid-feedback d-block">
+                  <div *ngIf="createDocumentForm?.get('video_length')?.errors?.['required']">{{ 'VIDEO_LENGTH_REQUIRED'
+                    |
+                    translate }}</div>
+                  <div *ngIf="createDocumentForm?.get('video_length')?.errors?.['invalidTimestamp']">{{
+                    'INVALID_TIMESTAMP' | translate }}</div>
+                </div>
+              </div>
+              <div *ngIf="createDocumentForm?.get('image_url')?.value">
+                <img [src]="createDocumentForm?.get('image_url')?.value" alt="{{ 'VIDEO_THUMBNAIL' | translate }}"
+                  class="img-fluid">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Numbered Image URL fields (e.g., for bian, archive_c) -->
+        <ng-container *ngSwitchDefault>
+          <div *ngIf="imageFields.includes(field)" class="mb-3">
+            <!-- Generate label like "Image URL 1", "Image URL 2", etc. -->
+            <label [for]="field" class="form-label">{{ ('IMAGE_URL_' + field.split('_')[2]) | translate }}</label>
+            <app-file-upload [label]="'UPLOAD_IMAGE' | translate"
+              [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+              [control]="getFileUploadControl(field)" (fileUploaded)="onFileUploaded(field, $event)"
+              (fileDeleted)="onFileDeleted(field)" (uploadProgress)="onUploadProgress(field, $event)">
+            </app-file-upload>
+            <!-- Check control existence before accessing properties -->
+            <ng-container *ngIf="createDocumentForm?.get(field) as numberedImageControl">
+              <div *ngIf="numberedImageControl.invalid && numberedImageControl.touched" class="text-danger">
+                {{ 'IS_REQUIRED' | translate:{ field: (('IMAGE_URL_' + field.split('_')[2]) | translate) } }}
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <!-- PDF URL field -->
+        <div *ngSwitchCase="'pdf_url'">
+          <label for="pdf_url" class="form-label">{{ 'PDF_URL' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'PDF_URL'| translate}"
+            [acceptedFileTypes]="'.pdf'" [context]="'pdfs'" [control]="getFileUploadControl('pdf_url')"
+            (fileUploaded)="onFileUploaded('pdf_url', $event)"
+            (fileDeleted)="onFileDeleted('pdf_url')"></app-file-upload>
+          <ng-container *ngIf="createDocumentForm?.get('pdf_url') as pdfUrlControl">
+            <div *ngIf="pdfUrlControl.invalid && pdfUrlControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: ('PDF_URL' | translate) } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Custom fields based on model type -->
+        <div *ngSwitchCase="'release_type'">
+          <app-dropdown-select id="release_type" [label]="'RELEASE_TYPE' | translate" dropdownName="release_type"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('release_type')"></app-dropdown-select>
+          <div
+            *ngIf="createDocumentForm.get('release_type')?.invalid && createDocumentForm.get('release_type')?.touched"
+            class="text-danger">
+            {{ 'IS_REQUIRED' | translate:{ field: 'RELEASE_TYPE' | translate } }}
+          </div>
+        </div>
+
+        <div *ngSwitchCase="'author'">
+          <label for="author" class="form-label">{{ 'AUTHOR' | translate }}</label>
+          <input id="author" formControlName="author" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'AUTHOR' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('author') as authorControl">
+            <div *ngIf="authorControl.invalid && authorControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'AUTHOR' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Date of Event field -->
+        <div *ngSwitchCase="'date_of_event'">
+          <label for="date_of_event" class="form-label">{{ 'DATE_OF_EVENT' | translate }}</label>
+          <input id="date_of_event" type="text" class="form-control" formControlName="date_of_event" bsDatepicker
+            [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+          <ng-container *ngIf="createDocumentForm?.get('date_of_event') as dateOfEventControl">
+            <div *ngIf="dateOfEventControl.invalid && dateOfEventControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'DATE_OF_EVENT' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'type_c'">
+          <app-dropdown-select id="type_c" [label]="'TYPE_C' | translate" dropdownName="type_c"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('type_c')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('type_c') as typeCControl">
+            <div *ngIf="typeCControl.invalid && typeCControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'TYPE_C' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'image_url_1'">
+          <label class="form-label">{{ 'IMAGE_URL_1' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_1' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_1')" (fileUploaded)="onFileUploaded('image_url_1', $event)"
+            (fileDeleted)="onFileDeleted('image_url_1')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_2'">
+          <label class="form-label">{{ 'IMAGE_URL_2' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_2' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_2')" (fileUploaded)="onFileUploaded('image_url_2', $event)"
+            (fileDeleted)="onFileDeleted('image_url_2')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_6'">
+          <label class="form-label">{{ 'IMAGE_URL_6' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_6' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_6')" (fileUploaded)="onFileUploaded('image_url_6', $event)"
+            (fileDeleted)="onFileDeleted('image_url_6')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_5'">
+          <label class="form-label">{{ 'IMAGE_URL_5' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_5' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_5')" (fileUploaded)="onFileUploaded('image_url_5', $event)"
+            (fileDeleted)="onFileDeleted('image_url_5')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_3'">
+          <label class="form-label">{{ 'IMAGE_URL_3' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_3' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_3')" (fileUploaded)="onFileUploaded('image_url_3', $event)"
+            (fileDeleted)="onFileDeleted('image_url_3')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_4'">
+          <label class="form-label">{{ 'IMAGE_URL_4' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_4' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_4')" (fileUploaded)="onFileUploaded('image_url_4', $event)"
+            (fileDeleted)="onFileDeleted('image_url_4')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_7'">
+          <label class="form-label">{{ 'IMAGE_URL_7' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_7' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_7')" (fileUploaded)="onFileUploaded('image_url_7', $event)"
+            (fileDeleted)="onFileDeleted('image_url_7')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_en'">
+          <label class="form-label">{{ 'IMAGE_URL_EN' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_EN' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_en')" (fileUploaded)="onFileUploaded('image_url_en', $event)"
+            (fileDeleted)="onFileDeleted('image_url_en')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_fr'">
+          <label class="form-label">{{ 'IMAGE_URL_FR' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_FR' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_fr')" (fileUploaded)="onFileUploaded('image_url_fr', $event)"
+            (fileDeleted)="onFileDeleted('image_url_fr')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_ar'">
+          <label class="form-label">{{ 'IMAGE_URL_AR' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_AR' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_ar')" (fileUploaded)="onFileUploaded('image_url_ar', $event)"
+            (fileDeleted)="onFileDeleted('image_url_ar')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_zh_cn'">
+          <label class="form-label">{{ 'IMAGE_URL_ZH_CN' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_ZH_CN' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_zh_cn')"
+            (fileUploaded)="onFileUploaded('image_url_zh_cn', $event)"
+            (fileDeleted)="onFileDeleted('image_url_zh_cn')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_de'">
+          <label class="form-label">{{ 'IMAGE_URL_DE' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_DE' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_de')" (fileUploaded)="onFileUploaded('image_url_de', $event)"
+            (fileDeleted)="onFileDeleted('image_url_de')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_ru'">
+          <label class="form-label">{{ 'IMAGE_URL_RU' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_RU' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_ru')" (fileUploaded)="onFileUploaded('image_url_ru', $event)"
+            (fileDeleted)="onFileDeleted('image_url_ru')"></app-file-upload>
+        </div>
+
+        <div *ngSwitchCase="'image_url_msd'">
+          <label class="form-label">{{ 'IMAGE_URL_MSD' | translate }}</label>
+          <app-file-upload [label]="'ENTER_FIELD' | translate:{field: 'IMAGE_URL_MSD' | translate}"
+            [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'" [context]="'images'"
+            [control]="getFileUploadControl('image_url_msd')" (fileUploaded)="onFileUploaded('image_url_msd', $event)"
+            (fileDeleted)="onFileDeleted('image_url_msd')"></app-file-upload>
+        </div>
+
+        <!-- DocumentAthar specific fields -->
+        <div *ngSwitchCase="'athar_id'">
+          <label for="athar_id" class="form-label">{{ 'ATHAR_ID' | translate }}</label>
+          <input id="athar_id" formControlName="athar_id" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_ID' | translate}" pattern="[a-zA-Z0-9\-]+"
+            title="{{ 'ATHAR_ID_VALIDATION_HELP' | translate }}" />
+          <small class="form-text text-muted">{{ 'ATHAR_ID_VALIDATION_HELP' | translate }}</small>
+          <ng-container *ngIf="createDocumentForm?.get('athar_id') as atharIdControl">
+            <div *ngIf="atharIdControl.invalid && atharIdControl.touched" class="text-danger">
+              <div *ngIf="atharIdControl.errors?.['required']">
+                {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_ID' | translate } }}
+              </div>
+              <div *ngIf="atharIdControl.errors?.['pattern']">
+                {{ 'ATHAR_ID_VALIDATION_ERROR' | translate }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_name'">
+          <label for="athar_name" class="form-label">{{ 'ATHAR_NAME' | translate }}</label>
+          <input id="athar_name" formControlName="athar_name" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_NAME' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_name') as atharNameControl">
+            <div *ngIf="atharNameControl.invalid && atharNameControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_NAME' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_legal_status'">
+          <app-dropdown-select id="athar_legal_status" [label]="'ATHAR_LEGAL_STATUS' | translate"
+            dropdownName="athar_legal_status" [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_legal_status')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_legal_status') as atharLegalStatusControl">
+            <div *ngIf="atharLegalStatusControl.invalid && atharLegalStatusControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_LEGAL_STATUS' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_date_of_loss'">
+          <label for="athar_date_of_loss" class="form-label">{{ 'ATHAR_DATE_OF_LOSS' | translate }}</label>
+          <input id="athar_date_of_loss" type="text" class="form-control" formControlName="athar_date_of_loss"
+            bsDatepicker [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_date_of_loss') as atharDateOfLossControl">
+            <div *ngIf="atharDateOfLossControl.invalid && atharDateOfLossControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_DATE_OF_LOSS' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_present_location'">
+          <label for="athar_present_location" class="form-label">{{ 'ATHAR_PRESENT_LOCATION' | translate }}</label>
+          <input id="athar_present_location" formControlName="athar_present_location" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_PRESENT_LOCATION' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_present_location') as atharPresentLocationControl">
+            <div *ngIf="atharPresentLocationControl.invalid && atharPresentLocationControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PRESENT_LOCATION' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_present_location_name'">
+          <label for="athar_present_location_name" class="form-label">{{ 'ATHAR_PRESENT_LOCATION_NAME' | translate
+            }}</label>
+          <input id="athar_present_location_name" formControlName="athar_present_location_name" type="text"
+            class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_PRESENT_LOCATION_NAME' | translate}" />
+          <ng-container
+            *ngIf="createDocumentForm?.get('athar_present_location_name') as atharPresentLocationNameControl">
+            <div *ngIf="atharPresentLocationNameControl.invalid && atharPresentLocationNameControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PRESENT_LOCATION_NAME' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_present_location_country'">
+          <app-dropdown-select id="athar_present_location_country"
+            [label]="'ATHAR_PRESENT_LOCATION_COUNTRY' | translate" dropdownName="athar_present_location_country"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_present_location_country')"></app-dropdown-select>
+          <ng-container
+            *ngIf="createDocumentForm?.get('athar_present_location_country') as atharPresentLocationCountryControl">
+            <div *ngIf="atharPresentLocationCountryControl.invalid && atharPresentLocationCountryControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PRESENT_LOCATION_COUNTRY' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_date_of_presentation'">
+          <label for="athar_date_of_presentation" class="form-label">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate
+            }}</label>
+          <input id="athar_date_of_presentation" type="text" class="form-control"
+            formControlName="athar_date_of_presentation" bsDatepicker
+            [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue' }" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_date_of_presentation') as atharDateOfPresentationControl">
+            <div *ngIf="atharDateOfPresentationControl.invalid && atharDateOfPresentationControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_DATE_OF_PRESENTATION' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_type'">
+          <app-dropdown-select id="athar_type" [label]="'ATHAR_TYPE' | translate" dropdownName="athar_type"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_type')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_type') as atharTypeControl">
+            <div *ngIf="atharTypeControl.invalid && atharTypeControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_TYPE' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_material'">
+          <app-dropdown-select id="athar_material" [label]="'ATHAR_MATERIAL' | translate" dropdownName="athar_material"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_material')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_material') as atharMaterialControl">
+            <div *ngIf="atharMaterialControl.invalid && atharMaterialControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_MATERIAL' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_period'">
+          <app-dropdown-select id="athar_period" [label]="'ATHAR_PERIOD' | translate" dropdownName="athar_period"
+            [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_period')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_period') as atharPeriodControl">
+            <div *ngIf="atharPeriodControl.invalid && atharPeriodControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PERIOD' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_geo_location'">
+          <label for="athar_geo_location" class="form-label">{{ 'ATHAR_GEO_LOCATION' | translate }}</label>
+          <app-map-location-picker [initialValue]="createDocumentForm?.get('athar_geo_location')?.value || ''"
+            [disabled]="false" (locationChanged)="onLocationChanged('athar_geo_location', $event)">
+          </app-map-location-picker>
+          <ng-container *ngIf="createDocumentForm?.get('athar_geo_location') as atharGeoLocationControl">
+            <div *ngIf="atharGeoLocationControl.invalid && atharGeoLocationControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_GEO_LOCATION' | translate } }}
+            </div>
+            <div *ngIf="atharGeoLocationControl.hasError('pattern')" class="text-danger">
+              {{ 'INVALID_COORDINATE_FORMAT' | translate }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_original_area'">
+          <label for="athar_original_area" class="form-label">{{ 'ATHAR_ORIGINAL_AREA' | translate }}</label>
+          <input id="athar_original_area" formControlName="athar_original_area" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_ORIGINAL_AREA' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_original_area') as atharOriginalAreaControl">
+            <div *ngIf="atharOriginalAreaControl.invalid && atharOriginalAreaControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_ORIGINAL_AREA' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_origin_country'">
+          <app-dropdown-select id="athar_origin_country" [label]="'ATHAR_ORIGIN_COUNTRY' | translate"
+            dropdownName="athar_origin_country" [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_origin_country')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_origin_country') as atharOriginCountryControl">
+            <div *ngIf="atharOriginCountryControl.invalid && atharOriginCountryControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_ORIGIN_COUNTRY' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_preservation_status'">
+          <app-dropdown-select id="athar_preservation_status" [label]="'ATHAR_PRESERVATION_STATUS' | translate"
+            dropdownName="athar_preservation_status" [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_preservation_status')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_preservation_status') as atharPreservationStatusControl">
+            <div *ngIf="atharPreservationStatusControl.invalid && atharPreservationStatusControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PRESERVATION_STATUS' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_arch_original_area'">
+          <label for="athar_arch_original_area" class="form-label">{{ 'ATHAR_ARCH_ORIGINAL_AREA' | translate }}</label>
+          <input id="athar_arch_original_area" formControlName="athar_arch_original_area" type="text"
+            class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_ARCH_ORIGINAL_AREA' | translate}">
+          <ng-container *ngIf="createDocumentForm?.get('athar_arch_original_area') as atharArchOriginalAreaControl">
+            <div *ngIf="atharArchOriginalAreaControl.invalid && atharArchOriginalAreaControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_ARCH_ORIGINAL_AREA' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_case_number'">
+          <label for="athar_case_number" class="form-label">{{ 'ATHAR_CASE_NUMBER' | translate }}</label>
+          <input id="athar_case_number" formControlName="athar_case_number" type="text" class="form-control"
+            [placeholder]="'ENTER_FIELD' | translate:{field: 'ATHAR_CASE_NUMBER' | translate}" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_case_number') as atharCaseNumberControl">
+            <div *ngIf="atharCaseNumberControl.invalid && atharCaseNumberControl.touched" class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_CASE_NUMBER' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_required_procedure'">
+          <app-dropdown-select id="athar_required_procedure" [label]="'ATHAR_REQUIRED_PROCEDURE' | translate"
+            dropdownName="athar_required_procedure" [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate"
+            [control]="createDocumentForm.get('athar_required_procedure')"></app-dropdown-select>
+          <ng-container *ngIf="createDocumentForm?.get('athar_required_procedure') as atharRequiredProcedureControl">
+            <div *ngIf="atharRequiredProcedureControl.invalid && atharRequiredProcedureControl.touched"
+              class="text-danger">
+              {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_REQUIRED_PROCEDURE' | translate } }}
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngSwitchCase="'athar_page_link'">
+          <label for="athar_page_link" class="form-label">{{ 'ATHAR_PAGE_LINK' | translate }}</label>
+          <input id="athar_page_link" formControlName="athar_page_link" type="url" class="form-control"
+            [placeholder]="'ENTER_URL' | translate" />
+          <ng-container *ngIf="createDocumentForm?.get('athar_page_link') as atharPageLinkControl">
+            <div *ngIf="atharPageLinkControl.invalid && atharPageLinkControl.touched" class="text-danger">
+              <div *ngIf="atharPageLinkControl.hasError('required')">
+                {{ 'IS_REQUIRED' | translate:{ field: 'ATHAR_PAGE_LINK' | translate } }}
+              </div>
+              <div *ngIf="atharPageLinkControl.hasError('pattern')">
+                {{ 'INVALID_URL_FORMAT' | translate }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Form Validation Summary -->
+    <div *ngIf="hasFormErrors()" class="alert alert-danger mt-4 border-start border-danger border-4">
+      <h5 class="alert-heading mb-3">
+        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+        {{ 'FORM_VALIDATION_ERRORS' | translate }}
+      </h5>
+      <ul class="mb-3 list-unstyled">
+        <li *ngFor="let error of getFormErrorSummary()" class="mb-2 d-flex align-items-start">
+          <i class="bi bi-dot text-danger me-1 fs-3"></i>
+          <span class="text-dark">{{ error }}</span>
+        </li>
+      </ul>
+      <hr class="my-3">
+      <p class="mb-0 text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        {{ 'PLEASE_FIX_ERRORS_TO_CONTINUE' | translate }}
+      </p>
+    </div>
+
+    <!-- Form Actions Buttons -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        <i class="bi bi-arrow-left me-2"></i>
+        {{ 'CANCEL' | translate }}
+      </button>
+
+      <div class="d-flex align-items-center">
+        <div *ngIf="createDocumentForm?.invalid" class="text-danger ms-3">
+          <small>
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            {{ 'FORM_HAS_ERRORS' | translate }}
+          </small>
+        </div>
+        <button type="submit" class="btn" [disabled]="!canSubmitForm()" [ngClass]="{
+                  'btn-warning': createDocumentForm?.invalid && canSubmitForm(),
+                  'btn-primary': createDocumentForm?.valid && canSubmitForm(),
+                  'btn-secondary': !canSubmitForm()
+                }" [attr.title]="getSubmitButtonTitle()">
+          <i class="bi me-2" [ngClass]="{
+            'bi-exclamation-triangle': createDocumentForm?.invalid && canSubmitForm(),
+            'bi-check-circle': createDocumentForm?.valid && canSubmitForm(),
+            'bi-cloud-upload': hasActiveUploads()
+          }"></i>
+          <span *ngIf="canSubmitForm()">
+            {{ 'CREATE_DOCUMENT' | translate: { TYPE: ('ADMIN_PANEL_CREATE_' + documentType.toUpperCase() | translate) }
+            }}
+          </span>
+          <span *ngIf="hasActiveUploads()">
+            {{ 'FILE_UPLOAD.UPLOADING_FILES' | translate }} ({{ getActiveUploadCount() }})
+          </span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

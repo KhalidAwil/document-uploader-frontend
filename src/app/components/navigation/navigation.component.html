@@ -1,0 +1,120 @@
+<div class="container-fluid-custom">
+  <header class="header-custom py-3 mb-1">
+    <div class="row flex-nowrap justify-content-between align-items-center">
+      <div class="col-auto d-flex align-items-center">
+        <div *ngIf="logoPath; else defaultText" class="logo-container me-3">
+          <img [src]="logoPath" alt="{{ 'LOGO_ALT' | translate }}" *ngIf="logoSize !== 'original'; else originalHeaderLogo" [class]="'logo-img logo-' + logoSize">
+          <ng-template #originalHeaderLogo>
+            <img [src]="logoPath" alt="{{ 'LOGO_ALT' | translate }}" class="logo-img">
+          </ng-template>
+        </div>
+        <ng-template #defaultText>
+          <h2 class="mb-0">
+            <a class="text-decoration-none" href="#">
+              {{ 'DOCUMENT_UPLOADER' | translate }}
+            </a>
+          </h2>
+        </ng-template>
+      </div>
+      <div class="col-auto d-flex justify-content-end align-items-center">
+        <div *ngIf="authUser" class="d-flex align-items-center ms-2">
+          <span class="badge bg-tertiary me-2">
+            <i class="bi bi-person-fill"></i>
+          </span>
+          <span class="text-white fw-bold">{{ authUser?.name }}</span>
+        </div>
+        <button class="btn btn-sm btn-tertiary ms-2" routerLink="admin" *ngIf="isLoggedIn">
+          <i class="bi bi-gear-fill ms-1"></i>
+          {{ 'ADMIN_SETTINGS' | translate }}
+        </button>
+        <button class="btn btn-sm btn-secondary" *ngIf="isLoggedIn" (click)="logOut()">
+          <i class="bi bi-box-arrow-right ms-1"></i>
+          {{ 'LOGOUT' | translate }}
+        </button>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="navigation-container sticky-top" #navigationContainer>
+  <div class="container-fluid-custom">
+    <nav class="navbar navbar-dark navbar-expand-lg navbar-custom shadow">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          (click)="toggleMenu($event)"
+          aria-controls="navbarNav"
+          [attr.aria-expanded]="isMenuOpen"
+          [attr.aria-label]="'TOGGLE_NAVIGATION' | translate"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse" id="navbarNav" [ngClass]="{'collapse': !isMenuOpen, 'show': isMenuOpen}">
+          <ul class="navbar-nav nav-pills w-100 d-flex justify-content-between">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                <i class="bi bi-house-door ms-2"></i>
+                {{ 'HOME' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/guide" routerLinkActive="active">
+                <i class="bi bi-book ms-2"></i>
+                {{ 'GUIDES' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/release" routerLinkActive="active">
+                <i class="bi bi-file-earmark-text ms-2"></i>
+                {{ 'RELEASES' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/bian" routerLinkActive="active">
+                <i class="bi bi-file-earmark ms-2"></i>
+                {{ 'BIANS' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/news" routerLinkActive="active">
+                <i class="bi bi-newspaper ms-2"></i>
+                {{ 'NEWS' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/archive_c" routerLinkActive="active">
+                <i class="bi bi-archive ms-2"></i>
+                {{ 'ARCHIVE_C' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/athar" routerLinkActive="active">
+                <i class="bi bi-radar ms-2"></i>
+                {{ 'ATHAR' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="documents/media" routerLinkActive="active">
+                <i class="bi bi-collection ms-2"></i>
+                {{ 'LIBRARY' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="join-us" routerLinkActive="active">
+                <i class="bi bi-people ms-2"></i>
+                {{ 'JOIN_US.NAV_TITLE' | translate }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="contact" routerLinkActive="active">
+                <i class="bi bi-envelope ms-2"></i>
+                {{ 'CONTACT' | translate }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>

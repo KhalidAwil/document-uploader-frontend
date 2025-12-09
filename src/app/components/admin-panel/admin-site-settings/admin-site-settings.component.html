@@ -1,0 +1,192 @@
+<div class="py-5">
+  <div class="container align-items-center">
+    <h3>{{ 'SITE_SETTINGS' | translate }}</h3>
+
+    <!-- Loading Indicator -->
+     <div *ngIf="isLoading && !hasSiteSettingsChanges" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">{{ 'LOADING_SETTINGS' | translate }}</p>
+     </div>
+
+    <!-- Content Area (Hide when initially loading) -->
+    <div *ngIf="!isLoading || hasSiteSettingsChanges"> <!-- Show if not loading OR if changes are pending -->
+
+        <!-- Success/Error Messages -->
+        <div
+          *ngIf="saveSuccessMessage"
+          class="alert alert-success alert-dismissible fade show"
+          role="alert"
+        >
+          {{ saveSuccessMessage }}
+          <button
+            type="button"
+            class="btn-close"
+            (click)="saveSuccessMessage = null"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div
+          *ngIf="saveErrorMessage"
+          class="alert alert-danger alert-dismissible fade show"
+          role="alert"
+        >
+          {{ saveErrorMessage }}
+          <button
+            type="button"
+            class="btn-close"
+            (click)="saveErrorMessage = null"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <hr />
+
+        <!-- Carousel Images Section -->
+        <div class="mb-5">
+          <h4>{{ 'CAROUSEL_IMAGES' | translate }}</h4>
+          <!-- Display Images -->
+          <!-- Carousel Images (pending + saved, uniform row) -->
+          <div class="carousel-image-list mt-3">
+            <ng-container *ngIf="siteSettings?.carousel_images && siteSettings.carousel_images.length > 0">
+              <div class="card-wrapper" *ngFor="let image of siteSettings.carousel_images">
+                  <div class="card h-100 shadow-sm">
+                    <ng-container *ngIf="!failedCarouselImageIds.includes(image.id); else imageError">
+                      <img
+                        [src]="image?.image_url"
+                        class="card-img-top"
+                        alt="{{ 'CAROUSEL_IMAGE_ALT' | translate }}"
+                        style="height: 200px; object-fit: cover;"
+                        (error)="handleImageError($event, image.id)" />
+                    </ng-container>
+                    <ng-template #imageError>
+                      <div class="alert alert-danger text-center mb-0" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                        {{ 'CAROUSEL_IMAGE_LOAD_FAILED' | translate }}
+                      </div>
+                    </ng-template>
+
+                    <div class="card-body d-flex flex-column">
+                       <p class="card-text small text-muted mb-auto">
+                          {{ 'IMAGE_ID' | translate }}: {{ image.id > 0 ? image.id : ('PENDING' | translate) }}
+                       </p>
+                      <div class="d-flex justify-content-end mt-2">
+                        <button
+                          *ngIf="canManageSettings()"
+                          class="btn btn-danger btn-sm"
+                          (click)="deleteCarouselImage(image.id)"
+                           [title]="'DELETE' | translate"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <div class="card-wrapper" *ngFor="let pending of pendingImages">
+                <div class="card shadow-sm position-relative">
+                  <img
+                    [src]="pending.file ? (pending.file | filePreview) : ''"
+                    class="card-img-top opacity-50"
+                    alt="{{ 'CAROUSEL_IMAGE_ALT' | translate }}"
+                    style="height: 200px; object-fit: cover; filter: blur(1px);"
+                  />
+                  <div class="position-absolute top-50 start-50 translate-middle">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Uploading...</span>
+                    </div>
+                  </div>
+                  <div class="card-body d-flex flex-column">
+                    <p class="card-text small text-muted mb-auto">
+                      {{ 'IMAGE_ID' | translate }}: {{ 'PENDING' | translate }}
+                    </p>
+                    <div class="d-flex justify-content-end mt-2">
+                      <span class="badge bg-secondary">{{ 'UPLOADING' | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- No carousel images message -->
+            <div *ngIf="!siteSettings?.carousel_images || siteSettings.carousel_images.length === 0" class="col-12">
+              <p class="text-center text-muted">{{ 'NO_CAROUSEL_IMAGES' | translate }}</p>
+            </div>
+          </div>
+
+          <!-- Add Image Form -->
+          <div class="mt-4 pt-3 border-top" *ngIf="canManageSettings()">
+            <h5>{{ 'ADD_CAROUSEL_IMAGE' | translate }}</h5>
+            <form [formGroup]="carouselImageForm" (ngSubmit)="addCarouselImage()" class="d-flex align-items-start gap-3">
+              <div class="flex-grow-1">
+                <app-file-upload
+                  #newCarouselImageUpload
+                  fieldId="newCarouselImage"
+                  [label]="'UPLOAD_IMAGE' | translate"
+                  [acceptedFileTypes]="'.jpg,.jpeg,.png,.webp,.gif,.svg'"
+                  [context]="'carousel'"
+                  [control]="imageUrlControl"
+                  [deferOperations]="true"
+                  (fileUploaded)="onImageUploaded('imageUrl', $event)"
+                  (fileDeleted)="onImageDeleted('imageUrl')"
+                 ></app-file-upload>
+                  <!-- Help text -->
+                   <div class="text-muted small mt-1">
+                      {{ 'SELECT_IMAGE_TO_ADD' | translate }}
+                   </div>
+              </div>
+              <button
+                type="submit"
+                class="btn btn-success mt-0"
+                [disabled]="!newCarouselImageUpload?.hasPendingOperation() || newCarouselImageUpload?.pendingOperation?.type !== 'upload'"
+              >
+                <i class="bi bi-plus-circle me-1"></i>
+                {{ 'ADD_IMAGE' | translate }}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- Logo Upload Section -->
+        <div class="mb-5" *ngIf="canManageSettings()">
+          <h4>{{ 'LOGO_UPLOAD.UPLOAD_LABEL' | translate }}</h4>
+           <app-logo-upload
+              [headerLogoUrl]="siteSettings.logos?.header_url ?? null"
+              [footerLogoUrl]="siteSettings.logos?.footer_url ?? null"
+              [pdfLogoUrl]="siteSettings.logos?.pdf_url ?? null"
+              [headerLogoSize]="siteSettings.logos?.header_size ?? 'medium'"
+              [footerLogoSize]="siteSettings.logos?.footer_size ?? 'medium'"
+              (pendingChange)="onLogoPendingChange()"
+            ></app-logo-upload>
+        </div>
+
+        <hr *ngIf="canManageSettings()" />
+
+        <!-- Save/Cancel Buttons -->
+        <div class="d-flex justify-content-end mt-4" *ngIf="canManageSettings()">
+          <button
+            class="btn btn-secondary ms-2"
+            (click)="cancelPendingOperations()"
+            [disabled]="!hasSiteSettingsChanges || isLoading"
+          >
+            <i class="bi bi-x-circle me-2"></i>
+            {{ 'CANCEL' | translate }}
+          </button>
+          <button
+            class="btn btn-primary"
+            (click)="saveSiteSettings()"
+            [disabled]="!hasSiteSettingsChanges || isLoading"
+          >
+             <span *ngIf="!isLoading">
+                 <i class="bi bi-save ms-2"></i>
+                 {{ 'SAVE_CHANGES' | translate }}
+             </span>
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+             <span *ngIf="isLoading"> {{ 'SAVING' | translate }}...</span>
+          </button>
+        </div>
+     </div>
+
+  </div>
+</div>

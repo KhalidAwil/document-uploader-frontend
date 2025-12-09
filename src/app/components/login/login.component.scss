@@ -1,0 +1,187 @@
+@import './../../../styles.scss';
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 300px);
+  padding: 2rem 1rem;
+}
+
+.login-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  color: $primary;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  color: lighten($secondary, 20%);
+  font-size: 1rem;
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: $secondary;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  
+  .bi {
+    margin-right: 0.5rem;
+    color: var(--app-tertiary);
+  }
+  
+  // Required field indicator
+  .text-danger {
+    margin-left: 0.25rem;
+  }
+}
+
+.form-control {
+  padding: 0.75rem 1rem;
+  border-color: rgba($primary, 0.2);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--app-tertiary), 0.25);
+    border-color: var(--app-tertiary);
+  }
+  
+  &.is-invalid {
+    border-color: $danger;
+    background-image: none;
+    padding-right: 1rem;
+    animation: shake 0.5s ease-in-out; // Added shake animation
+    
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgba($danger, 0.25);
+    }
+  }
+}
+
+.input-group {
+  .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .btn {
+    border-color: rgba($primary, 0.2);
+    color: $primary;
+    
+    &:hover {
+      background-color: rgba($primary, 0.1);
+    }
+    
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}
+
+// Form text for hints
+.form-text {
+  font-size: 0.8rem;
+  color: $secondary;
+  margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+  color: $danger;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.auth-error {
+  color: $danger;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.alert {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  
+  .bi {
+    font-size: 1.2rem;
+  }
+  
+  .btn-close {
+    margin-left: auto;
+    font-size: 0.75rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Added shake animation for invalid fields
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+// RTL Styles
+.direction-rtl {
+  .form-label .bi {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+  
+  .alert .bi {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+  
+  .form-label .text-danger {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+}
+
+// Responsive Styles
+@media (max-width: 576px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  
+  a {
+    color: var(--app-tertiary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+}

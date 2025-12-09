@@ -1,0 +1,86 @@
+<div class="map-location-picker">
+  <!-- Display current location -->
+  <div class="input-group">
+    <input 
+      type="text" 
+      class="form-control" 
+      [value]="getLocationDisplayText()" 
+      readonly
+      [placeholder]="'SELECT_LOCATION_ON_MAP' | translate"
+      [disabled]="disabled">
+    <button 
+      type="button" 
+      class="btn btn-outline-secondary" 
+      (click)="openMapModal()"
+      [disabled]="disabled">
+      <i class="bi bi-map"></i> {{ 'SELECT_ON_MAP' | translate }}
+    </button>
+    <button 
+      type="button" 
+      class="btn btn-outline-danger" 
+      (click)="clearLocation()"
+      [disabled]="disabled || !selectedLocation">
+      <i class="bi bi-x-circle"></i>
+    </button>
+  </div>
+  
+  <!-- Location details -->
+  <div *ngIf="selectedLocation" class="mt-2">
+    <small class="form-text text-muted d-block">
+      <strong>{{ 'COORDINATES' | translate }}:</strong> {{ selectedLocation }}
+    </small>
+    <small class="form-text text-success d-block" *ngIf="locationName && !isLoadingLocation">
+      <i class="bi bi-geo-alt-fill me-1"></i><strong>{{ 'LOCATION' | translate }}:</strong> {{ locationName }}
+    </small>
+    <small class="form-text text-info d-block" *ngIf="isLoadingLocation">
+      <i class="bi bi-arrow-clockwise me-1"></i>{{ 'LOADING_LOCATION' | translate }}...
+    </small>
+  </div>
+</div>
+
+<!-- Map Modal -->
+<div class="modal fade" [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" 
+     tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mapModalLabel">{{ 'SELECT_LOCATION' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeMapModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Manual coordinate input -->
+        <div class="mb-3">
+          <label class="form-label">{{ 'MANUAL_COORDINATES' | translate }}</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="manualInput"
+            (input)="onManualInputChange()"
+            placeholder="31.7683, 35.2137"
+            pattern="^-?([1-8]?[0-9](\.[0-9]+)?|90(\.0+)?),\s*-?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))(\.[0-9]+)?)$">
+          <small class="form-text text-muted">{{ 'COORDINATE_FORMAT_HELP' | translate }}</small>
+        </div>
+        
+        <!-- Map container -->
+        <div #mapContainer class="map-container" style="height: 400px; width: 100%;"></div>
+        
+        <div class="mt-2">
+          <small class="text-info">
+            <i class="fas fa-info-circle"></i> {{ 'CLICK_MAP_TO_SELECT' | translate }}
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeMapModal()">
+          {{ 'CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="confirmLocation()" [disabled]="!selectedLocation">
+          {{ 'CONFIRM_LOCATION' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal backdrop -->
+<div class="modal-backdrop fade" [class.show]="isModalOpen" *ngIf="isModalOpen"></div>

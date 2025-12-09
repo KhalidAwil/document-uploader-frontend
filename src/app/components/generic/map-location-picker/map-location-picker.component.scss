@@ -1,0 +1,54 @@
+.map-location-picker {
+  .input-group {
+    .btn {
+      white-space: nowrap;
+    }
+  }
+}
+
+.modal {
+  &.show {
+    display: block !important;
+  }
+  
+  .modal-dialog {
+    margin-top: 50px;
+  }
+}
+
+.map-container {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  
+  /* Ensure Leaflet controls are visible */
+  :deep(.leaflet-control-zoom) {
+    z-index: 1000;
+  }
+  
+  :deep(.leaflet-control-attribution) {
+    z-index: 1000;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  
+  &.fade {
+    opacity: 0;
+  }
+  
+  &.show {
+    opacity: 0.5;
+  }
+}
+
+/* Ensure modal appears above backdrop */
+.modal {
+  z-index: 1050;
+}

@@ -1,0 +1,428 @@
+<div class="py-5 bg-body-tertiary">
+  <div class="container align-items-center">
+    <div class="d-flex justify-content-between mb-5">
+      <h2>{{ (modelType !== 'archive_c' && modelType !== 'news' && modelType !== 'athar' ? modelType.toUpperCase() + 'S' :
+        modelType.toUpperCase()) | translate }}</h2>
+      <div class="d-flex gap-2">
+        <!-- View Toggle Re-added for Archive_C and Athar -->
+        <div class="btn-group me-2" *ngIf="modelType === 'archive_c' || modelType === 'athar'">
+          <button class="btn" [class.btn-primary]="!isHistoricalView" [class.btn-outline-primary]="isHistoricalView"
+            (click)="toggleView(false)" [title]="'GRID_VIEW' | translate">
+            <i class="bi bi-grid"></i>
+          </button>
+          <button class="btn" [class.btn-primary]="isHistoricalView" [class.btn-outline-primary]="!isHistoricalView"
+            (click)="toggleView(true)" [title]="'HISTORICAL_VIEW' | translate">
+            <i class="bi bi-clock-history"></i>
+          </button>
+        </div>
+        <!-- Filter Toggle Button -->
+        <button class="btn btn-outline-secondary" type="button" (click)="toggleFilters()">
+          <i class="bi bi-funnel-fill"></i>
+          {{ 'TOGGLE_FILTERS' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Filter Section -->
+    <div [ngClass]="{ collapse: filtersCollapsed }" class="filter-section">
+      <form [formGroup]="filterForm" (ngSubmit)="onFilter()">
+        <div class="filter-row d-flex flex-wrap align-items-end gap-3 mb-4">
+          <!-- Filter Inputs Appear Here -->
+          <!-- Date Range Picker for Date of Event -->
+          <div class="filter-item" *ngIf="filterableFields.includes('date_of_event')">
+            <label for="dateOfEvent" class="form-label">{{ 'DATE_OF_EVENT' | translate }}</label>
+            <input type="text" class="form-control" id="dateOfEvent"
+              [attr.placeholder]="'FILTERS_SELECT_EVENT_DATE' | translate" bsDaterangepicker
+              formControlName="date_of_event" [bsConfig]="bsConfig" />
+          </div>
+
+          <!-- Date Range Picker for Date of Publication -->
+          <div class="filter-item" *ngIf="filterableFields.includes('date_of_publication')">
+            <label for="dateOfPublication" class="form-label">{{ 'DATE_OF_PUBLICATION' | translate }}</label>
+            <input type="text" class="form-control" id="dateOfPublication"
+              [attr.placeholder]="'FILTERS_SELECT_PUBLICATION_DATE' | translate" bsDaterangepicker
+              formControlName="date_of_publication" [bsConfig]="bsConfig" />
+          </div>
+
+          <!-- Date Range Picker for Athar Date of Loss -->
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_date_of_loss')">
+            <label for="atharDateOfLoss" class="form-label">{{ 'ATHAR_DATE_OF_LOSS' | translate }}</label>
+            <input type="text" class="form-control" id="atharDateOfLoss"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_DATE_OF_LOSS' | translate" bsDaterangepicker
+              formControlName="athar_date_of_loss" [bsConfig]="bsConfig" />
+          </div>
+
+          <!-- Dropdown for Release Type -->
+          <div class="filter-item" *ngIf="filterableFields.includes('release_type')">
+            <app-dropdown-select id="release_type" [label]="'RELEASE_TYPE' | translate" dropdownName="release_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" [control]="filterForm.get('release_type')"
+              [initialValue]="filterForm.get('release_type')?.value"></app-dropdown-select>
+          </div>
+
+          <!-- Dropdown for Archive-C -->
+          <div class="filter-item" *ngIf="filterableFields.includes('type_c')">
+            <app-dropdown-select id="type_c" [label]="'TYPE_C' | translate" dropdownName="type_c"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" [control]="filterForm.get('type_c')"
+              [initialValue]="filterForm.get('type_c')?.value"></app-dropdown-select>
+          </div>
+
+          <!-- Dropdown for Media Type -->
+          <div class="filter-item" *ngIf="filterableFields.includes('media_type')">
+            <app-dropdown-select id="media_type" [label]="'MEDIA_TYPE' | translate" dropdownName="media_type"
+              [placeholder]="'DROPDOWN_MANAGEMENT.SELECT_OPTION' | translate" [control]="filterForm.get('media_type')"
+              [initialValue]="filterForm.get('media_type')?.value"></app-dropdown-select>
+          </div>
+
+          <!-- Text Filters -->
+          <div class="filter-item" *ngIf="filterableFields.includes('title')">
+            <label for="title" class="form-label">{{ 'TITLE' | translate }}</label>
+            <input type="text" class="form-control" id="title" formControlName="title"
+              [attr.placeholder]="'FILTERS_SELECT_TITLE' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('description')">
+            <label for="description" class="form-label">{{ 'DESCRIPTION' | translate }}</label>
+            <input type="text" class="form-control" id="description" formControlName="description"
+              [attr.placeholder]="'FILTERS_SELECT_DESCRIPTION' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('event_location')">
+            <label for="event_location" class="form-label">{{ 'EVENT_LOCATION' | translate }}</label>
+            <input type="text" class="form-control" id="event_location" formControlName="event_location"
+              [attr.placeholder]="'FILTERS_SELECT_EVENT_LOCATION' | translate" />
+          </div>
+
+          <!-- Athar-specific filters -->
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_id')">
+            <label for="athar_id" class="form-label">{{ 'ATHAR_ID' | translate }}</label>
+            <input type="text" class="form-control" id="athar_id" formControlName="athar_id"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_ID' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_name')">
+            <label for="athar_name" class="form-label">{{ 'ATHAR_NAME' | translate }}</label>
+            <input type="text" class="form-control" id="athar_name" formControlName="athar_name"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_NAME' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_legal_status')">
+            <label for="athar_legal_status" class="form-label">{{ 'ATHAR_LEGAL_STATUS' | translate }}</label>
+            <input type="text" class="form-control" id="athar_legal_status" formControlName="athar_legal_status"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_LEGAL_STATUS' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_present_location')">
+            <label for="athar_present_location" class="form-label">{{ 'ATHAR_PRESENT_LOCATION' | translate }}</label>
+            <input type="text" class="form-control" id="athar_present_location" formControlName="athar_present_location"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_PRESENT_LOCATION' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_present_location_name')">
+            <label for="athar_present_location_name" class="form-label">{{ 'ATHAR_PRESENT_LOCATION_NAME' | translate }}</label>
+            <input type="text" class="form-control" id="athar_present_location_name" formControlName="athar_present_location_name"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_PRESENT_LOCATION_NAME' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_present_location_country')">
+            <label for="athar_present_location_country" class="form-label">{{ 'ATHAR_PRESENT_LOCATION_COUNTRY' | translate }}</label>
+            <input type="text" class="form-control" id="athar_present_location_country" formControlName="athar_present_location_country"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_PRESENT_LOCATION_COUNTRY' | translate" />
+          </div>
+
+          <div class="filter-item" *ngIf="filterableFields.includes('athar_date_of_presentation')">
+            <label for="athar_date_of_presentation" class="form-label">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate }}</label>
+            <input type="text" class="form-control" id="athar_date_of_presentation" formControlName="athar_date_of_presentation"
+              [attr.placeholder]="'FILTERS_SELECT_ATHAR_DATE_OF_PRESENTATION' | translate" />
+          </div>
+
+          <!-- Filter for unknown date_of_presentation (athar only) -->
+          <div class="filter-item" *ngIf="modelType === 'athar'">
+            <label for="filter_unknown_date_presentation" class="form-label">{{ 'FILTER_UNKNOWN_DATE_PRESENTATION' | translate }}</label>
+            <select class="form-select" id="filter_unknown_date_presentation" formControlName="filter_unknown_date_presentation">
+              <option value="">{{ 'ALL_DOCUMENTS' | translate }}</option>
+              <option value="exclude_unknown">{{ 'EXCLUDE_UNKNOWN_DATE_PRESENTATION' | translate }}</option>
+              <option value="only_unknown">{{ 'ONLY_UNKNOWN_DATE_PRESENTATION' | translate }}</option>
+            </select>
+          </div>
+
+        </div>
+        <!-- Filter Buttons Always Below Inputs -->
+        <div class="filter-buttons d-flex flex-wrap gap-2 mt-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ 'APPLY_FILTERS' | translate }}
+            </button>
+            <!-- Generic Sort (NOT for archive_c or athar in historical view) -->
+            <ng-container *ngIf="(modelType !== 'archive_c' && modelType !== 'athar') || !isHistoricalView">
+              <button type="button" class="btn btn-secondary" (click)="onSortChange('asc')">
+                <i class="bi bi-sort-up me-1"></i>
+                {{ 'PUBLICATION_DATE_SORT_ASC' | translate }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="onSortChange('desc')">
+                <i class="bi bi-sort-down me-1"></i>
+                {{ 'PUBLICATION_DATE_SORT_DESC' | translate }}
+              </button>
+            </ng-container>
+            <!-- Event Date Sorting (Archive_C specific) -->
+            <ng-container *ngIf="modelType === 'archive_c' && filterableFields.includes('date_of_event')">
+              <button type="button" class="btn btn-secondary" (click)="onEventDateSortChange('asc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-up me-1"></i>
+                {{ 'EVENT_DATE_SORT_ASC' | translate }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="onEventDateSortChange('desc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-down me-1"></i>
+                {{ 'EVENT_DATE_SORT_DESC' | translate }}
+              </button>
+            </ng-container>
+            <!-- Athar Date Sorting (Athar specific) -->
+            <ng-container *ngIf="modelType === 'athar' && filterableFields.includes('athar_date_of_presentation')">
+              <button type="button" class="btn btn-secondary" (click)="onAtharDateSortChange('asc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-up me-1"></i>
+                {{ 'ATHAR_DATE_SORT_ASC' | translate }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="onAtharDateSortChange('desc')">
+                <i class="bi bi-calendar-event me-1"></i>
+                <i class="bi bi-sort-down me-1"></i>
+                {{ 'ATHAR_DATE_SORT_DESC' | translate }}
+              </button>
+            </ng-container>
+            <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
+              <i class="bi bi-x-circle me-1"></i>
+              {{ 'CLEAR_FILTERS' | translate }}
+            </button>
+          </div>
+      </form>
+    </div>
+
+    <!-- Main Content Area with Loading Overlay -->
+    <div class="content-area position-relative">
+      <!-- Loading State with Shimmer Cards -->
+      <div *ngIf="isLoading">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col" *ngFor="let i of [1,2,3,4,5,6]">
+            <div class="card shadow-sm shimmer-card shimmer mb-4">
+              <div class="shimmer-img"></div>
+              <div class="shimmer-body d-flex flex-column" style="height: calc(100% - 200px);">
+                <div class="shimmer-line short"></div>
+                <div class="shimmer-line long"></div>
+                <div class="shimmer-line long"></div>
+                <div class="shimmer-line medium"></div>
+                <div class="shimmer-actions mt-auto">
+                  <div class="d-flex gap-2">
+                    <div class="shimmer-button"></div>
+                    <div class="shimmer-button"></div>
+                  </div>
+                  <div class="shimmer-date"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==== Views ==== -->
+      <div *ngIf="!isLoading">
+        <!-- Grid View (for non-archive_c and non-athar OR archive_c/athar when isHistoricalView is false) -->
+        <div *ngIf="(modelType !== 'archive_c' && modelType !== 'athar') || !isHistoricalView">
+          <div *ngIf="documents!.length > 0 && !isLoading; else noDocuments">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+              <!-- Standard Document Card -->
+              <div class="col" *ngFor="let document of documents">
+                <div class="feature-card border border-primary card shadow-sm mb-4">
+                  <!-- Image -->
+                  <img *ngIf="document.image_url" class="card-img-top document-image" [src]="document.image_url | imageUrl"
+                    style="object-fit: contain;" alt="Document Image" />
+                  <div *ngIf="!document.image_url"
+                    class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                    <i class="bi bi-image text-white" style="font-size: 3rem;"></i> <!-- Placeholder Icon -->
+                  </div>
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary" style="min-height: 50px;">{{ document.title | truncate: 80 }}
+                    </h5>
+                    <p class="card-text flex-grow-1">
+                      {{ document.description | truncate: 200 }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto flex-wrap">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                          [routerLink]="['/documents', modelType, 'view' , document.id]" [title]="viewDocLabel">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" *ngIf="canEditDocument()"
+                          [routerLink]="['/documents', modelType, 'edit', document.id]" [title]="editDocLabel">
+                          <i class="bi bi-pencil-fill"></i>
+                        </button>
+                      </div>
+                      <div class="d-flex align-items-center text-nowrap flex-wrap pt-2 pb-2">
+                        <div>
+                          <!-- Icons and Dates -->
+                          <i class="bi bi-image-fill me-2" *ngIf="document?.media_type === 'image'"></i>
+                          <i class="bi bi-play-btn-fill me-2" *ngIf="document?.media_type === 'video'"></i>
+                          <small class="text-body-secondary ms-2" [title]="'DATE_OF_PUBLICATION_TOOLTIP' | translate">
+                            <i class="bi bi-clock-history me-1"></i>
+                            {{ document?.date_of_publication | arabicDate: 'short' }}
+                          </small>
+                        </div>
+                        <div>
+                          <!-- Show event date badge also in grid view for archive_c -->
+                          <small *ngIf="modelType === 'archive_c' && document?.date_of_event"
+                            class="text-body-secondary badge bg-tertiary-light text-dark"
+                            [title]="'DATE_OF_EVENT_TOOLTIP' | translate">
+                            <i class="bi bi-calendar-event ms-1"></i>
+                            {{ document?.date_of_event | arabicDate: 'mediumDate' }}
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Pagination Controls (Standard) -->
+            <div class="d-flex justify-content-between align-items-center mt-4"
+              *ngIf="documents.length > 0 && pagination.lastPage > 1">
+              <!-- Items per page and count -->
+              <div class="d-flex align-items-center">
+                <div class="ms-3">
+                  <label class="ms-2">{{ 'PAGINATION.ITEMS_PER_PAGE' | translate }}:</label>
+                  <select class="form-select form-select-sm d-inline-block w-auto" [disabled]="isLoading"
+                    [ngModel]="pagination.perPage" (ngModelChange)="onPageSizeChange($event)">
+                    <option *ngFor="let size of pageSizes" [value]="size.value">{{ size.label }}</option>
+                  </select>
+                </div>
+                <div class="text-muted me-3">
+                  {{ 'PAGINATION.SHOWING' | translate }} {{ (pagination.currentPage - 1) * pagination.perPage + 1 |
+                  arabicNumerals}} -
+                  {{ math.min(pagination.currentPage * pagination.perPage, pagination.total) | arabicNumerals}}
+                  {{ 'PAGINATION.OF' | translate }} {{ pagination.total | arabicNumerals }} {{ 'PAGINATION.ITEMS' |
+                  translate }}
+                </div>
+              </div>
+              <!-- Pagination controls -->
+              <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1 || isLoading">
+                    <a class="page-link" href="javascript:void(0)" (click)="onPageChange(pagination.currentPage - 1)"
+                      aria-label="Previous"><span aria-hidden="true">«</span></a>
+                  </li>
+                  <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === pagination.currentPage"
+                    [class.disabled]="isLoading">
+                    <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">{{
+                      (page).toLocaleString('ar-SA') }}</a>
+                  </li>
+                  <li class="page-item" [class.disabled]="pagination.currentPage === pagination.lastPage || isLoading">
+                    <a class="page-link" href="javascript:void(0)" (click)="onPageChange(pagination.currentPage + 1)"
+                      aria-label="Next"><span aria-hidden="true">»</span></a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Timeline View (for archive_c and athar when isHistoricalView is true) -->
+        <div *ngIf="(modelType === 'archive_c' || modelType === 'athar') && isHistoricalView" class="archive-c-container">
+          <div class="timeline-scroll-container" #timelineScrollContainer infiniteScroll [infiniteScrollDistance]="2"
+            [infiniteScrollThrottle]="300" (scrolled)="onScroll()" [scrollWindow]="false">
+
+            <div class="timeline" *ngIf="documents!.length > 0 && !isLoading; else (isLoading ? null : noDocuments)">
+              <!-- Timeline Items -->
+              <div *ngFor="let document of documents; let i = index" class="timeline-item" [id]="'doc-' + document.id">
+                <!-- Connecting line - only added for items after the first one -->
+                <div *ngIf="i > 0" class="connecting-line"></div>
+                <div class="timeline-content">
+                  <div class="timeline-date-card" 
+                       [ngClass]="{'unknown-date': modelType === 'athar' && isUnknownDate(document.athar_date_of_presentation)}">
+                    <h3 *ngIf="modelType === 'archive_c'">{{ document.date_of_event | arabicDate: 'mediumDate' }}</h3>
+                    <h3 *ngIf="modelType === 'athar' && !isUnknownDate(document.athar_date_of_presentation)">{{ document.athar_date_of_presentation | arabicDate: 'mediumDate' }}</h3>
+                    <h3 *ngIf="modelType === 'athar' && isUnknownDate(document.athar_date_of_presentation)" class="unknown-date-label">
+                      <i class="bi bi-question-circle me-2"></i>
+                      {{ 'UNKNOWN_DATE' | translate }}
+                    </h3>
+                  </div>
+                  <div class="feature-card border border-primary card shadow-sm timeline-card">
+                    <img *ngIf="document.image_url" class="card-img-top document-image" [src]="document.image_url | imageUrl" style="object-fit: contain;" alt="Document Image" />
+                    <div *ngIf="!document.image_url"
+                      class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                      <i class="bi bi-image text-white" style="font-size: 3rem;"></i> <!-- Placeholder Icon -->
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title text-primary" style="min-height: 50px;">{{ document.title | truncate: 80 }}</h5>
+                      <p class="card-text flex-grow-1">{{ document.description | truncate: 200 }}</p>
+                      <div class="d-flex justify-content-between align-items-center mt-auto flex-wrap">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary"
+                            [routerLink]="['/documents', modelType, 'view', document.id]" [title]="viewDocLabel">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" *ngIf="canEditDocument()"
+                            [routerLink]="['/documents', modelType, 'edit', document.id]" [title]="editDocLabel">
+                            <i class="bi bi-pencil-fill"></i>
+                          </button>
+                        </div>
+                        <div class="d-flex align-items-center text-nowrap flex-wrap pt-2 pb-2">
+                          <div>
+                            <i class="bi bi-image-fill me-2" *ngIf="document?.media_type === 'image'"></i>
+                            <i class="bi bi-play-btn-fill me-2" *ngIf="document?.media_type === 'video'"></i>
+                            <small class="text-body-secondary ms-2" [title]="'DATE_OF_PUBLICATION_TOOLTIP' | translate">
+                              <i class="bi bi-clock-history me-1"></i>
+                              {{ document.date_of_publication | arabicDate: 'short' }}
+                            </small>
+                          </div>
+                          <div>
+                            <small *ngIf="modelType === 'archive_c'" class="text-body-secondary badge bg-tertiary-light text-dark"
+                              [title]="'DATE_OF_EVENT_TOOLTIP' | translate">
+                              <i class="bi bi-calendar-event ms-1"></i>
+                              {{ document.date_of_event | arabicDate: 'mediumDate' }}
+                            </small>
+                            <small *ngIf="modelType === 'athar' && document.athar_date_of_loss" class="text-body-secondary badge bg-tertiary-light text-dark"
+                              [title]="'ATHAR_DATE_OF_LOSS_TOOLTIP' | translate">
+                              <i class="bi bi-calendar-x ms-1"></i>
+                              {{ document.athar_date_of_loss | arabicDate: 'mediumDate' }}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Loading Indicator for Infinite Scroll -->
+              <div *ngIf="loadingMore" class="loading-more-indicator">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                  <span class="visually-hidden">{{ 'LOADING_MORE' | translate }}</span>
+                </div>
+                <span class="ms-2 text-secondary">{{ 'LOADING_MORE' | translate }}...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date Scrubber -->
+          <div class="date-scrubber" *ngIf="dateMarkers.length > 0">
+            <ul class="list-unstyled">
+              <li *ngFor="let marker of dateMarkers">
+                <a href="#" (click)="scrollToMarker(marker); $event.preventDefault()"
+                  [class.active]="marker.year === activeMarkerYear">
+                  {{ marker.year | arabicNumerals }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- No Documents Template -->
+        <ng-template #noDocuments>
+          <div class="text-center py-5" *ngIf="!isLoading && !loadingMore">
+            <i class="bi bi-journal-x display-1 text-muted"></i>
+            <p class="lead mt-3">{{ 'NO_DOCUMENTS_FOUND' | translate }}</p>
+            <p *ngIf="filterForm.dirty">{{ 'TRY_ADJUSTING_FILTERS' | translate }}</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

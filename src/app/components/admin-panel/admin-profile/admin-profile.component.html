@@ -1,0 +1,124 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col">
+      <div class="card border border-primary">
+        <div class="card-body">
+          <h2>{{ 'USER_PROFILE' | translate }}</h2>
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+            <!-- First Name Field -->
+            <div class="mb-3">
+              <label for="firstName" class="form-label">{{ 'FIRST_NAME' | translate }}</label>
+              <div class="d-flex align-items-center">
+                <input id="firstName" type="text" class="form-control ms-2" formControlName="first_name"
+                  [readonly]="!editMode.first_name" />
+                <button *ngIf="user?.roles?.includes('root_super_admin')" type="button"
+                  class="btn btn-outline-secondary ms-2 d-flex flex-shrink-0" (click)="toggleEditMode('first_name')"
+                  style="min-width: 100px;">
+                  <i class="bi ms-1 mt-1" [ngClass]="editMode.first_name ? 'bi-x-circle' : 'bi-pencil'"></i>&nbsp;
+                  {{ (editMode.first_name ? 'CANCEL' : 'EDIT') | translate }}
+                </button>
+              </div>
+              <div *ngIf="shouldShowFieldError('first_name')" class="text-danger mt-1">
+                <small>{{ getFieldErrorMessage('first_name') }}</small>
+              </div>
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="mb-3">
+              <label for="lastName" class="form-label">{{ 'LAST_NAME' | translate }}</label>
+              <div class="d-flex align-items-center">
+                <input id="lastName" type="text" class="form-control ms-2" formControlName="last_name"
+                  [readonly]="!editMode.last_name" />
+                <button *ngIf="user?.roles?.includes('root_super_admin')" type="button"
+                  class="btn btn-outline-secondary ms-2 d-flex flex-shrink-0" (click)="toggleEditMode('last_name')"
+                  style="min-width: 100px;">
+                  <i class="bi ms-1 mt-1" [ngClass]="editMode.last_name ? 'bi-x-circle' : 'bi-pencil'"></i>&nbsp;
+                  {{ (editMode.last_name ? 'CANCEL' : 'EDIT') | translate }}
+                </button>
+              </div>
+              <div *ngIf="shouldShowFieldError('last_name')" class="text-danger mt-1">
+                <small>{{ getFieldErrorMessage('last_name') }}</small>
+              </div>
+            </div>
+
+            <!-- Nickname Field -->
+            <div class="mb-3">
+              <label for="nickname" class="form-label">{{ 'NICKNAME' | translate }}</label>
+              <div class="d-flex align-items-center">
+                <input id="nickname" type="text" class="form-control ms-2" formControlName="nickname"
+                  [readonly]="!editMode.nickname" />
+                <button *ngIf="user?.roles?.includes('root_super_admin')" type="button"
+                  class="btn btn-outline-secondary ms-2 d-flex flex-shrink-0" (click)="toggleEditMode('nickname')"
+                  style="min-width: 100px;">
+                  <i class="bi ms-1 mt-1" [ngClass]="editMode.nickname ? 'bi-x-circle' : 'bi-pencil'"></i>&nbsp;
+                  {{ (editMode.nickname ? 'CANCEL' : 'EDIT') | translate }}
+                </button>
+              </div>
+              <div *ngIf="shouldShowFieldError('nickname')" class="text-danger mt-1">
+                <small>{{ getFieldErrorMessage('nickname') }}</small>
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">{{ 'EMAIL' | translate }}</label>
+              <div class="d-flex align-items-center">
+                <input id="email" type="email" class="form-control ms-2" formControlName="email"
+                  [readonly]="!editMode.email" />
+                <button *ngIf="user?.roles?.includes('root_super_admin')" type="button"
+                  class="btn btn-outline-secondary ms-2 d-flex flex-shrink-0" (click)="toggleEditMode('email')"
+                  style="min-width: 100px;">
+                  <i class="bi ms-1 mt-1" [ngClass]="editMode.email ? 'bi-x-circle' : 'bi-pencil'"></i>&nbsp;
+                  {{ (editMode.email ? 'CANCEL' : 'EDIT') | translate }}
+                </button>
+              </div>
+              <div *ngIf="shouldShowFieldError('email')" class="text-danger mt-1">
+                <small>{{ getFieldErrorMessage('email') }}</small>
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">{{ 'PASSWORD' | translate }}</label>
+              <div class="d-flex align-items-center">
+                <input id="password" type="password" class="form-control ms-2" formControlName="password"
+                  [readonly]="!editMode.password" placeholder="{{ 'PASSWORD_PLACEHOLDER' | translate }}" />
+                <button type="button" class="btn btn-outline-secondary ms-2 d-flex flex-shrink-0"
+                  (click)="toggleEditMode('password')" style="min-width: 100px;">
+                  <i class="bi ms-1 mt-1" [ngClass]="editMode.password ? 'bi-x-circle' : 'bi-pencil'"></i>&nbsp;
+                  {{ (editMode.password ? 'CANCEL' : 'EDIT') | translate }}
+                </button>
+              </div>
+              <div *ngIf="shouldShowFieldError('password')" class="text-danger mt-1">
+                <small>{{ getFieldErrorMessage('password') }}</small>
+              </div>
+            </div>
+
+            <!-- Save Changes Button -->
+            <div *ngIf="isAnyFieldInEditMode()" class="d-flex justify-content-end mt-4">
+              <button type="submit" class="btn" 
+                      [ngClass]="userForm.invalid ? 'btn-warning' : 'btn-primary'" 
+                      [disabled]="isLoading"
+                      [attr.title]="userForm.invalid ? ('FORM_HAS_ERRORS' | translate) : null">
+                <span *ngIf="!isLoading">
+                  <i class="bi me-2" [ngClass]="userForm.invalid ? 'bi-exclamation-triangle' : 'bi-check-circle'"></i>
+                  {{ 'SAVE_CHANGES' | translate }}
+                </span>
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                  aria-hidden="true"></span>
+                <span *ngIf="isLoading">{{ 'SAVING' | translate }}...</span>
+              </button>
+              <!-- Form Validation Status Display -->
+              <div *ngIf="userForm.invalid && isAnyFieldInEditMode()" class="text-danger ms-3 align-self-center">
+                <span class="fw-medium">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                  {{ 'FORM_HAS_ERRORS' | translate }}
+                </span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
