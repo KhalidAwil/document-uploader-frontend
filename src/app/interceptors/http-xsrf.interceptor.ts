@@ -33,8 +33,14 @@ export const httpXsrfInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
 }
 
 async function getCsrfCookie(httpClient: HttpClient, xsrfExtractor: HttpXsrfTokenExtractor): Promise<string | null> {
-  // Get the CSRF cookie
-  await firstValueFrom(httpClient.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true }));
+  // Get the CSRF cookie from the backend
+  // In production, this will use the same domain (proxied through Nginx)
+  // In development, this uses localhost:8000
+  const baseUrl = window.location.origin.includes('localhost')
+    ? 'http://localhost:8000'
+    : window.location.origin;
+
+  await firstValueFrom(httpClient.get(`${baseUrl}/sanctum/csrf-cookie`, { withCredentials: true }));
   const token = xsrfExtractor.getToken();
   return token;
 }
