@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { FileUploadComponent } from './file-upload.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
@@ -8,12 +10,18 @@ describe('FileUploadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FileUploadComponent]
+      imports: [
+        FileUploadComponent,
+        HttpClientTestingModule,
+        TranslateModule.forRoot(),
+        ReactiveFormsModule
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(FileUploadComponent);
     component = fixture.componentInstance;
+    component.control = new FormControl();
     fixture.detectChanges();
   });
 

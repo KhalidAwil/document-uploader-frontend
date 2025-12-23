@@ -58,7 +58,7 @@ export class ArabicNumeralsDirective implements AfterViewInit, OnDestroy {
   }
 
   private convertAllNumbers(): void {
-    const inputs = this.el.nativeElement.querySelectorAll('input[type="text"]');
+    const inputs = this.el.nativeElement.querySelectorAll('input');
 
     inputs.forEach((input: HTMLInputElement) => {
       // Only convert if the value contains Western numerals

@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DocumentMediaComponent } from './document-media.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('DocumentMediaComponent', () => {
   let component: DocumentMediaComponent;
@@ -8,9 +11,22 @@ describe('DocumentMediaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocumentMediaComponent]
+      imports: [
+        DocumentMediaComponent,
+        HttpClientTestingModule,
+        TranslateModule.forRoot()
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({}),
+            queryParamMap: of({ get: () => null })
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DocumentMediaComponent);
     component = fixture.componentInstance;

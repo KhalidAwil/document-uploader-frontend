@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DocumentGuideComponent } from './document-guide.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('DocumentGuideComponent', () => {
   let component: DocumentGuideComponent;
@@ -8,9 +11,22 @@ describe('DocumentGuideComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocumentGuideComponent]
+      imports: [
+        DocumentGuideComponent,
+        HttpClientTestingModule,
+        TranslateModule.forRoot()
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({}),
+            queryParamMap: of({ get: () => null })
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DocumentGuideComponent);
     component = fixture.componentInstance;

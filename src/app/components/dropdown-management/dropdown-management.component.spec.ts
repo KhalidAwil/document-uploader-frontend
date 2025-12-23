@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DropdownManagementComponent } from './dropdown-management.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('DropdownManagementComponent', () => {
   let component: DropdownManagementComponent;
@@ -8,9 +9,13 @@ describe('DropdownManagementComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DropdownManagementComponent]
+      imports: [
+        DropdownManagementComponent,
+        HttpClientTestingModule,
+        TranslateModule.forRoot()
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DropdownManagementComponent);
     component = fixture.componentInstance;
