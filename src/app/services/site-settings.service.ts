@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap, shareReplay } from 'rxjs/operators';
-import { environment } from '../../environment';
+import { environment } from '../environments/environment';
 
 export interface SiteSettings {
   logos: {

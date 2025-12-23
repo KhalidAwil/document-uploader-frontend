@@ -5,7 +5,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Subscription, lastValueFrom } from 'rxjs';
 import { FileUploadService, UploadResponse } from '../../../services/fileupload.service';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../../environment';
+import { environment } from '../environments/environment';
 import { ConfirmationModalService } from '../../../services/confirmation-modal.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
