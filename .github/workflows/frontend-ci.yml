@@ -2,9 +2,9 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "staging" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "staging" ]
 
 jobs:
   build:
@@ -31,3 +31,41 @@ jobs:
 
     - name: Test
       run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+
+    steps:
+    - name: Deploy to Staging
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /var/www/staging-uploader-frontend
+          git pull origin staging
+          npm ci
+          npm run build -- --configuration production
+          echo "✓ Frontend deployed successfully to staging!"
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Deploy to Production
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /var/www/prod-uploader-frontend
+          git pull origin main
+          npm ci
+          npm run build -- --configuration production
+          echo "✓ Frontend deployed successfully to production!"
