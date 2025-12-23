@@ -47,7 +47,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd /var/www/staging-uploader-frontend
-          git pull origin staging
+          git fetch origin staging
+          git reset --hard origin/staging
           npm ci
           npm run build -- --configuration production
           echo "✓ Frontend deployed successfully to staging!"
