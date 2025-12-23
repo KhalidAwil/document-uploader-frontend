@@ -1,8 +1,11 @@
-import { SafeUrlPipePipe } from './safe-url-pipe.pipe';
+import { SafeUrlPipe } from './safe-url-pipe.pipe';
+import { DomSanitizer } from '@angular/platform-browser';
+import { TestBed } from '@angular/core/testing';
 
-describe('SafeUrlPipePipe', () => {
+describe('SafeUrlPipe', () => {
   it('create an instance', () => {
-    const pipe = new SafeUrlPipePipe();
+    const sanitizer = TestBed.inject(DomSanitizer);
+    const pipe = new SafeUrlPipe(sanitizer);
     expect(pipe).toBeTruthy();
   });
 });
