@@ -12,6 +12,7 @@ import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { arLocale, enGbLocale } from 'ngx-bootstrap/chronos';
 import { TranslateService } from '@ngx-translate/core';
+import { environment } from '../environments/environment';
 
 declare const plausible: any;
 
@@ -57,6 +58,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('🚀 APP VERSION: v1.0.1 - ENV FIX DEPLOYED');
+    console.log('Environment API URL:', environment.apiUrl);
+
     registerLocaleData(localeArSA);
     registerLocaleData(localeEn);
     registerLocaleData(localeAr);
@@ -127,11 +131,11 @@ export class AppComponent implements OnInit {
       // Check for Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+U, Ctrl+A (Windows/Linux)
       // Check for Cmd+C, Cmd+X, Cmd+V, Cmd+U, Cmd+A (Mac)
       if ((e.ctrlKey || e.metaKey) &&
-          (e.key === 'c' || e.key === 'C' ||
-           e.key === 'x' || e.key === 'X' ||
-           e.key === 'v' || e.key === 'V' ||
-           e.key === 'u' || e.key === 'U' ||
-           e.key === 'a' || e.key === 'A')) {
+        (e.key === 'c' || e.key === 'C' ||
+          e.key === 'x' || e.key === 'X' ||
+          e.key === 'v' || e.key === 'V' ||
+          e.key === 'u' || e.key === 'U' ||
+          e.key === 'a' || e.key === 'A')) {
         e.preventDefault();
         console.log('Keyboard shortcut blocked:', e.key);
         return false;
@@ -139,8 +143,8 @@ export class AppComponent implements OnInit {
 
       // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Developer tools)
       if (e.key === 'F12' ||
-          ((e.ctrlKey || e.metaKey) && e.shiftKey &&
-           (e.key === 'I' || e.key === 'i' ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey &&
+          (e.key === 'I' || e.key === 'i' ||
             e.key === 'J' || e.key === 'j' ||
             e.key === 'C' || e.key === 'c'))) {
         e.preventDefault();
@@ -160,8 +164,8 @@ export class AppComponent implements OnInit {
       // Allow selection in input fields and textareas
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.getAttribute('contenteditable') === 'true') {
+        target.tagName === 'TEXTAREA' ||
+        target.getAttribute('contenteditable') === 'true') {
         return true;
       }
       e.preventDefault();
