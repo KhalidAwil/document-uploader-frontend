@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first, last, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 export interface User {
   user: any,

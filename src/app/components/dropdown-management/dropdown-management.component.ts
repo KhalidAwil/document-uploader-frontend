@@ -8,7 +8,7 @@ import { RoleService, Role, RoleUpdateResponse } from '../../services/role.servi
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { environment } from '../environments/environment';
+import { environment } from '../../../environments/environment';
 
 interface DropdownOption {
   label: string;

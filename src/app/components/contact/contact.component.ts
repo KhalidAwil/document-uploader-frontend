@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { HttpClient } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { environment } from '../environments/environment';
+import { environment } from '../../../environments/environment';
 import { StatisticsService } from '../../services/statistics.service';
 
 interface ContactResponse {
