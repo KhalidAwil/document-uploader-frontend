@@ -83,6 +83,8 @@ export class AppComponent implements OnInit {
     const exemptRoutes = [
       '/create',      // Any create route
       '/edit/',       // Any edit route
+      '/login',       // Login page
+      'login-yemnat-aqy' // Admin login page
     ];
 
     return exemptRoutes.some(route => currentUrl.includes(route));
