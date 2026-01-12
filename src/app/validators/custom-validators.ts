@@ -17,13 +17,13 @@ export function passwordStrengthValidator(): ValidatorFn {
     const hasNumber = /[0-9]/.test(value);
     const hasLetter = /[a-zA-Z]/.test(value);
     const hasSymbol = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(value);
-    
+
     const valid = hasNumber && hasLetter && hasSymbol;
-    
+
     if (!valid) {
       return { passwordStrength: { hasNumber, hasLetter, hasSymbol } };
     }
-    
+
     return null;
   };
 }
@@ -53,27 +53,27 @@ export function urlValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const url = control.value;
     if (!url) return null; // Don't validate empty value here (handled by required)
-    
+
     try {
       // Use URL constructor for comprehensive validation
       const urlObj = new URL(url);
-      
+
       // Ensure it has a valid protocol (http or https)
       if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
         return { invalidUrl: true };
       }
-      
+
       // Ensure it has a valid hostname
       if (!urlObj.hostname || urlObj.hostname.length === 0 || urlObj.hostname.startsWith('.') || urlObj.hostname.endsWith('.')) {
         return { invalidUrl: true };
       }
-      
-      // Additional check with regex for common URL patterns
-      const urlPattern = /^https?:\/\/(?:[-\w.])+(?:\:[0-9]+)?(?:\/(?:[\w/_.-])*(?:\?(?:[\w&=%.-])*)?(?:\#(?:[\w.-])*)?)?$/;
-      if (!urlPattern.test(url)) {
+
+
+      // Additional check to ensure it doesn't end with a dot (common typo)
+      if (urlObj.hostname.endsWith('.')) {
         return { invalidUrl: true };
       }
-      
+
       return null;
     } catch (error) {
       // URL constructor throws error for invalid URLs
@@ -89,7 +89,7 @@ export function geoLocationValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
     if (!value) return null; // Don't validate empty value here (handled by required)
-    
+
     const pattern = /^-?([1-8]?[0-9](\.[0-9]+)?|90(\.0+)?),\s*-?(180(\.0+)?|((1[0-7][0-9])|([1-9]?[0-9]))(\.[0-9]+)?)$/;
     return pattern.test(value) ? null : { invalidGeoLocation: true };
   };
@@ -105,7 +105,7 @@ export function timeValidator(): ValidatorFn {
     }
 
     const time = control.value;
-    
+
     // Check if we have a valid time object
     if (!time || typeof time !== 'object') {
       return { invalidTime: true };
@@ -131,12 +131,12 @@ export function dateOrUnknownValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
     if (!value) return null; // Don't validate empty value here (handled by required)
-    
+
     // Allow "unknown" as valid value
     if (value === 'unknown') {
       return null;
     }
-    
+
     // Check if it's a valid date
     const date = new Date(value);
     return !isNaN(date.getTime()) ? null : { invalidDate: true };
@@ -150,7 +150,7 @@ export function uuidValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
     if (!value) return null; // Don't validate empty value here (handled by required)
-    
+
     const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidPattern.test(value) ? null : { invalidUuid: true };
   };
@@ -163,7 +163,7 @@ export function atharIdFormatValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
     if (!value) return null; // Don't validate empty value here (handled by required)
-    
+
     // Accept any string value - no format restrictions
     return null;
   };
@@ -175,12 +175,12 @@ export function atharIdFormatValidator(): ValidatorFn {
 export function atharIdUniquenessValidator(documentService: DocumentService, currentId?: string): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const value = control.value;
-    
+
     // Don't validate empty values, "unknown", or if it's the same as current ID (for edit mode)
     if (!value || value === 'unknown' || value === currentId) {
       return of(null);
     }
-    
+
     return documentService.checkAtharIdUniqueness(value, currentId).pipe(
       map((isUnique: boolean) => {
         return isUnique ? null : { atharIdNotUnique: true };
