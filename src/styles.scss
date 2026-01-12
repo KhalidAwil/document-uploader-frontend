@@ -1909,3 +1909,15 @@ app-edit-athar-document ::-moz-selection {
   background: #b3d4fc !important; /* Default browser selection color */
   color: inherit !important;
 }
+// ==========================================
+// Global Text Selection Override
+// ==========================================
+::selection {
+  background-color: var(--app-tertiary) !important;
+  color: var(--app-primary-900) !important;
+}
+
+::-moz-selection {
+  background-color: var(--app-tertiary) !important;
+  color: var(--app-primary-900) !important;
+}
