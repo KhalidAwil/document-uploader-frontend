@@ -169,7 +169,8 @@ export class HomepageComponent implements OnInit {
     const hasNews = this.latestNews.length > 0;
     const hasArchiveCs = this.latestArchiveCs.length > 0;
     const hasAthars = this.latestAthars.length > 0;
-    this.showSidebar = this.isLoading || hasBians || hasNews || hasArchiveCs || hasAthars;
+    const hasMedias = this.latestMedias.length > 0;
+    this.showSidebar = this.isLoading || hasBians || hasNews || hasArchiveCs || hasAthars || hasMedias;
   }
 
   /**
