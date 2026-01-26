@@ -39,11 +39,9 @@ export class ContentManagerComponent implements OnInit {
     newBulletForm = { text: '' };
 
     themes = [
-        { value: 'primary', label: 'أزرق داكن (Primary Blue)' },
-        { value: 'secondary', label: 'رمادي (Gray)' },
-        { value: 'tertiary', label: 'ذهبي/بني (Gold/Brown)' },
-        { value: 'gradient-primary', label: 'تدرج أزرق (Blue Gradient)' },
-        { value: 'gradient-secondary', label: 'تدرج رمادي (Gray Gradient)' }
+        { value: 'tertiary', label: 'بني / ذهبي' },
+        { value: 'secondary', label: 'أزرق' },
+        { value: 'primary', label: 'بني داكن' }
     ];
 
     constructor(private pageSectionService: PageSectionService) { }
