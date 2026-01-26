@@ -138,7 +138,8 @@
             <div class="mb-3">
                 <label class="form-label">المحتوى</label>
                 <textarea class="form-control" [(ngModel)]="editForm.body_text" rows="4" maxlength="5000"></textarea>
-                <small class="text-muted">{{ editForm.body_text?.length || 0 }} / 5000</small>
+                <small class="text-muted">{{ (editForm.body_text?.length || 0) | arabicNumerals }} / {{ 5000 |
+                    arabicNumerals }}</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">النمط</label>
@@ -186,7 +187,8 @@
                 <div class="invalid-feedback" *ngIf="goalBody.touched && goalBody.errors?.['minlength']">
                     يجب أن يكون الوصف أكثر من 5 أحرف
                 </div>
-                <small class="text-muted">{{ goalForm.body_text?.length || 0 }} / 5000</small>
+                <small class="text-muted">{{ (goalForm.body_text?.length || 0) | arabicNumerals }} / {{ 5000 |
+                    arabicNumerals }}</small>
             </div>
         </div>
         <div class="modal-footer">
@@ -218,7 +220,8 @@
                 <div class="invalid-feedback" *ngIf="bulletText.touched && bulletText.errors?.['minlength']">
                     يجب أن يكون النص أكثر من 3 أحرف
                 </div>
-                <small class="text-muted">{{ bulletForm.text?.length || 0 }} / 500</small>
+                <small class="text-muted">{{ (bulletForm.text?.length || 0) | arabicNumerals }} / {{ 500 |
+                    arabicNumerals }}</small>
             </div>
         </div>
         <div class="modal-footer">
@@ -255,7 +258,8 @@
                 <label class="form-label">المحتوى</label>
                 <textarea class="form-control" [(ngModel)]="newSectionForm.body_text" rows="4"
                     maxlength="5000"></textarea>
-                <small class="text-muted">{{ newSectionForm.body_text?.length || 0 }} / 5000</small>
+                <small class="text-muted">{{ (newSectionForm.body_text?.length || 0) | arabicNumerals }} / {{ 5000 |
+                    arabicNumerals }}</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">النمط</label>
@@ -294,7 +298,8 @@
                 <div class="invalid-feedback" *ngIf="newBulletText.touched && newBulletText.errors?.['minlength']">
                     يجب أن يكون النص أكثر من 3 أحرف
                 </div>
-                <small class="text-muted">{{ newBulletForm.text?.length || 0 }} / 500</small>
+                <small class="text-muted">{{ (newBulletForm.text?.length || 0) | arabicNumerals }} / {{ 500 |
+                    arabicNumerals }}</small>
             </div>
         </div>
         <div class="modal-footer">

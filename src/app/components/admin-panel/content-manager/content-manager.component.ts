@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PageSectionService } from '../../../services/page-section.service';
 import { PageSection, GoalItem, SectionBullet } from '../../../models/page-section.model';
+import { ArabicNumeralsPipe } from '../../../pipes/arabic-numerals.pipe';
 
 @Component({
     selector: 'app-content-manager',
     standalone: true,
-    imports: [CommonModule, FormsModule, DragDropModule, SlicePipe],
+    imports: [CommonModule, FormsModule, DragDropModule, SlicePipe, ArabicNumeralsPipe],
     templateUrl: './content-manager.component.html',
     styleUrls: ['./content-manager.component.scss']
 })
