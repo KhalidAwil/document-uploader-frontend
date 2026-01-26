@@ -125,12 +125,20 @@
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label">العنوان</label>
-                <input type="text" class="form-control" [(ngModel)]="editForm.heading" maxlength="255">
+                <label class="form-label">العنوان <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editForm.heading" #editHeading="ngModel" required
+                    minlength="2" maxlength="255" [class.is-invalid]="editHeading.touched && editHeading.invalid">
+                <div class="invalid-feedback" *ngIf="editHeading.touched && editHeading.errors?.['required']">
+                    العنوان مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="editHeading.touched && editHeading.errors?.['minlength']">
+                    يجب أن يكون العنوان أكثر من حرفين
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">المحتوى</label>
                 <textarea class="form-control" [(ngModel)]="editForm.body_text" rows="4" maxlength="5000"></textarea>
+                <small class="text-muted">{{ editForm.body_text?.length || 0 }} / 5000</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">النمط</label>
@@ -141,7 +149,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
-            <button class="btn btn-primary" (click)="saveSection()" [disabled]="isSaving">
+            <button class="btn btn-primary" (click)="saveSection()" [disabled]="isSaving || !editForm.heading?.trim()">
                 <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
                 حفظ
             </button>
@@ -158,17 +166,33 @@
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label">عنوان الهدف</label>
-                <input type="text" class="form-control" [(ngModel)]="goalForm.heading" maxlength="255">
+                <label class="form-label">عنوان الهدف <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="goalForm.heading" #goalHeading="ngModel" required
+                    minlength="2" maxlength="255" [class.is-invalid]="goalHeading.touched && goalHeading.invalid">
+                <div class="invalid-feedback" *ngIf="goalHeading.touched && goalHeading.errors?.['required']">
+                    عنوان الهدف مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="goalHeading.touched && goalHeading.errors?.['minlength']">
+                    يجب أن يكون العنوان أكثر من حرفين
+                </div>
             </div>
             <div class="mb-3">
-                <label class="form-label">وصف الهدف</label>
-                <textarea class="form-control" [(ngModel)]="goalForm.body_text" rows="4" maxlength="5000"></textarea>
+                <label class="form-label">وصف الهدف <span class="text-danger">*</span></label>
+                <textarea class="form-control" [(ngModel)]="goalForm.body_text" rows="4" #goalBody="ngModel" required
+                    minlength="5" maxlength="5000" [class.is-invalid]="goalBody.touched && goalBody.invalid"></textarea>
+                <div class="invalid-feedback" *ngIf="goalBody.touched && goalBody.errors?.['required']">
+                    وصف الهدف مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="goalBody.touched && goalBody.errors?.['minlength']">
+                    يجب أن يكون الوصف أكثر من 5 أحرف
+                </div>
+                <small class="text-muted">{{ goalForm.body_text?.length || 0 }} / 5000</small>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
-            <button class="btn btn-primary" (click)="saveGoalItem()" [disabled]="isSaving">
+            <button class="btn btn-primary" (click)="saveGoalItem()"
+                [disabled]="isSaving || !goalForm.heading?.trim() || !goalForm.body_text?.trim()">
                 <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
                 حفظ
             </button>
@@ -185,13 +209,21 @@
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label">النص</label>
-                <input type="text" class="form-control" [(ngModel)]="bulletForm.text" maxlength="500">
+                <label class="form-label">النص <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="bulletForm.text" #bulletText="ngModel" required
+                    minlength="3" maxlength="500" [class.is-invalid]="bulletText.touched && bulletText.invalid">
+                <div class="invalid-feedback" *ngIf="bulletText.touched && bulletText.errors?.['required']">
+                    النص مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="bulletText.touched && bulletText.errors?.['minlength']">
+                    يجب أن يكون النص أكثر من 3 أحرف
+                </div>
+                <small class="text-muted">{{ bulletForm.text?.length || 0 }} / 500</small>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
-            <button class="btn btn-primary" (click)="saveBullet()" [disabled]="isSaving">
+            <button class="btn btn-primary" (click)="saveBullet()" [disabled]="isSaving || !bulletForm.text?.trim()">
                 <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
                 حفظ
             </button>
@@ -208,13 +240,22 @@
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label">العنوان</label>
-                <input type="text" class="form-control" [(ngModel)]="newSectionForm.heading" maxlength="255" required>
+                <label class="form-label">العنوان <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newSectionForm.heading" #newHeading="ngModel"
+                    required minlength="2" maxlength="255"
+                    [class.is-invalid]="newHeading.touched && newHeading.invalid">
+                <div class="invalid-feedback" *ngIf="newHeading.touched && newHeading.errors?.['required']">
+                    العنوان مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="newHeading.touched && newHeading.errors?.['minlength']">
+                    يجب أن يكون العنوان أكثر من حرفين
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">المحتوى</label>
                 <textarea class="form-control" [(ngModel)]="newSectionForm.body_text" rows="4"
                     maxlength="5000"></textarea>
+                <small class="text-muted">{{ newSectionForm.body_text?.length || 0 }} / 5000</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">النمط</label>
@@ -225,7 +266,8 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
-            <button class="btn btn-primary" (click)="addSection()" [disabled]="isSaving || !newSectionForm.heading">
+            <button class="btn btn-primary" (click)="addSection()"
+                [disabled]="isSaving || !newSectionForm.heading?.trim()">
                 <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
                 إضافة
             </button>
@@ -242,13 +284,22 @@
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label">النص</label>
-                <input type="text" class="form-control" [(ngModel)]="newBulletForm.text" maxlength="500" required>
+                <label class="form-label">النص <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newBulletForm.text" #newBulletText="ngModel"
+                    required minlength="3" maxlength="500"
+                    [class.is-invalid]="newBulletText.touched && newBulletText.invalid">
+                <div class="invalid-feedback" *ngIf="newBulletText.touched && newBulletText.errors?.['required']">
+                    النص مطلوب
+                </div>
+                <div class="invalid-feedback" *ngIf="newBulletText.touched && newBulletText.errors?.['minlength']">
+                    يجب أن يكون النص أكثر من 3 أحرف
+                </div>
+                <small class="text-muted">{{ newBulletForm.text?.length || 0 }} / 500</small>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
-            <button class="btn btn-primary" (click)="addBullet()" [disabled]="isSaving || !newBulletForm.text">
+            <button class="btn btn-primary" (click)="addBullet()" [disabled]="isSaving || !newBulletForm.text?.trim()">
                 <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
                 إضافة
             </button>

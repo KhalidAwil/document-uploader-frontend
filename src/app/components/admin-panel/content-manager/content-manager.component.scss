@@ -143,23 +143,29 @@
 
 // Tab styles
 .nav-tabs {
+  border-bottom: 2px solid #e0e0e0;
+  gap: 0.5rem;
+
   .nav-link {
-    color: #666;
-    border: none;
-    border-bottom: 3px solid transparent;
+    color: #333;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
     padding: 0.75rem 1.5rem;
     font-weight: 500;
     transition: all 0.2s ease;
 
     &:hover {
-      color: var(--bs-primary);
-      border-bottom-color: rgba(var(--bs-primary-rgb), 0.3);
+      background-color: #e8e8e8;
+      color: #1a1a1a;
+      border-color: #ccc;
     }
 
     &.active {
-      color: var(--bs-primary);
-      border-bottom-color: var(--bs-primary);
-      background: transparent;
+      color: white;
+      background-color: var(--bs-primary, #b8925a);
+      border-color: var(--bs-primary, #b8925a);
     }
   }
 }
