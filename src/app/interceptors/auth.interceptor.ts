@@ -13,11 +13,18 @@ export const authInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>
   const token = currentUser?.access_token;
 
   // Clone request and add Authorization header if token exists
+  // Also include withCredentials: true for stateful Sanctum authentication
   if (token) {
     request = request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
-      }
+      },
+      withCredentials: true
+    });
+  } else {
+    // Even without token, include withCredentials for CSRF cookies
+    request = request.clone({
+      withCredentials: true
     });
   }
 
