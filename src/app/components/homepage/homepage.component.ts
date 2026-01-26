@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DocumentService, Document, PaginatedResponse } from '../../services/document.service';
 import { HomepageService, CarouselImage } from '../../services/homepage.service';
+import { PageSectionService } from '../../services/page-section.service';
+import { PageSection } from '../../models/page-section.model';
 import { Observable, Subject, forkJoin } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -38,6 +40,11 @@ export class HomepageComponent implements OnInit {
   latestMedias: Document[] = [];
   carouselImages: CarouselImage[] = [];
 
+  // Dynamic sections from CMS
+  sections: PageSection[] = [];
+  goalsSection: PageSection | null = null;
+  standardSections: PageSection[] = [];
+
   headerLogoPath: string | null = null;
   headerLogoSize: string = 'medium';
   footerLogoPath: string | null = null;
@@ -48,6 +55,7 @@ export class HomepageComponent implements OnInit {
     public translate: TranslateService,
     private documentService: DocumentService,
     private homepageService: HomepageService,
+    private pageSectionService: PageSectionService,
     private cdr: ChangeDetectorRef,
     private siteSettingsService: SiteSettingsService,
     private statisticsService: StatisticsService
@@ -55,6 +63,7 @@ export class HomepageComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchData();
+    this.fetchSections();
     this.setupSiteSettingsSubscription();
     this.trackPageView();
   }
@@ -249,6 +258,54 @@ export class HomepageComponent implements OnInit {
         }
       default:
         return null;
+    }
+  }
+
+  /**
+   * Fetch dynamic sections from CMS API
+   */
+  fetchSections(): void {
+    this.pageSectionService.getSections('homepage').subscribe({
+      next: (response) => {
+        this.sections = response.data || [];
+        // Separate goals section from standard sections
+        this.goalsSection = this.sections.find(s => s.section_type === 'goals') || null;
+        this.standardSections = this.sections.filter(s => s.section_type !== 'goals');
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching homepage sections:', error);
+        this.sections = [];
+        this.goalsSection = null;
+        this.standardSections = [];
+      }
+    });
+  }
+
+  /**
+   * Get CSS class for section theme
+   */
+  getThemeClass(theme: string): string {
+    switch (theme) {
+      case 'gradient-secondary':
+        return 'modern-section bg-gradient-secondary mt-4';
+      case 'gradient-primary':
+        return 'modern-section bg-gradient-primary mt-4';
+      default:
+        return 'modern-section mt-4 border border-primary';
+    }
+  }
+
+  /**
+   * Get text color class for section theme
+   */
+  getTextClass(theme: string): string {
+    switch (theme) {
+      case 'gradient-secondary':
+      case 'gradient-primary':
+        return 'text-white';
+      default:
+        return 'text-primary';
     }
   }
 }

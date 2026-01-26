@@ -6,30 +6,55 @@
           <h1 class="card-title text-center mb-4">{{ 'JOIN_US.TITLE' | translate }}</h1>
           <p class="card-text text-center">{{ 'JOIN_US.DESCRIPTION' | translate }}</p>
 
-          <div class="row">
-            <div class="col mb-4">
-              <div class="join-us-section h-100 mb-2">
-                <h2 class="h4 fw-bold mb-3 text-primary">{{ 'JOIN_US_SECTION_1_HEADER' | translate }}</h2>
-                <ul>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_1' | translate }}</li>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_2' | translate }}</li>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_3' | translate }}</li>
-                </ul>
-              </div>
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">جاري التحميل...</span>
             </div>
           </div>
-          <div class="row">
-            <div class="col mb-4">
-              <div class="join-us-section h-100 mb-2">
-                <h2 class="h4 fw-bold mb-3 text-primary">{{ 'JOIN_US_SECTION_2_HEADER' | translate }}</h2>
-                <ul>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_1' | translate }}</li>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_2' | translate }}</li>
-                  <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_3' | translate }}</li>
-                </ul>
+
+          <!-- Dynamic Sections from CMS -->
+          <ng-container *ngIf="!isLoading && sections.length > 0">
+            <div *ngFor="let section of sections" class="row">
+              <div class="col mb-4">
+                <div class="join-us-section h-100 mb-2">
+                  <h2 class="h4 fw-bold mb-3 text-primary">{{ section.heading }}</h2>
+                  <ul *ngIf="section.bullets && section.bullets.length > 0">
+                    <li *ngFor="let bullet of section.bullets" class="text-primary mb-0">{{ bullet.text }}</li>
+                  </ul>
+                  <p *ngIf="section.body_text" class="text-primary">{{ section.body_text }}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </ng-container>
+
+          <!-- Fallback: Static sections if CMS data not loaded -->
+          <ng-container *ngIf="!isLoading && sections.length === 0">
+            <div class="row">
+              <div class="col mb-4">
+                <div class="join-us-section h-100 mb-2">
+                  <h2 class="h4 fw-bold mb-3 text-primary">{{ 'JOIN_US_SECTION_1_HEADER' | translate }}</h2>
+                  <ul>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_1' | translate }}</li>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_2' | translate }}</li>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_1_TEXT_3' | translate }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col mb-4">
+                <div class="join-us-section h-100 mb-2">
+                  <h2 class="h4 fw-bold mb-3 text-primary">{{ 'JOIN_US_SECTION_2_HEADER' | translate }}</h2>
+                  <ul>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_1' | translate }}</li>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_2' | translate }}</li>
+                    <li class="text-primary mb-0">{{ 'JOIN_US_SECTION_2_TEXT_3' | translate }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>

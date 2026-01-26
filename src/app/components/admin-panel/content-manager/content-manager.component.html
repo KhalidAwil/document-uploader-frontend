@@ -1,0 +1,257 @@
+<div class="content-manager">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">إدارة المحتوى</h2>
+        <button class="btn btn-primary" (click)="openAddSectionModal()">
+            <i class="bi bi-plus-lg me-1"></i> إضافة قسم جديد
+        </button>
+    </div>
+
+    <!-- Alerts -->
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab === 'homepage'" (click)="switchTab('homepage')">
+                الصفحة الرئيسية
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab === 'join_us'" (click)="switchTab('join_us')">
+                انضم إلينا
+            </button>
+        </li>
+    </ul>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+    </div>
+
+    <!-- Sections List -->
+    <div *ngIf="!isLoading" cdkDropList (cdkDropListDropped)="drop($event)" class="sections-list">
+        <div *ngFor="let section of sections" cdkDrag class="section-card">
+            <div class="section-header">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-grip-vertical drag-handle me-2" cdkDragHandle></i>
+                    <div>
+                        <h5 class="mb-0">{{ section.heading }}</h5>
+                        <small>
+                            <span [class]="getThemeClass(section.theme)">{{ getThemeLabel(section.theme) }}</span>
+                            <span *ngIf="section.section_type === 'goals'" class="badge bg-info ms-1">أهداف</span>
+                            <span *ngIf="!section.is_active" class="badge bg-secondary ms-1">غير نشط</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(section)">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteSection(section)"
+                        [disabled]="section.section_type === 'goals'"
+                        [title]="section.section_type === 'goals' ? 'لا يمكن حذف قسم الأهداف' : 'حذف'">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section Body Preview -->
+            <div *ngIf="section.body_text" class="section-body-preview">
+                {{ section.body_text | slice:0:150 }}{{ section.body_text.length > 150 ? '...' : '' }}
+            </div>
+
+            <!-- Goals Items (for goals section) -->
+            <div *ngIf="section.section_type === 'goals' && section.goal_items" class="goals-list mt-3">
+                <h6 class="text-muted mb-2">الأهداف (5 أهداف ثابتة - تعديل فقط):</h6>
+                <div *ngFor="let goal of section.goal_items"
+                    class="goal-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span [class]="getThemeClass(goal.theme)" class="me-2">{{ goal.item_order }}</span>
+                        <strong>{{ goal.heading }}</strong>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" (click)="openGoalEditModal(goal)">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bullets (for join_us sections) -->
+            <div *ngIf="activeTab === 'join_us' && section.bullets" class="bullets-list mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="text-muted mb-0">النقاط:</h6>
+                    <button class="btn btn-sm btn-outline-success" (click)="openAddBulletModal(section)">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div *ngFor="let bullet of section.bullets"
+                    class="bullet-item d-flex justify-content-between align-items-center">
+                    <span>• {{ bullet.text }}</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1"
+                            (click)="openBulletEditModal(section, bullet)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="deleteBullet(section, bullet)"
+                            [disabled]="section.bullets?.length === 1">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="sections.length === 0" class="text-center text-muted py-5">
+            لا توجد أقسام. انقر على "إضافة قسم جديد" للبدء.
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Modal -->
+<div *ngIf="showEditModal" class="modal-backdrop" (click)="closeAllModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5>تعديل القسم</h5>
+            <button class="btn-close" (click)="closeAllModals()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">العنوان</label>
+                <input type="text" class="form-control" [(ngModel)]="editForm.heading" maxlength="255">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">المحتوى</label>
+                <textarea class="form-control" [(ngModel)]="editForm.body_text" rows="4" maxlength="5000"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">النمط</label>
+                <select class="form-select" [(ngModel)]="editForm.theme">
+                    <option *ngFor="let theme of themes" [value]="theme.value">{{ theme.label }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
+            <button class="btn btn-primary" (click)="saveSection()" [disabled]="isSaving">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                حفظ
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Goal Modal -->
+<div *ngIf="showGoalEditModal" class="modal-backdrop" (click)="closeAllModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5>تعديل الهدف</h5>
+            <button class="btn-close" (click)="closeAllModals()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">عنوان الهدف</label>
+                <input type="text" class="form-control" [(ngModel)]="goalForm.heading" maxlength="255">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">وصف الهدف</label>
+                <textarea class="form-control" [(ngModel)]="goalForm.body_text" rows="4" maxlength="5000"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
+            <button class="btn btn-primary" (click)="saveGoalItem()" [disabled]="isSaving">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                حفظ
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Bullet Modal -->
+<div *ngIf="showBulletEditModal" class="modal-backdrop" (click)="closeAllModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5>تعديل النقطة</h5>
+            <button class="btn-close" (click)="closeAllModals()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">النص</label>
+                <input type="text" class="form-control" [(ngModel)]="bulletForm.text" maxlength="500">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
+            <button class="btn btn-primary" (click)="saveBullet()" [disabled]="isSaving">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                حفظ
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Section Modal -->
+<div *ngIf="showAddSectionModal" class="modal-backdrop" (click)="closeAllModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5>إضافة قسم جديد</h5>
+            <button class="btn-close" (click)="closeAllModals()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">العنوان</label>
+                <input type="text" class="form-control" [(ngModel)]="newSectionForm.heading" maxlength="255" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">المحتوى</label>
+                <textarea class="form-control" [(ngModel)]="newSectionForm.body_text" rows="4"
+                    maxlength="5000"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">النمط</label>
+                <select class="form-select" [(ngModel)]="newSectionForm.theme">
+                    <option *ngFor="let theme of themes" [value]="theme.value">{{ theme.label }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
+            <button class="btn btn-primary" (click)="addSection()" [disabled]="isSaving || !newSectionForm.heading">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                إضافة
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bullet Modal -->
+<div *ngIf="showAddBulletModal" class="modal-backdrop" (click)="closeAllModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5>إضافة نقطة جديدة</h5>
+            <button class="btn-close" (click)="closeAllModals()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">النص</label>
+                <input type="text" class="form-control" [(ngModel)]="newBulletForm.text" maxlength="500" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeAllModals()">إلغاء</button>
+            <button class="btn btn-primary" (click)="addBullet()" [disabled]="isSaving || !newBulletForm.text">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                إضافة
+            </button>
+        </div>
+    </div>
+</div>

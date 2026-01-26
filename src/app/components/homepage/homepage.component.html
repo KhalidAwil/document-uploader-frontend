@@ -5,7 +5,8 @@
     <ng-template ngbSlide *ngFor="let img of carouselImages; let i = index">
       <a [href]="img.image_url" target="_blank" rel="noopener">
         <div class="picsum-img-wrapper">
-          <img [src]="img.image_url | imageUrl" alt="{{ 'CAROUSEL_IMAGE_ALT' | translate: {index: i} }}" class="carousel-img" />
+          <img [src]="img.image_url | imageUrl" alt="{{ 'CAROUSEL_IMAGE_ALT' | translate: {index: i} }}"
+            class="carousel-img" />
         </div>
       </a>
     </ng-template>
@@ -30,7 +31,8 @@
         <div class="col-md-6 mb-4 mb-md-0">
           <div class="feature-card border border-primary h-100" *ngIf="latestGuides && latestGuides[0] as document">
             <div class="card-img-container">
-              <img class="w-100" [src]="document.image_url | imageUrl" alt="{{ 'LATEST_GUIDE_IMAGE_ALT' | translate }}" />
+              <img class="w-100" [src]="document.image_url | imageUrl"
+                alt="{{ 'LATEST_GUIDE_IMAGE_ALT' | translate }}" />
             </div>
             <div class="card-body d-flex flex-column text-white bg-gradient-primary">
               <span class="badge bg-tertiary mb-2">{{ 'LATEST_GUIDE' | translate }}</span>
@@ -51,7 +53,8 @@
           <div class="feature-card border border-secondary h-100"
             *ngIf="latestReleases && latestReleases[0] as document">
             <div class="card-img-container">
-              <img class="w-100" [src]="document.image_url | imageUrl" alt="{{ 'LATEST_RELEASE_IMAGE_ALT' | translate }}" />
+              <img class="w-100" [src]="document.image_url | imageUrl"
+                alt="{{ 'LATEST_RELEASE_IMAGE_ALT' | translate }}" />
             </div>
             <div class="card-body d-flex flex-column text-white bg-gradient-secondary">
               <span class="badge bg-tertiary mb-2">{{ 'LATEST_RELEASE' | translate }}</span>
@@ -76,172 +79,71 @@
           'col-lg-8 main-content-column': showSidebar,
           'col-12 main-content-column': !showSidebar
         }" style="text-align: right;">
-          <!-- Static Sections -->
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'ABOUT_US_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'ABOUT_US_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'VISION_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'VISION_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'MISSION_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'MISSION_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'GOALS_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                </div>
-              </div>
-              <div class="row g-4">
-                <div class="col mt-3">
-                  <div class="goal-card primary-card">
-                    <h4 class="card-title text-primary text-center mb-0 pb-0">{{ 'GOAL_1_HEADER' | translate }}</h4>
-                    <div class="divider mt-2"></div>
-                    <p class="card-text text-primary text-justify">{{ 'GOAL_1_TEXT' | translate }}</p>
+          <!-- Dynamic Sections from CMS -->
+          <ng-container *ngFor="let section of sections">
+            <!-- Standard Section -->
+            <section *ngIf="section.section_type !== 'goals'" [class]="getThemeClass(section.theme)">
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-12 text-center">
+                    <h2 class="section-heading" [class]="getTextClass(section.theme)">{{ section.heading }}</h2>
+                    <div class="divider"></div>
+                    <p *ngIf="section.body_text" class="mt-4 text-justify" [class]="getTextClass(section.theme)"
+                      style="text-align: right;">
+                      {{ section.body_text }}
+                    </p>
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col mt-3">
-                  <div class="goal-card secondary-card">
-                    <h4 class="card-title text-secondary text-center mb-0 pb-0">{{ 'GOAL_2_HEADER' | translate }}</h4>
-                    <div class="divider mt-2"></div>
-                    <p class="card-text text-primary text-justify">{{ 'GOAL_2_TEXT' | translate }}</p>
+            </section>
+
+            <!-- Goals Section -->
+            <section *ngIf="section.section_type === 'goals'" class="modern-section mt-4 border border-primary">
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-12 text-center">
+                    <h2 class="section-heading text-primary">{{ section.heading }}</h2>
+                    <div class="divider"></div>
+                  </div>
+                </div>
+                <ng-container *ngFor="let goal of section.goal_items">
+                  <div class="row">
+                    <div class="col mt-3">
+                      <div class="goal-card" [ngClass]="{
+                        'primary-card': goal.theme === 'primary',
+                        'secondary-card': goal.theme === 'secondary',
+                        'tertiary-card': goal.theme === 'tertiary'
+                      }">
+                        <h4 class="card-title text-center mb-0 pb-0" [ngClass]="{
+                          'text-primary': goal.theme === 'primary',
+                          'text-secondary': goal.theme === 'secondary',
+                          'text-tertiary': goal.theme === 'tertiary'
+                        }">{{ goal.heading }}</h4>
+                        <div class="divider mt-2"></div>
+                        <p class="card-text text-primary text-justify">{{ goal.body_text }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </section>
+          </ng-container>
+
+          <!-- Fallback: Static sections if CMS data not loaded yet -->
+          <ng-container *ngIf="sections.length === 0 && !isLoading">
+            <section class="modern-section mt-4 border border-primary">
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-12 text-center">
+                    <h2 class="section-heading text-primary">{{ 'ABOUT_US_HEADER' | translate }}</h2>
+                    <div class="divider"></div>
+                    <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'ABOUT_US_TEXT' | translate
+                      }}</p>
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col mt-3">
-                  <div class="goal-card tertiary-card">
-                    <h4 class="card-title text-tertiary text-center mb-0 pb-0">{{ 'GOAL_3_HEADER' | translate }}</h4>
-                    <div class="divider mt-2"></div>
-                    <p class="card-text text-primary text-justify">{{ 'GOAL_3_TEXT' | translate }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mt-3">
-                  <div class="goal-card primary-card">
-                    <h4 class="card-title text-primary text-center mb-0 pb-0">{{ 'GOAL_4_HEADER' | translate }}</h4>
-                    <div class="divider mt-2"></div>
-                    <p class="card-text text-primary text-justify">{{ 'GOAL_4_TEXT' | translate }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mt-3">
-                  <div class="goal-card secondary-card">
-                    <h4 class="card-title text-secondary text-center mb-0 pb-0">{{ 'GOAL_5_HEADER' | translate }}</h4>
-                    <div class="divider mt-2"></div>
-                    <p class="card-text text-primary text-justify">{{ 'GOAL_5_TEXT' | translate }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'VISUAL_SLOGAN_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <div *ngIf="headerLogoPath; else defaultIcon" class="logo-container me-3">
-                    <img [src]="headerLogoPath" alt="{{ 'LOGO_ALT' | translate }}"
-                      *ngIf="headerLogoSize !== 'original'; else originalHeaderLogo" [height]="getLogoHeight('header')"
-                      class="logo-img">
-                    <ng-template #originalHeaderLogo>
-                      <img [src]="headerLogoPath" alt="{{ 'LOGO_ALT' | translate }}" class="logo-img">
-                    </ng-template>
-                  </div>
-                  <ng-template #defaultIcon>
-                    <i class="bi bi-info-circle"></i>
-                  </ng-template>
-                  <p class="mt-4 text-primary text-justify">{{ 'VISUAL_SLOGAN_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section bg-gradient-secondary mt-4">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-white">{{ 'READABLE_SLOGAN_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <div *ngIf="footerLogoPath; else defaultIcon" class="logo-container me-3">
-                    <img [src]="footerLogoPath" alt="{{ 'LOGO_ALT' | translate }}"
-                      *ngIf="footerLogoSize !== 'original'; else originalFooterLogo" [height]="getLogoHeight('footer')"
-                      class="logo-img">
-                    <ng-template #originalFooterLogo>
-                      <img [src]="footerLogoPath" alt="{{ 'LOGO_ALT' | translate }}" class="logo-img">
-                    </ng-template>
-                  </div>
-                  <ng-template #defaultIcon>
-                    <i class="bi bi-info-circle"></i>
-                  </ng-template>
-                  <p class="mt-4 text-white text-justify">{{ 'READABLE_SLOGAN_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'A_SECTION_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'A_SECTION_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'B_SECTION_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'B_SECTION_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="modern-section mt-4 border border-primary">
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-12 text-center">
-                  <h2 class="section-heading text-primary">{{ 'C_SECTION_HEADER' | translate }}</h2>
-                  <div class="divider"></div>
-                  <p class="mt-4 text-primary text-justify" style="text-align: right;">{{ 'C_SECTION_TEXT' | translate }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
+            </section>
+          </ng-container>
         </div>
         <div class="col-lg-4" style="text-align: right;">
           <div class="position-sticky" style="top: 2rem">

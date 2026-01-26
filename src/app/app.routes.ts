@@ -27,6 +27,7 @@ import { AdminUsersComponent } from './components/admin-panel/admin-users/admin-
 import { AdminContactMessagesComponent } from './components/admin-panel/admin-contact-messages/admin-contact-messages.component';
 import { AdminSiteSettingsComponent } from './components/admin-panel/admin-site-settings/admin-site-settings.component';
 import { SiteAnalyticsComponent } from './components/admin-panel/site-analytics/site-analytics.component';
+import { ContentManagerComponent } from './components/admin-panel/content-manager/content-manager.component';
 import { EditAtharDocumentComponent } from './components/athar/edit-athar-document/edit-athar-document.component';
 import { CreateAtharDocumentComponent } from './components/athar/create-athar-document/create-athar-document.component';
 
@@ -37,13 +38,13 @@ const toArabicNumerals = (num: string): string => {
 };
 
 export const routes: Routes = [
-  { 
-    path: 'login-yemnat-aqy', 
-    component: LoginComponent 
+  {
+    path: 'login-yemnat-aqy',
+    component: LoginComponent
   },
-  { 
-    path: '', 
-    component: HomepageComponent, 
+  {
+    path: '',
+    component: HomepageComponent,
     data: { breadcrumb: 'HOME' }
   },
   {
@@ -58,7 +59,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentGuideComponent,
-            data: { 
+            data: {
               modelType: 'guide'
             }
           },
@@ -105,7 +106,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentNewsComponent,
-            data: { 
+            data: {
               modelType: 'news'
             }
           },
@@ -152,7 +153,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentBianComponent,
-            data: { 
+            data: {
               modelType: 'bian'
             }
           },
@@ -162,7 +163,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'VIEW_ROUTE.BIAN',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'bian'
             }
@@ -174,7 +175,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'EDIT_ROUTE.BIAN',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'bian',
               getRequiredPermission: () => 'edit bian'
@@ -199,7 +200,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentArchiveCComponent,
-            data: { 
+            data: {
               modelType: 'archive_c'
             }
           },
@@ -209,7 +210,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'VIEW_ROUTE.ARCHIVE',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'archive_c'
             }
@@ -221,7 +222,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'EDIT_ROUTE.ARCHIVE',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'archive_c',
               getRequiredPermission: () => 'edit archive_c'
@@ -246,7 +247,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentAtharComponent,
-            data: { 
+            data: {
               modelType: 'athar'
             }
           },
@@ -293,7 +294,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentReleaseComponent,
-            data: { 
+            data: {
               modelType: 'release'
             }
           },
@@ -303,7 +304,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'VIEW_ROUTE.RELEASE',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'release'
             }
@@ -315,7 +316,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'EDIT_ROUTE.RELEASE',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'release',
               getRequiredPermission: () => 'edit release'
@@ -340,7 +341,7 @@ export const routes: Routes = [
           {
             path: '',
             component: DocumentMediaComponent,
-            data: { 
+            data: {
               modelType: 'media'
             }
           },
@@ -350,7 +351,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'VIEW_ROUTE.MEDIA',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'media'
             }
@@ -362,7 +363,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'EDIT_ROUTE.MEDIA',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'media',
               getRequiredPermission: () => 'edit media'
@@ -390,7 +391,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'VIEW_ROUTE.USER',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'user'
             }
@@ -402,7 +403,7 @@ export const routes: Routes = [
             data: {
               breadcrumb: (route: ActivatedRouteSnapshot) => ({
                 label: 'EDIT_ROUTE.USER',
-                params: { id: toArabicNumerals(route.params['id']) } 
+                params: { id: toArabicNumerals(route.params['id']) }
               }),
               modelType: 'user',
               getRequiredPermission: () => 'edit user'
@@ -501,6 +502,15 @@ export const routes: Routes = [
           breadcrumb: 'DROPDOWN_MANAGEMENT.TITLE',
           getRequiredPermission: () => ['root_super_admin']
         }
+      },
+      {
+        path: 'content-manager',
+        component: ContentManagerComponent,
+        canActivate: [RoleGuard],
+        data: {
+          breadcrumb: 'إدارة المحتوى',
+          getRequiredPermission: () => ['super_admin', 'root_super_admin']
+        }
       }
     ]
   },
@@ -519,8 +529,8 @@ export const routes: Routes = [
     component: NotFoundComponent,
     data: { breadcrumb: 'NOT_FOUND.TITLE' },
   },
-  { 
-    path: '**', 
-    redirectTo: 'not-found' 
+  {
+    path: '**',
+    redirectTo: 'not-found'
   }
 ];
