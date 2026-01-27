@@ -290,6 +290,8 @@ export class HomepageComponent implements OnInit {
     switch (theme) {
       case 'secondary':
         return 'modern-section mt-4 border border-secondary section-secondary';
+      case 'secondary-bg':
+        return 'modern-section mt-4 section-secondary-bg';
       case 'tertiary':
         return 'modern-section mt-4 border border-tertiary section-tertiary';
       case 'gradient-secondary':
@@ -309,6 +311,8 @@ export class HomepageComponent implements OnInit {
     switch (theme) {
       case 'secondary':
         return 'text-secondary';
+      case 'secondary-bg':
+        return 'text-white';
       case 'tertiary':
         return 'text-tertiary';
       case 'gradient-secondary':

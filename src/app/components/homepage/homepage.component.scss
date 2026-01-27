@@ -468,6 +468,26 @@
   }
 }
 
+.section-secondary-bg {
+  background-color: var(--bs-secondary, #5A6285) !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 2rem !important;
+
+  .section-heading,
+  h2,
+  h3,
+  h4,
+  p,
+  .divider {
+    color: white !important;
+  }
+
+  .divider {
+    background: rgba(255, 255, 255, 0.5) !important;
+  }
+}
+
 .section-tertiary {
   border-color: var(--bs-tertiary, #b8925a) !important;
 
