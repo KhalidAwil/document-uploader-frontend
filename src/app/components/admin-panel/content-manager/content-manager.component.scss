@@ -81,19 +81,31 @@
   border-radius: 4px;
 
   .bullet-item {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 0.5rem;
     padding: 0.5rem;
     background: white;
     border-radius: 4px;
     margin-bottom: 0.5rem;
     border: 1px solid #eee;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
 
-    span {
-      display: block;
+    // Text content - takes remaining space and wraps
+    >span:first-child {
+      flex: 1;
+      min-width: 0;
       word-wrap: break-word;
       overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    // Button container - stays fixed width
+    >div {
+      flex-shrink: 0;
+      white-space: nowrap;
+      display: flex;
+      gap: 0.25rem;
     }
 
     &:last-child {
