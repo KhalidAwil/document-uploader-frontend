@@ -443,6 +443,61 @@
   background: var(--app-primary-100) !important;
 }
 
+// Section theme styles
+.section-primary {
+  border-color: var(--bs-primary, #6d5347) !important;
+
+  .section-heading,
+  h2,
+  h3,
+  h4,
+  p {
+    color: var(--bs-primary, #6d5347) !important;
+  }
+}
+
+.section-secondary {
+  border-color: var(--bs-secondary, #5A6285) !important;
+
+  .section-heading,
+  h2,
+  h3,
+  h4,
+  p {
+    color: var(--bs-secondary, #5A6285) !important;
+  }
+}
+
+.section-tertiary {
+  border-color: var(--bs-tertiary, #b8925a) !important;
+
+  .section-heading,
+  h2,
+  h3,
+  h4,
+  p {
+    color: var(--bs-tertiary, #b8925a) !important;
+  }
+}
+
+// Border color utilities
+.border-secondary {
+  border-color: var(--bs-secondary, #5A6285) !important;
+}
+
+.border-tertiary {
+  border-color: var(--bs-tertiary, #b8925a) !important;
+}
+
+// Text color utilities  
+.text-secondary {
+  color: var(--bs-secondary, #5A6285) !important;
+}
+
+.text-tertiary {
+  color: var(--bs-tertiary, #b8925a) !important;
+}
+
 // RTL adjustments
 .direction-rtl {
   .feature-card-body {

@@ -288,12 +288,17 @@ export class HomepageComponent implements OnInit {
    */
   getThemeClass(theme: string): string {
     switch (theme) {
+      case 'secondary':
+        return 'modern-section mt-4 border border-secondary section-secondary';
+      case 'tertiary':
+        return 'modern-section mt-4 border border-tertiary section-tertiary';
       case 'gradient-secondary':
         return 'modern-section bg-gradient-secondary mt-4';
       case 'gradient-primary':
         return 'modern-section bg-gradient-primary mt-4';
+      case 'primary':
       default:
-        return 'modern-section mt-4 border border-primary';
+        return 'modern-section mt-4 border border-primary section-primary';
     }
   }
 
@@ -302,9 +307,14 @@ export class HomepageComponent implements OnInit {
    */
   getTextClass(theme: string): string {
     switch (theme) {
+      case 'secondary':
+        return 'text-secondary';
+      case 'tertiary':
+        return 'text-tertiary';
       case 'gradient-secondary':
       case 'gradient-primary':
         return 'text-white';
+      case 'primary':
       default:
         return 'text-primary';
     }
