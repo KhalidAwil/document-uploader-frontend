@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, TemplateRef } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
 import { CommonModule, Location } from '@angular/common';
@@ -12,13 +12,13 @@ import { ArabicDatePipe } from '../../../pipes/arabic-date.pipe';
 import { shareOptions, ShareOption } from '../../../config/sharing.config';
 import { TruncatePipe } from "../../../pipes/truncate.pipe";
 import { ArabicDateHelper } from '../../../utils/arabic-date-helper';
-import { Modal } from 'bootstrap';
 import { DropdownService } from '../../../services/dropdown.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ArabicNumeralsPipe } from "../../../pipes/arabic-numerals.pipe";
 import { ImageUrlPipe } from "../../../pipes/image-url.pipe";
 import { HttpClient } from '@angular/common/http';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // Define dropdown field mapping to specify which fields should use which dropdown
 interface DropdownFieldMapping {
@@ -30,9 +30,10 @@ interface DropdownFieldMapping {
   selector: 'app-view-document',
   templateUrl: './view-document.component.html',
   styleUrls: ['./view-document.component.scss'],
-  imports: [CommonModule, RouterModule, SafeUrlPipe, TranslatePipe, ArabicDatePipe, TruncatePipe, ArabicNumeralsPipe, ImageUrlPipe]
+  imports: [CommonModule, RouterModule, SafeUrlPipe, TranslatePipe, ArabicDatePipe, TruncatePipe, ArabicNumeralsPipe, ImageUrlPipe, NgbModule]
 })
-export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ViewDocumentComponent implements OnInit, OnDestroy {
+  @ViewChild('imageModal') imageModalTemplate!: TemplateRef<any>;
   document: any = null;
   isLoading: boolean = true;
   modelType: string = '';
@@ -46,12 +47,11 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
   shouldShowImageMenu: boolean = false;
   isRtl: boolean = false;
   lightboxImageUrl: string | null = null;
-  private lightboxModal: Modal | null = null;
   private destroy$ = new Subject<void>();
-  
+
   // Field value cache to avoid repeated lookups
   private fieldValueCache: Map<string, string> = new Map();
-  
+
   // Map fields to their dropdown sources
   private dropdownFieldMapping: DropdownFieldMapping = {
     'release_type': 'release_type',
@@ -73,8 +73,9 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
     private location: Location,
     private translate: TranslateService,
     private dropdownService: DropdownService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal
+  ) { }
 
   ngOnInit(): void {
     const documentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -91,7 +92,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(() => {
         // Clear the cache when dropdowns change
         this.fieldValueCache.clear();
-        
+
         // Refresh document display if already loaded
         if (this.document) {
           // No need to reload the document, just update the UI
@@ -102,22 +103,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fetchDocument(modelType, documentId);
   }
 
-  ngAfterViewInit(): void {
-    // Initialize Bootstrap Modal
-    const modalElement = document.getElementById('imageLightboxModal');
-    if (modalElement) {
-      this.lightboxModal = new Modal(modalElement, {
-        backdrop: 'static',
-        keyboard: true
-      });
-    }
-  }
-
   ngOnDestroy(): void {
-    if (this.lightboxModal) {
-      this.lightboxModal.dispose();
-    }
-    
     // Clean up subscriptions
     this.destroy$.next();
     this.destroy$.complete();
@@ -127,7 +113,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = true;
     const shimmerMinTime = 1000;
     const shimmerStart = Date.now();
-  
+
     this.documentService.getDocument(modelType, documentId).subscribe({
       next: response => {
         this.document = response;
@@ -136,10 +122,10 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.document?.type === 'media' && this.document?.media_type === 'video') {
           this.setVideoEmbedUrl();
         }
-        
+
         // Prefetch dropdown labels for fields that will be displayed
         this.prefetchDropdownLabels();
-        
+
         const elapsed = Date.now() - shimmerStart;
         const remaining = Math.max(0, shimmerMinTime - elapsed);
         setTimeout(() => { this.isLoading = false; }, remaining);
@@ -158,17 +144,17 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private prefetchDropdownLabels(): void {
     if (!this.document) return;
-    
+
     // Create a set of unique dropdown names to fetch
     const dropdownsToFetch = new Set<string>();
-    
+
     // Check which dropdown fields exist in this document
     for (const [fieldName, dropdownName] of Object.entries(this.dropdownFieldMapping)) {
       if (this.document[fieldName] !== undefined && this.document[fieldName] !== null) {
         dropdownsToFetch.add(dropdownName);
       }
     }
-    
+
     // Prefetch all needed dropdowns
     dropdownsToFetch.forEach(dropdownName => {
       this.dropdownService.getDropdownByName(dropdownName)
@@ -265,18 +251,20 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openLightbox(imageUrl: string) {
+    console.log('Opening lightbox for image:', imageUrl);
     this.lightboxImageUrl = imageUrl;
-    if (this.lightboxModal) {
-      this.lightboxModal.show();
-      this.statisticsService.incrementView(this.modelType, this.document?.id, 'image_views', this.document?.media_type).subscribe(() => console.log('Lightbox image viewed'));
+    try {
+      this.modalService.open(this.imageModalTemplate, { size: 'lg', centered: true });
+      console.log('Modal opened successfully');
+    } catch (e) {
+      console.error('Error opening modal:', e);
     }
+    this.statisticsService.incrementView(this.modelType, this.document?.id, 'image_views', this.document?.media_type).subscribe(() => console.log('Lightbox image viewed'));
   }
 
   closeLightbox() {
-    if (this.lightboxModal) {
-      this.lightboxModal.hide();
-      this.lightboxImageUrl = null;
-    }
+    this.modalService.dismissAll();
+    this.lightboxImageUrl = null;
   }
 
   viewPdf(pdfUrl: string, event: Event) {
@@ -313,9 +301,9 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
   getFieldValue(field: string): string {
     console.log('Hala', field, this.document[field]);
     if (!field || !this.document) return 'N/A';
-    
+
     const value = this.document[field];
-    
+
     // Handle special athar fields with "unknown" values (including null/undefined)
     if (this.document.type === 'athar') {
       // Handle athar date fields with Arabic formatting
@@ -326,7 +314,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
       // Handle athar dropdown fields - show "غير معروف" for null/unknown values
       const atharDropdownFields = [
         'athar_type',
-        'athar_material', 
+        'athar_material',
         'athar_period',
         'athar_origin_country',
         'athar_preservation_status',
@@ -363,10 +351,10 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
         return this.isUnknownValue(value) ? 'غير معروف' : String(value);
       }
     }
-    
+
     // General null/undefined check for non-athar fields
     if (value === undefined || value === null) return 'N/A';
-    
+
     // Check if this is a date field
     if (field.includes('date')) {
       try {
@@ -375,24 +363,24 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
         return value;
       }
     }
-    
+
     // Check if this field has a dropdown mapping
     if (this.dropdownFieldMapping[field]) {
       // Create a cache key for this lookup
       const cacheKey = `${field}:${value}`;
-      
+
       // Check cache first
       if (this.fieldValueCache.has(cacheKey)) {
         return this.fieldValueCache.get(cacheKey) || String(value);
       }
-      
+
       // If not in cache, use synchronized lookup for immediate display
       // and set up async update for correctness
       const dropdownName = this.dropdownFieldMapping[field];
-      
+
       // Start with a fallback value (could be from translations)
       let displayValue = this.getFallbackDisplayValue(field, value);
-      
+
       // Set up async lookup for correct value
       this.dropdownService.getOptionLabel(dropdownName, value)
         .pipe(takeUntil(this.destroy$))
@@ -400,7 +388,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
           if (label && label !== value) {
             // Cache the result for future use
             this.fieldValueCache.set(cacheKey, label);
-            
+
             // Only update if different from current display
             if (displayValue !== label) {
               displayValue = label;
@@ -412,14 +400,14 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           }
         });
-      
+
       return displayValue;
     }
-    
+
     // Default case - just return the value
     return String(value);
   }
-  
+
   /**
    * Get a fallback display value for a field when dropdown lookup is in progress
    * @param field The field name
@@ -428,7 +416,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private getFallbackDisplayValue(field: string, value: any): string {
     // First try the translation approach for backward compatibility
-    switch(field) {
+    switch (field) {
       case 'release_type':
         return this.translate.instant(`OPTION_${value.toUpperCase()}`);
       case 'media_type':
@@ -442,10 +430,10 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private extractVideoId(url: string): string | null {
     const urlParts = new URL(url);
-    let videoId = urlParts.searchParams.get('v'); 
+    let videoId = urlParts.searchParams.get('v');
     if (!videoId) {
-      const pathParts = urlParts.pathname.split('/'); 
-      videoId = pathParts[pathParts.length - 1]; 
+      const pathParts = urlParts.pathname.split('/');
+      videoId = pathParts[pathParts.length - 1];
     }
     return videoId;
   }
@@ -492,15 +480,15 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getAtharFieldValue(fieldName: string, value: string): string {
     if (!value) return value;
-    
+
     const translationKey = `ATHAR_${fieldName.toUpperCase()}_VALUES.${value}`;
     const translated = this.translate.instant(translationKey);
-    
+
     // If translation exists and is different from the key, return it
     if (translated && translated !== translationKey) {
       return translated;
     }
-    
+
     // Otherwise return the original value
     return value;
   }
@@ -558,25 +546,25 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private getAtharDropdownValue(fieldName: string, value: string): string {
     if (!value) return 'غير معروف';
-    
+
     // Create a cache key for this lookup
     const cacheKey = `${fieldName}:${value}`;
-    
+
     // Check cache first
     if (this.fieldValueCache.has(cacheKey)) {
       return this.fieldValueCache.get(cacheKey) || 'غير معروف';
     }
-    
+
     // Start with fallback value
     let displayValue = value;
-    
+
     // Handle special case for "unknown" value
     if (value === 'unknown') {
       displayValue = 'غير معروف';
       this.fieldValueCache.set(cacheKey, displayValue);
       return displayValue;
     }
-    
+
     // Set up async lookup for correct Arabic label from dropdown
     this.dropdownService.getOptionLabel(fieldName, value)
       .pipe(takeUntil(this.destroy$))
@@ -585,7 +573,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
           if (label && label !== value) {
             // Cache the result for future use
             this.fieldValueCache.set(cacheKey, label);
-            
+
             // Only update if different from current display
             if (displayValue !== label) {
               displayValue = label;
@@ -602,7 +590,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy, AfterViewInit {
           this.fieldValueCache.set(cacheKey, value);
         }
       });
-    
+
     return displayValue;
   }
 }
