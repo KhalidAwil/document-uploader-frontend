@@ -60,15 +60,9 @@
 
       <!-- Image Content - For all document types except video media -->
       <div *ngIf="shouldShowImage()" class="image-container mb-3">
-<<<<<<< Updated upstream
-        <img [src]="currentImageUrl | imageUrl" alt="Document Image"
-          class="img-fluid rounded document-image clickable-image" (click)="openLightbox(currentImageUrl!)"
-          style="max-height: 500px; width: 100%; object-fit: contain;" />
-=======
         <img [src]="currentImageUrl | imageUrl" alt="Document Image" class="img-fluid rounded document-image"
           (click)="openLightbox(currentImageUrl!)"
           style="max-height: 500px; width: 100%; object-fit: contain; cursor: pointer;" />
->>>>>>> Stashed changes
       </div>
 
       <!-- Image Menu - Only for archive_c and bian document types with numbered images -->

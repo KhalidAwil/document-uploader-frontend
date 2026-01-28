@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, TemplateRef } from '@angular/core';
-=======
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ViewChild, TemplateRef } from '@angular/core';
->>>>>>> Stashed changes
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
 import { CommonModule, Location } from '@angular/common';
@@ -38,10 +34,6 @@ interface DropdownFieldMapping {
 })
 export class ViewDocumentComponent implements OnInit, OnDestroy {
   @ViewChild('imageModal') imageModalTemplate!: TemplateRef<any>;
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   document: any = null;
   isLoading: boolean = true;
   modelType: string = '';
@@ -111,13 +103,6 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
     this.fetchDocument(modelType, documentId);
   }
 
-<<<<<<< Updated upstream
-=======
-  ngAfterViewInit(): void {
-    // No modal initialization needed here, NgbModal handles it
-  }
-
->>>>>>> Stashed changes
   ngOnDestroy(): void {
     // Clean up subscriptions
     this.destroy$.next();
@@ -314,6 +299,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
    * @returns The formatted field value
    */
   getFieldValue(field: string): string {
+    console.log('Hala', field, this.document[field]);
     if (!field || !this.document) return 'N/A';
 
     const value = this.document[field];
