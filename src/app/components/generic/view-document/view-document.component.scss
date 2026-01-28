@@ -16,6 +16,7 @@
     margin-bottom: 1.5rem;
     letter-spacing: 0.01em;
     position: relative;
+
     &::after {
       content: '';
       display: block;
@@ -32,12 +33,12 @@
     margin-left: 2.4rem;
     border-left: 3px solid var(--app-tertiary);
     padding-left: 2rem;
-    
+
     .history-event {
       position: relative;
       margin-bottom: 2.3rem;
       padding-bottom: 1rem;
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -51,24 +52,28 @@
         z-index: 2;
         box-shadow: 0 1px 4px rgba(var(--app-primary-rgb), 0.09);
       }
+
       .event-date {
         color: var(--app-tertiary);
         font-size: 1.02rem;
         font-weight: 600;
         margin-bottom: 0.2rem;
       }
+
       .event-title {
         color: var(--app-primary-900);
         font-size: 1.13rem;
         font-weight: 700;
         margin-bottom: 0.15rem;
       }
+
       .event-desc {
         color: var(--app-foreground);
         font-size: 1.04rem;
         margin-bottom: 0.1rem;
       }
     }
+
     .history-event:last-child {
       margin-bottom: 0;
       padding-bottom: 0;
@@ -100,8 +105,15 @@
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .document-header {
@@ -109,8 +121,10 @@
     font-size: 1.9rem;
     line-height: 1.2;
   }
+
   .document-date {
     font-size: 1.1rem;
+
     i {
       vertical-align: middle;
     }
@@ -123,6 +137,7 @@
     overflow: hidden;
     border: 1px solid var(--app-primary-900);
   }
+
   .image-container {
     border: 1px solid var(--app-primary-900);
     border-radius: var(--app-radius-md);
@@ -133,7 +148,16 @@
       object-fit: contain;
       background: #fff;
     }
-    
+
+    .clickable-image {
+      cursor: pointer;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
     img.document-image.bian-aspect {
       aspect-ratio: 10 / 13;
       width: auto;
@@ -143,12 +167,12 @@
       background: #f8f9fa;
     }
   }
-  
+
   .image-menu {
     background-color: var(--app-card-bg);
     border-radius: var(--app-radius-md);
     border: 1px solid var(--app-primary-900);
-    
+
     // New nav-pills styles for the image menu
     .nav-pills {
       margin-bottom: 0;
@@ -159,9 +183,11 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
     .nav-item {
       margin: 0.25rem;
     }
+
     .nav-link {
       padding: 0.75rem 1.5rem;
       font-weight: 700;
@@ -175,18 +201,20 @@
       display: flex;
       align-items: center;
     }
+
     .nav-link.active {
       background-color: #D1985D !important;
       color: white !important;
       border: 1.5px solid #D1985D;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
+
     .nav-link:hover:not(.active) {
       background: rgba(209, 152, 93, 0.13);
       color: #664433 !important;
       border: 1.5px solid #D1985D;
       text-decoration: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
       z-index: 1;
       position: relative;
       transition: all 0.2s;
@@ -197,17 +225,18 @@
 .direction-rtl {
   .btn-group-images {
     flex-direction: row-reverse;
-    
+
     .btn {
       border-radius: var(--app-radius-md) !important;
       position: relative;
-      
+
       &:first-child:not(:last-child),
       &:last-child:not(:first-child) {
         border-radius: var(--app-radius-md) !important;
       }
-      
-      &.btn-primary, &.btn-outline-primary {
+
+      &.btn-primary,
+      &.btn-outline-primary {
         border-radius: var(--app-radius-md) !important;
       }
     }
@@ -216,16 +245,19 @@
 
 .language-selector-container {
   background: rgba(var(--app-primary), 0.1);
+
   .language-button {
     border-radius: 20px;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     transition: all 0.3s ease;
+
     &.active {
       background-color: var(--app-secondary) !important;
       border-color: var(--app-tertiary);
       color: white;
     }
+
     &:hover:not(.active) {
       background-color: rgba(var(--app-primary), 0.15);
       border-color: var(--app-primary);
@@ -249,6 +281,7 @@
       font-family: 'Tajawal', 'Noto Naskh Arabic', sans-serif;
       position: relative;
       padding-bottom: 0.5rem;
+
       &::after {
         content: '';
         position: absolute;
@@ -309,6 +342,7 @@
     .description-title {
       position: relative;
       padding-bottom: 0.5rem;
+
       &::after {
         content: '';
         position: absolute;
@@ -319,6 +353,7 @@
         background-color: var(--app-tertiary);
       }
     }
+
     .description-text {
       font-size: 1.1rem;
       line-height: 1.8;
@@ -330,6 +365,7 @@
     .attachments-title {
       position: relative;
       padding-bottom: 0.5rem;
+
       &::after {
         content: '';
         position: absolute;
@@ -340,10 +376,12 @@
         background-color: var(--app-tertiary);
       }
     }
+
     .attachment-button {
       border-radius: 20px;
       padding: 0.5rem 1.25rem;
       transition: all 0.3s ease;
+
       &:hover {
         background-color: var(--app-tertiary);
         color: white;
@@ -357,6 +395,7 @@
       border-radius: 20px;
       padding: 0.5rem 1.5rem;
     }
+
     .back-button {
       border-radius: 20px;
       padding: 0.5rem 1.5rem;
@@ -426,6 +465,7 @@
       &:hover,
       &:focus {
         background-color: var(--app-primary-700);
+
         i {
           color: white;
           transform: none !important;
@@ -445,6 +485,7 @@
   0% {
     left: -150px;
   }
+
   100% {
     left: 100%;
   }
@@ -463,7 +504,7 @@
   left: -150px;
   width: 150px;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   animation: shimmer 1.5s linear infinite;
   z-index: 3;
 }
@@ -519,15 +560,15 @@
   background: var(--app-primary-200);
   border-radius: 0.25rem;
   margin-bottom: 0.8rem;
-  
+
   &.short {
     width: 40%;
   }
-  
+
   &.medium {
     width: 70%;
   }
-  
+
   &.long {
     width: 100%;
   }
@@ -610,6 +651,7 @@
 // Athar-specific field styling for text wrapping
 .athar-information-section {
   .athar-field {
+
     // Special styling for full-width fields like athar_arch_original_area
     &.full-width-field {
       .field-value {
@@ -620,19 +662,19 @@
         overflow-wrap: break-word;
         hyphens: auto;
         line-height: 1.6;
-        
+
         // Ensure proper RTL text handling
         direction: rtl;
         text-align: right;
       }
     }
-    
+
     // Enhanced styling for regular athar fields
     .field-label {
       white-space: nowrap; // Prevent label from wrapping
       flex-shrink: 0; // Prevent label from shrinking
     }
-    
+
     .field-value {
       word-wrap: break-word;
       overflow-wrap: break-word;

@@ -3,7 +3,7 @@
   <div *ngIf="isLoading" class="shimmer-container">
     <!-- Image Shimmer -->
     <div class="shimmer-image shimmer"></div>
-    
+
     <!-- Content Shimmer -->
     <div class="card">
       <div class="card-body">
@@ -16,9 +16,9 @@
             <div class="shimmer-date shimmer"></div>
           </div>
         </div>
-        
+
         <div class="shimmer-divider shimmer"></div>
-        
+
         <!-- Metadata Shimmer -->
         <div class="card mb-4">
           <div class="card-body">
@@ -27,7 +27,7 @@
             <div class="shimmer-meta shimmer"></div>
           </div>
         </div>
-        
+
         <!-- Description Shimmer -->
         <div class="my-5">
           <div class="shimmer-text long shimmer"></div>
@@ -36,7 +36,7 @@
           <div class="shimmer-text long shimmer"></div>
           <div class="shimmer-text short shimmer"></div>
         </div>
-        
+
         <!-- Buttons Shimmer -->
         <div class="d-flex mt-4">
           <div class="shimmer-button shimmer"></div>
@@ -51,7 +51,8 @@
     <!-- Document Media -->
     <div class="document-media-container mb-4">
       <!-- Video Content - Only for media type with video -->
-      <div *ngIf="document?.type === 'media' && document?.media_type === 'video'" class="video-container ratio ratio-16x9">
+      <div *ngIf="document?.type === 'media' && document?.media_type === 'video'"
+        class="video-container ratio ratio-16x9">
         <iframe *ngIf="videoEmbedUrl" [src]="videoEmbedUrl" frameborder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
         </iframe>
@@ -59,21 +60,17 @@
 
       <!-- Image Content - For all document types except video media -->
       <div *ngIf="shouldShowImage()" class="image-container mb-3">
-        <img [src]="currentImageUrl | imageUrl"
-             alt="Document Image"
-             class="img-fluid rounded document-image"
-             (click)="openLightbox(currentImageUrl!)"
-             style="max-height: 500px; width: 100%; object-fit: contain; cursor: pointer;" />
+        <img [src]="currentImageUrl | imageUrl" alt="Document Image"
+          class="img-fluid rounded document-image clickable-image" (click)="openLightbox(currentImageUrl!)"
+          style="max-height: 500px; width: 100%; object-fit: contain;" />
       </div>
-      
+
       <!-- Image Menu - Only for archive_c and bian document types with numbered images -->
       <div *ngIf="isSpecialDocumentType() && shouldShowImageMenu" class="image-menu mt-3 mb-4">
         <ul class="nav nav-pills justify-content-center">
           <li class="nav-item" *ngFor="let image of images; let i = index">
-            <a href="#" 
-               class="nav-link"
-               [class.active]="selectedImageIndex === i"
-               (click)="selectImage(i); $event.preventDefault();">
+            <a href="#" class="nav-link" [class.active]="selectedImageIndex === i"
+              (click)="selectImage(i); $event.preventDefault();">
               {{ image.label }}
             </a>
           </li>
@@ -87,7 +84,8 @@
         <!-- Document Header -->
         <header class="document-header row align-items-center mb-1">
           <div class="col-md-8">
-            <h1 class="document-title display-5 text-primary fw-bold mb-1">{{ document?.title || 'DOCUMENT_NO_TITLE' | translate }}</h1>
+            <h1 class="document-title display-5 text-primary fw-bold mb-1">{{ document?.title || 'DOCUMENT_NO_TITLE' |
+              translate }}</h1>
           </div>
           <div class="col-md-4 text-md-end">
             <h6 class="metadata-item document-date col mt-0 mb-3">
@@ -147,7 +145,7 @@
         <!-- Athar-specific Information Cards -->
         <div *ngIf="modelType === 'athar'" class="athar-information-section">
           <div class="divider mb-4"></div>
-          
+
           <!-- Basic Information Card -->
           <div class="athar-info-card card mb-4 shadow-none metadata-section athar-card-full-width">
             <div class="card-body">
@@ -180,7 +178,8 @@
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-gem text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_MATERIAL' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_MATERIAL' | translate }}:
+                    </h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_material') }}</p>
                   </div>
                 </div>
@@ -206,28 +205,32 @@
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-geo-alt text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_GEO_LOCATION' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_GEO_LOCATION' | translate }}:
+                    </h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_geo_location') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-flag text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGIN_COUNTRY' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGIN_COUNTRY' | translate
+                      }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_origin_country') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-shield-check text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESERVATION_STATUS' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESERVATION_STATUS' |
+                      translate }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_preservation_status') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-shield-check text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGINAL_AREA' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_ORIGINAL_AREA' | translate
+                      }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_arch_original_area') }}</p>
                   </div>
                 </div>
@@ -255,65 +258,75 @@
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-scale text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_LEGAL_STATUS' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_LEGAL_STATUS' | translate }}:
+                    </h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_legal_status') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-calendar-x text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_LOSS' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_LOSS' | translate }}:
+                    </h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_date_of_loss') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-pin-map text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION' | translate
+                      }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_present_location') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-building text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_NAME' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_NAME' |
+                      translate }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_present_location_name') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-globe text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_COUNTRY' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PRESENT_LOCATION_COUNTRY' |
+                      translate }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_present_location_country') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-calendar-event text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_PRESENTATION' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_DATE_OF_PRESENTATION' |
+                      translate }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_date_of_presentation') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-file-earmark-text text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_CASE_NUMBER' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_CASE_NUMBER' | translate }}:
+                    </h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_case_number') }}</p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-list-check text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_REQUIRED_PROCEDURE' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_REQUIRED_PROCEDURE' |
+                      translate }}:</h6>
                     <p class="field-value mb-0">{{ getFieldValue('athar_required_procedure') }}</p>
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="athar-field d-flex align-items-center mb-2">
                     <i class="bi bi-link-45deg text-secondary ms-2 mb-0"></i>
-                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PAGE_LINK' | translate }}:</h6>
+                    <h6 class="field-label text-secondary fw-semibold ms-2 mb-0">{{ 'ATHAR_PAGE_LINK' | translate }}:
+                    </h6>
                     <div class="field-value mb-0">
-                      <a *ngIf="document?.athar_page_link" [href]="document?.athar_page_link" target="_blank" class="text-primary">
+                      <a *ngIf="document?.athar_page_link" [href]="document?.athar_page_link" target="_blank"
+                        class="text-primary">
                         {{ document?.athar_page_link }}
                         <i class="bi bi-box-arrow-up-right me-1"></i>
                       </a>
@@ -341,14 +354,18 @@
         <!-- Attachments -->
         <div class="attachments-container">
           <h2 class="attachments-title h5 text-primary fw-semibold mb-3">{{ 'ATTACHMENTS' | translate }}</h2>
-          <div *ngIf="document?.image_url || document?.pdf_url || document?.video_url; else noAttachments" class="attachments-list d-flex flex-wrap gap-3">
-            <button *ngIf="document?.image_url" class="btn btn-outline-secondary" (click)="viewImage(currentImageUrl!, $event)">
+          <div *ngIf="document?.image_url || document?.pdf_url || document?.video_url; else noAttachments"
+            class="attachments-list d-flex flex-wrap gap-3">
+            <button *ngIf="document?.image_url" class="btn btn-outline-secondary"
+              (click)="viewImage(currentImageUrl!, $event)">
               <i class="bi bi-image ms-2"></i>{{ 'VIEW_IMAGE' | translate }}
             </button>
-            <button *ngIf="document?.pdf_url" class="btn btn-outline-secondary" (click)="viewPdf(document?.pdf_url, $event)">
+            <button *ngIf="document?.pdf_url" class="btn btn-outline-secondary"
+              (click)="viewPdf(document?.pdf_url, $event)">
               <i class="bi bi-file-earmark-pdf ms-2"></i>{{ 'VIEW_PDF' | translate }}
             </button>
-            <button *ngIf="document?.video_url" class="btn btn-outline-secondary" (click)="viewVideo(document?.video_url, $event)">
+            <button *ngIf="document?.video_url" class="btn btn-outline-secondary"
+              (click)="viewVideo(document?.video_url, $event)">
               <i class="bi bi-play-circle ms-2"></i>{{ 'VIEW_VIDEO' | translate }}
             </button>
           </div>
@@ -372,11 +389,8 @@
         <div class="share-container mt-4 pt-4 border-top">
           <h3 class="h5 text-primary fw-semibold mb-3">{{ 'SHARE.TITLE' | translate }}</h3>
           <div class="share-buttons d-flex flex-wrap gap-3">
-            <button 
-              *ngFor="let option of shareOptions"
-              (click)="share(option)"
-              class="btn btn-tertiary rounded-circle share-button"
-              [title]="'SHARE.' + option.name | translate">
+            <button *ngFor="let option of shareOptions" (click)="share(option)"
+              class="btn btn-tertiary rounded-circle share-button" [title]="'SHARE.' + option.name | translate">
               <i [class]="option.icon" class="m-0"></i>
             </button>
           </div>
@@ -386,17 +400,14 @@
   </div>
 
   <!-- Lightbox Modal -->
-  <div class="modal fade" id="imageLightboxModal" tabindex="-1" aria-labelledby="imageLightboxModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="imageLightboxModalLabel">{{ 'VIEW_IMAGE' | translate }}</h5>
-          <button type="button" class="btn-close me-2" (click)="closeLightbox()" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <img *ngIf="lightboxImageUrl" [src]="lightboxImageUrl | imageUrl" alt="Full-size document image" class="img-fluid" style="width: 100%; height: auto;" />
-        </div>
-      </div>
+  <ng-template #imageModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">{{ 'VIEW_IMAGE' | translate }}</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeLightbox()"></button>
     </div>
-  </div>
+    <div class="modal-body text-center">
+      <img *ngIf="lightboxImageUrl" [src]="lightboxImageUrl | imageUrl" alt="Full-size document image" class="img-fluid"
+        style="max-height: 80vh; width: auto; max-width: 100%;" />
+    </div>
+  </ng-template>
 </div>
