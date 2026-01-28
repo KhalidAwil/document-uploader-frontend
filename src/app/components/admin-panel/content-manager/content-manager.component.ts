@@ -41,7 +41,6 @@ export class ContentManagerComponent implements OnInit {
     themes = [
         { value: 'tertiary', label: 'بني / ذهبي' },
         { value: 'secondary', label: 'أزرق (حدود)' },
-        { value: 'secondary-bg', label: 'أزرق (خلفية)' },
         { value: 'primary', label: 'بني داكن' }
     ];
 
