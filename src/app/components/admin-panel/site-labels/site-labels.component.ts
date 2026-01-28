@@ -102,7 +102,16 @@ export class SiteLabelsComponent implements OnInit {
     };
 
     getSectionLabel(section: string): string {
-        return this.sectionDisplayMap[section] || section;
+        // Direct match
+        if (this.sectionDisplayMap[section]) {
+            return this.sectionDisplayMap[section];
+        }
+        // Case insensitive match
+        const key = Object.keys(this.sectionDisplayMap).find(k => k.toLowerCase() === section.toLowerCase());
+        if (key) {
+            return this.sectionDisplayMap[key];
+        }
+        return section;
     }
     constructor(
         private labelService: LabelService,
@@ -137,7 +146,7 @@ export class SiteLabelsComponent implements OnInit {
     private groupLabels(labels: SiteLabel[]): void {
         this.groupedLabels = {};
         labels.forEach(label => {
-            const section = label.section || 'General';
+            const section = label.section || 'عام'; // Default to Arabic General
             if (!this.groupedLabels[section]) {
                 this.groupedLabels[section] = [];
             }
@@ -240,7 +249,7 @@ export class SiteLabelsComponent implements OnInit {
                     }
 
                     // CATEGORY MAPPING
-                    let section = 'General';
+                    let section = 'عام'; // Default to Arabic General
                     const parts = key.split('.');
                     const prefix = parts[0]; // e.g. AUTH, CONTACT
 
