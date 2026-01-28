@@ -1,12 +1,22 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 mb-0">إدارة نصوص الموقع</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a routerLink="/admin">لوحة التحكم</a></li>
-                <li class="breadcrumb-item active">نصوص الموقع</li>
-            </ol>
-        </nav>
+        <div>
+            <button class="btn btn-outline-danger me-2" (click)="resetAndImport()" [disabled]="isLoading || isSaving"
+                title="حذف جميع النصوص الحالية وإعادة استيراد القائمة النظيفة فقط">
+                <i class="bi bi-trash"></i> إعادة تعيين وتنظيف
+            </button>
+            <button class="btn btn-outline-secondary me-3" (click)="importDefaults()" [disabled]="isLoading || isSaving"
+                title="استيراد النصوص الافتراضية من ملفات الترجمة">
+                <i class="bi bi-arrow-clockwise"></i> استيراد الافتراضيات
+            </button>
+            <nav aria-label="breadcrumb" class="d-inline-block">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a routerLink="/admin">لوحة التحكم</a></li>
+                    <li class="breadcrumb-item active">نصوص الموقع</li>
+                </ol>
+            </nav>
+        </div>
     </div>
 
     <div *ngIf="message" class="alert alert-success alert-dismissible fade show" role="alert">

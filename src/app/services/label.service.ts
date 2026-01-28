@@ -76,4 +76,15 @@ export class LabelService {
             })
         );
     }
+
+    /**
+     * Reset all labels (Admin only)
+     */
+    resetLabels(): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/reset`).pipe(
+            tap(() => {
+                this.loadLabels().subscribe();
+            })
+        );
+    }
 }

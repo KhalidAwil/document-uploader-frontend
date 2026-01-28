@@ -18,9 +18,53 @@ export class SiteLabelsComponent implements OnInit {
     message = '';
     error = '';
 
-    // Grouped labels: { 'header': [label1, label2], 'footer': [...] }
     groupedLabels: Record<string, SiteLabel[]> = {};
     sections: string[] = [];
+
+    // Config
+    private readonly blocklist = [
+        'ABOUT_SECTION', 'MISSION', 'VALUES', 'GOAL_', 'VISUAL_SLOGAN', 'READABLE_SLOGAN',
+        'A_SECTION', 'B_SECTION', 'C_SECTION', 'JOIN_US_SECTION', 'LATEST_BIAN_IMAGE_ALT'
+    ];
+
+    private readonly categoryMap: Record<string, string> = {
+        'AUTH': 'Authentication',
+        'LOGIN': 'Authentication',
+        'REGISTER': 'Authentication',
+        'PASSWORD': 'Authentication',
+        'EMAIL': 'Authentication',
+        'CONTACT': 'Contact Page',
+        'FOOTER': 'Footer / Common',
+        'COPYRIGHT': 'Footer / Common',
+        'SOCIAL': 'Footer / Common',
+        'NAV': 'Navigation',
+        'HOME': 'Navigation',
+        'DOCUMENTS': 'Documents',
+        'ADMIN_PANEL': 'Admin Panel',
+        'MANAGE_USERS': 'Admin Panel',
+        'USERS': 'Admin Panel',
+        'ROLE': 'Admin Panel',
+        'DROPDOWN_MANAGEMENT': 'Admin Dropdowns',
+        'STATISTICS': 'Admin Statistics',
+        'FILE_UPLOAD': 'File Uploads',
+        'MODAL': 'Modals & Alerts',
+        'VALIDATION': 'Validation',
+        'IS_REQUIRED': 'Validation',
+        'REPORT': 'Reports',
+        'FILTERS': 'Search Filters',
+        'IMAGE': 'Media & Images',
+        'VIDEO': 'Media & Images',
+        'ATHAR': 'Athar Module',
+        'ABOUT': 'About Page (Legacy)',
+        'JOIN_US': 'Join Us Page',
+        'GUIDE': 'Document Types',
+        'RELEASE': 'Document Types',
+        'NEWS': 'Document Types',
+        'BIAN': 'Document Types',
+        'ARCHIVE_C': 'Document Types',
+        'MEDIA': 'Document Types',
+        'Common': 'General'
+    };
 
     constructor(
         private labelService: LabelService,
@@ -37,9 +81,8 @@ export class SiteLabelsComponent implements OnInit {
         this.labelService.getAllLabels().subscribe({
             next: (data) => {
                 if (!data || data.length === 0) {
-                    // Auto-import defaults if database is empty
                     this.message = 'جاري تهيئة نصوص الموقع لأول مرة...';
-                    this.importDefaults(false); // No confirmation needed for auto-init
+                    this.importDefaults(false);
                 } else {
                     this.groupLabels(data);
                     this.isLoading = false;
@@ -60,7 +103,7 @@ export class SiteLabelsComponent implements OnInit {
             if (!this.groupedLabels[section]) {
                 this.groupedLabels[section] = [];
             }
-            this.groupedLabels[section].push({ ...label }); // Clone to avoid direct mutation issues
+            this.groupedLabels[section].push({ ...label });
         });
         this.sections = Object.keys(this.groupedLabels).sort();
     }
@@ -69,7 +112,6 @@ export class SiteLabelsComponent implements OnInit {
         const allLabels: SiteLabel[] = [];
         let hasError = false;
 
-        // Flatten and validate
         this.sections.forEach(section => {
             this.groupedLabels[section].forEach(label => {
                 if (!label.value || label.value.trim() === '') {
@@ -81,7 +123,6 @@ export class SiteLabelsComponent implements OnInit {
 
         if (hasError) {
             this.error = 'جميع الحقول مطلوبة. يرجى التأكد من عدم وجود حقول فارغة.';
-            // We could highlight invalid fields, but for now simple message
             return;
         }
 
@@ -89,17 +130,14 @@ export class SiteLabelsComponent implements OnInit {
         this.error = '';
         this.message = '';
 
-        // Only send key and value (and id maybe? backend uses key)
         const updates = allLabels.map(l => ({ key: l.key, value: l.value, section: l.section }));
 
         this.labelService.updateLabels(updates).subscribe({
             next: () => {
                 this.message = 'تم حفظ التغييرات بنجاح';
                 this.isSaving = false;
-                // Reload to ensure sync
                 this.loadLabels();
 
-                // Also update the current translations in memory!
                 const newTranslations: Record<string, string> = {};
                 allLabels.forEach(l => newTranslations[l.key] = l.value);
                 this.translate.setTranslation('ar', newTranslations, true);
@@ -116,17 +154,65 @@ export class SiteLabelsComponent implements OnInit {
         if (shouldConfirm && !confirm('سيقوم هذا باستيراد جميع النصوص من ملف الترجمة الافتراضي وإضافتها إلى قاعدة البيانات. هل أنت متأكد؟')) {
             return;
         }
+        this.performImport(false);
+    }
 
+    resetAndImport(): void {
+        if (!confirm('تحذير: سيقوم هذا بحذف جميع التعديلات الحالية وإعادة استيراد النصوص الافتراضية "النظيفة" فقط. هل أنت متأكد؟')) {
+            return;
+        }
+        this.performImport(true);
+    }
+
+    private performImport(resetFirst: boolean): void {
         this.isLoading = true;
+        this.message = 'جاري المعالجة...';
+
+        const action$ = resetFirst ? this.labelService.resetLabels() : new Promise(resolve => resolve(true)); // dummy promise just to chain
+
+        // If resetLabels checks observable, we need to convert logic.
+        // resetLabels returns observable.
+
+        const start = resetFirst ? this.labelService.resetLabels() : this.http.get('assets/i18n/ar.json'); // wait, if not reset, start immediately? 
+        // Actually simpler:
+
+        if (resetFirst) {
+            this.labelService.resetLabels().subscribe({
+                next: () => this.fetchAndUploadDefaults(),
+                error: (err) => {
+                    this.error = 'فشل في إعادة تعيين البيانات';
+                    this.isLoading = false;
+                }
+            });
+        } else {
+            this.fetchAndUploadDefaults();
+        }
+    }
+
+    private fetchAndUploadDefaults(): void {
         this.http.get('assets/i18n/ar.json').subscribe({
             next: (data: any) => {
                 const flatLabels = this.flattenObject(data);
                 const updates: Partial<SiteLabel>[] = [];
 
                 Object.keys(flatLabels).forEach(key => {
-                    // We use the top-level key as section, e.g. 'AUTH.LOGIN_FAILED' -> section 'AUTH'
+                    // BLOCKLIST FILTER
+                    if (this.blocklist.some(term => key.includes(term))) {
+                        return; // Skip this key
+                    }
+
+                    // CATEGORY MAPPING
+                    let section = 'General';
                     const parts = key.split('.');
-                    const section = parts.length > 1 ? parts[0] : 'General';
+                    const prefix = parts[0]; // e.g. AUTH, CONTACT
+
+                    // Check map by prefix
+                    for (const mapKey in this.categoryMap) {
+                        if (key.startsWith(mapKey)) {
+                            section = this.categoryMap[mapKey];
+                            break;
+                        }
+                    }
 
                     updates.push({
                         key: key,
@@ -135,26 +221,14 @@ export class SiteLabelsComponent implements OnInit {
                     });
                 });
 
-                // Send to backend (backend should use updateOrCreate)
-                // My controller index logic was simple update loop. 
-                // I need to ensure controller supports updateOrCreate or I use a dedicated endpoint.
-                // My controller uses `SiteLabel::where('key', ...)->update()`. It won't create new ones.
-                // I should update LabelService to handle CREATE too?
-                // Or update Controller to use updateOrCreate.
-
-                // Let's assume controller needs update.
-                // Actually, SiteLabel::updateOrCreate is better in controller.
-                // I will check controller again.
-
-                // Proceeding with logic assuming I fix controller.
                 this.labelService.updateLabels(updates).subscribe({
                     next: () => {
-                        this.message = 'تم استيراد النصوص بنجاح';
+                        this.message = 'تم استيراد وتنظيم النصوص بنجاح';
                         this.loadLabels();
                     },
-                    error: err => {
+                    error: (err) => {
                         console.error(err);
-                        this.error = 'فشل في استيراد النصوص. تأكد من أن الخادم يدعم الإضافة.';
+                        this.error = 'فشل في استيراد النصوص.';
                         this.isLoading = false;
                     }
                 });
