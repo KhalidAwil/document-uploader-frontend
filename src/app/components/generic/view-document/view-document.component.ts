@@ -251,13 +251,16 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
   }
 
   openLightbox(imageUrl: string) {
+    // Debugging alert
+    // window.alert('Opening lightbox for: ' + imageUrl);
     console.log('Opening lightbox for image:', imageUrl);
     this.lightboxImageUrl = imageUrl;
     try {
       this.modalService.open(this.imageModalTemplate, { size: 'lg', centered: true });
       console.log('Modal opened successfully');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Error opening modal:', e);
+      window.alert('Error opening modal: ' + e.message);
     }
     this.statisticsService.incrementView(this.modelType, this.document?.id, 'image_views', this.document?.media_type).subscribe(() => console.log('Lightbox image viewed'));
   }
