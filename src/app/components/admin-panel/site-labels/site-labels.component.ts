@@ -36,8 +36,14 @@ export class SiteLabelsComponent implements OnInit {
         this.isLoading = true;
         this.labelService.getAllLabels().subscribe({
             next: (data) => {
-                this.groupLabels(data);
-                this.isLoading = false;
+                if (!data || data.length === 0) {
+                    // Auto-import defaults if database is empty
+                    this.message = 'جاري تهيئة نصوص الموقع لأول مرة...';
+                    this.importDefaults(false); // No confirmation needed for auto-init
+                } else {
+                    this.groupLabels(data);
+                    this.isLoading = false;
+                }
             },
             error: (err) => {
                 console.error('Failed to load labels', err);
@@ -106,8 +112,8 @@ export class SiteLabelsComponent implements OnInit {
         });
     }
 
-    importDefaults(): void {
-        if (!confirm('سيقوم هذا باستيراد جميع النصوص من ملف الترجمة الافتراضي وإضافتها إلى قاعدة البيانات. هل أنت متأكد؟')) {
+    importDefaults(shouldConfirm: boolean = true): void {
+        if (shouldConfirm && !confirm('سيقوم هذا باستيراد جميع النصوص من ملف الترجمة الافتراضي وإضافتها إلى قاعدة البيانات. هل أنت متأكد؟')) {
             return;
         }
 
