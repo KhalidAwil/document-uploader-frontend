@@ -10,13 +10,16 @@
                 title="استيراد النصوص الافتراضية من ملفات الترجمة">
                 <i class="bi bi-arrow-clockwise"></i> استيراد الافتراضيات
             </button>
-            <nav aria-label="breadcrumb" class="d-inline-block">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a routerLink="/admin">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item active">نصوص الموقع</li>
-                </ol>
-            </nav>
         </div>
+    </div>
+
+    <!-- Section Navigation -->
+    <div class="sticky-top bg-light py-2 px-3 shadow-sm mb-4 rounded border d-flex flex-wrap gap-2 justify-content-center"
+        style="top: 0.5rem; z-index: 900;">
+        <button *ngFor="let section of sections" class="btn btn-sm btn-outline-primary"
+            (click)="scrollToSection(section)">
+            {{ section }}
+        </button>
     </div>
 
     <div *ngIf="message" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -40,7 +43,7 @@
         <form (ngSubmit)="saveLabels()">
 
             <!-- Loop through sections -->
-            <div *ngFor="let section of sections" class="card shadow-sm mb-4">
+            <div *ngFor="let section of sections" class="card shadow-sm mb-4" [id]="section">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 text-primary text-uppercase">{{ section }}</h5>
                 </div>

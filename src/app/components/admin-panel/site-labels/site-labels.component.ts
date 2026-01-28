@@ -28,44 +28,55 @@ export class SiteLabelsComponent implements OnInit {
     ];
 
     private readonly categoryMap: Record<string, string> = {
-        'AUTH': 'Authentication',
-        'LOGIN': 'Authentication',
-        'REGISTER': 'Authentication',
-        'PASSWORD': 'Authentication',
-        'EMAIL': 'Authentication',
-        'CONTACT': 'Contact Page',
-        'FOOTER': 'Footer / Common',
-        'COPYRIGHT': 'Footer / Common',
-        'SOCIAL': 'Footer / Common',
-        'NAV': 'Navigation',
-        'HOME': 'Navigation',
-        'DOCUMENTS': 'Documents',
-        'ADMIN_PANEL': 'Admin Panel',
-        'MANAGE_USERS': 'Admin Panel',
-        'USERS': 'Admin Panel',
-        'ROLE': 'Admin Panel',
-        'DROPDOWN_MANAGEMENT': 'Admin Dropdowns',
-        'STATISTICS': 'Admin Statistics',
-        'FILE_UPLOAD': 'File Uploads',
-        'MODAL': 'Modals & Alerts',
-        'VALIDATION': 'Validation',
-        'IS_REQUIRED': 'Validation',
-        'REPORT': 'Reports',
-        'FILTERS': 'Search Filters',
-        'IMAGE': 'Media & Images',
-        'VIDEO': 'Media & Images',
-        'ATHAR': 'Athar Module',
-        'ABOUT': 'About Page (Legacy)',
-        'JOIN_US': 'Join Us Page',
-        'GUIDE': 'Document Types',
-        'RELEASE': 'Document Types',
-        'NEWS': 'Document Types',
-        'BIAN': 'Document Types',
-        'ARCHIVE_C': 'Document Types',
-        'MEDIA': 'Document Types',
-        'Common': 'General'
+        'AUTH': 'التسجيل والدخول',
+        'LOGIN': 'التسجيل والدخول',
+        'REGISTER': 'التسجيل والدخول',
+        'PASSWORD': 'التسجيل والدخول',
+        'EMAIL': 'التسجيل والدخول',
+        'CONTACT': 'صفحة اتصل بنا',
+        'FOOTER': 'تذييل الصفحة (Footer)',
+        'COPYRIGHT': 'تذييل الصفحة (Footer)',
+        'SOCIAL': 'تذييل الصفحة (Footer)',
+        'NAV': 'القائمة العلوية',
+        'HOME': 'القائمة العلوية',
+        'DOCUMENTS': 'المستندات',
+        'ADMIN_PANEL': 'لوحة التحكم',
+        'MANAGE_USERS': 'لوحة التحكم',
+        'USERS': 'لوحة التحكم',
+        'ROLE': 'لوحة التحكم',
+        'DROPDOWN_MANAGEMENT': 'إدارة القوائم المنسدلة',
+        'STATISTICS': 'الإحصائيات',
+        'FILE_UPLOAD': 'رفع الملفات',
+        'MODAL': 'النوافذ المنبثقة والتنبيهات',
+        'VALIDATION': 'رسائل التحقق',
+        'IS_REQUIRED': 'رسائل التحقق',
+        'REPORT': 'التقارير',
+        'FILTERS': 'فلاتر البحث',
+        'IMAGE': 'الوسائط والصور',
+        'VIDEO': 'الوسائط والصور',
+        'ATHAR': 'الآثار',
+        'ABOUT': 'صفحة عن الوزارة (قديم)',
+        'JOIN_US': 'صفحة انضم إلينا',
+        'GUIDE': 'أنواع المستندات',
+        'RELEASE': 'أنواع المستندات',
+        'NEWS': 'أنواع المستندات',
+        'BIAN': 'أنواع المستندات',
+        'ARCHIVE_C': 'أنواع المستندات',
+        'MEDIA': 'أنواع المستندات',
+        'Common': 'عام'
     };
 
+    scrollToSection(section: string): void {
+        const element = document.getElementById(section);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            // Add offset for sticky header if needed by scrolling the window up by header height 
+            // (Assuming ~100px header)
+            setTimeout(() => {
+                window.scrollBy(0, -80);
+            }, 500);
+        }
+    }
     constructor(
         private labelService: LabelService,
         private translate: TranslateService,
