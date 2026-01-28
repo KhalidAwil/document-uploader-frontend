@@ -108,6 +108,16 @@ export class ContentManagerComponent implements OnInit {
     saveSection(): void {
         if (!this.editingSection) return;
 
+        if (!this.editForm.heading?.trim()) {
+            this.showError('العنوان مطلوب');
+            return;
+        }
+
+        if (!this.editForm.body_text?.trim()) {
+            this.showError('النص مطلوب');
+            return;
+        }
+
         this.isSaving = true;
         this.pageSectionService.updateSection(this.editingSection.id, this.editForm).subscribe({
             next: (response) => {
@@ -236,6 +246,16 @@ export class ContentManagerComponent implements OnInit {
     }
 
     addSection(): void {
+        if (!this.newSectionForm.heading?.trim()) {
+            this.showError('العنوان مطلوب');
+            return;
+        }
+
+        if (!this.newSectionForm.body_text?.trim()) {
+            this.showError('النص مطلوب');
+            return;
+        }
+
         this.isSaving = true;
         const request = {
             page_type: this.activeTab,

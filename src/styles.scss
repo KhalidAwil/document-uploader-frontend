@@ -1996,12 +1996,13 @@ app-edit-athar-document ::-moz-selection {
 // Global CMS Section Theme Styles
 // ==========================================
 
-// Blue background theme
+// Blue background theme (Gradient with Border)
 .section-secondary-bg {
-  background-color: #5A6285 !important;
-  border: none !important;
+  background: linear-gradient(135deg, #5A6285 0%, #3E4666 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 8px !important;
   padding: 2rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 
   * {
     color: white !important;
