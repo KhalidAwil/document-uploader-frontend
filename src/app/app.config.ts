@@ -12,6 +12,7 @@ import { appInitializerFactory } from './factories/app-initializer.factory';
 import { DatePipe } from '@angular/common';
 import { ArabicDatePipe } from './pipes/arabic-date.pipe';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { LabelService } from './services/label.service';
 import { NgbCarouselConfig, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export const appConfig: ApplicationConfig = {
@@ -38,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializerFactory,
-      deps: [TranslateService],
+      deps: [TranslateService, LabelService],
       multi: true
     }
   ]

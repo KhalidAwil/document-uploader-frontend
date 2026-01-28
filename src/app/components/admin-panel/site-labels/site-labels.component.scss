@@ -1,0 +1,15 @@
+// Sticky footer shadow and z-index
+.sticky-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.form-label {
+    letter-spacing: 0.5px;
+}

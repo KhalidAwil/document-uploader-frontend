@@ -27,6 +27,7 @@ import { AdminUsersComponent } from './components/admin-panel/admin-users/admin-
 import { AdminContactMessagesComponent } from './components/admin-panel/admin-contact-messages/admin-contact-messages.component';
 import { AdminSiteSettingsComponent } from './components/admin-panel/admin-site-settings/admin-site-settings.component';
 import { SiteAnalyticsComponent } from './components/admin-panel/site-analytics/site-analytics.component';
+import { SiteLabelsComponent } from './components/admin-panel/site-labels/site-labels.component';
 import { ContentManagerComponent } from './components/admin-panel/content-manager/content-manager.component';
 import { EditAtharDocumentComponent } from './components/athar/edit-athar-document/edit-athar-document.component';
 import { CreateAtharDocumentComponent } from './components/athar/create-athar-document/create-athar-document.component';
@@ -491,6 +492,15 @@ export const routes: Routes = [
         canActivate: [RoleGuard],
         data: {
           breadcrumb: 'SITE_SETTINGS',
+          getRequiredPermission: () => ['root_super_admin']
+        }
+      },
+      {
+        path: 'labels',
+        component: SiteLabelsComponent,
+        canActivate: [RoleGuard],
+        data: {
+          breadcrumb: 'نصوص الموقع',
           getRequiredPermission: () => ['root_super_admin']
         }
       },

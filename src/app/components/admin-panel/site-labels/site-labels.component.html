@@ -1,0 +1,67 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">إدارة نصوص الموقع</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a routerLink="/admin">لوحة التحكم</a></li>
+                <li class="breadcrumb-item active">نصوص الموقع</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div *ngIf="message" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" (click)="message = ''"></button>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+        <p class="mt-2 text-muted">جاري تحميل النصوص...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+        <form (ngSubmit)="saveLabels()">
+
+            <!-- Loop through sections -->
+            <div *ngFor="let section of sections" class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-primary text-uppercase">{{ section }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div *ngFor="let label of groupedLabels[section]" class="col-md-6 mb-3">
+                            <label [for]="label.key" class="form-label fw-bold small text-muted">
+                                {{ label.key }}
+                            </label>
+                            <input type="text" class="form-control" [id]="label.key" [(ngModel)]="label.value"
+                                [name]="label.key" required
+                                [class.is-invalid]="!label.value || label.value.trim() === ''">
+                            <div class="invalid-feedback">
+                                هذا الحقل مطلوب
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="sticky-bottom bg-white border-top p-3 d-flex justify-content-end shadow-lg"
+                style="bottom: 0; z-index: 1000;">
+                <button type="button" class="btn btn-secondary me-2" (click)="loadLabels()">إعادة تعيين</button>
+                <button type="submit" class="btn btn-primary px-5" [disabled]="isSaving">
+                    <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status"
+                        aria-hidden="true"></span>
+                    {{ isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
