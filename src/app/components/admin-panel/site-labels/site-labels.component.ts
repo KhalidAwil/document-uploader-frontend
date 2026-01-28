@@ -77,6 +77,33 @@ export class SiteLabelsComponent implements OnInit {
             }, 500);
         }
     }
+    // Fallback map for displaying English sections in Arabic (if user hasn't reset DB)
+    private readonly sectionDisplayMap: Record<string, string> = {
+        'Authentication': 'التسجيل والدخول',
+        'Contact Page': 'صفحة اتصل بنا',
+        'Footer': 'تذييل الصفحة (Footer)',
+        'Footer / Common': 'تذييل الصفحة (Footer)',
+        'Navigation': 'القائمة العلوية',
+        'Documents': 'المستندات',
+        'Admin Panel': 'لوحة التحكم',
+        'Admin Dropdowns': 'إدارة القوائم المنسدلة',
+        'Admin Statistics': 'الإحصائيات',
+        'File Uploads': 'رفع الملفات',
+        'Modals & Alerts': 'النوافذ المنبثقة والتنبيهات',
+        'Validation': 'رسائل التحقق',
+        'Reports': 'التقارير',
+        'Search Filters': 'فلاتر البحث',
+        'Media & Images': 'الوسائط والصور',
+        'Athar Module': 'الآثار',
+        'About Page (Legacy)': 'صفحة عن الوزارة (قديم)',
+        'Join Us Page': 'صفحة انضم إلينا',
+        'Document Types': 'أنواع المستندات',
+        'General': 'عام'
+    };
+
+    getSectionLabel(section: string): string {
+        return this.sectionDisplayMap[section] || section;
+    }
     constructor(
         private labelService: LabelService,
         private translate: TranslateService,
